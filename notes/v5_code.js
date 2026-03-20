@@ -220,13 +220,13 @@ RULES:
 - For customers: name, email, phoneNumber, organizationNumber, address, postalCode, city, isPrivateIndividual
 - For suppliers: name, email, phoneNumber, organizationNumber, address, postalCode, city
 - For products: name, number, priceExcludingVat, vatPercentage (default 25)
-- For invoices: customerName, customerOrgNumber, invoiceDate, dueDate, lines[{description, quantity, unitPrice, vatPercentage}], shouldSend (true if task says send/envie/sende/enviar/envoyer/schicken)
+- For invoices: customerName, customerOrgNumber, invoiceDate, dueDate, lines[{description, productNumber, quantity, unitPrice, vatPercentage}], shouldSend (true if task says send/envie/sende/enviar/envoyer/schicken). IMPORTANT: if product numbers are mentioned (e.g. "Skylagring (3300)"), extract them as productNumber in each line.
 - For payments: invoiceNumber, invoiceId, amount, paymentDate, customerName, customerOrgNumber, productDescription, productPrice, products[{name, number, unitPrice}] (extract ALL customer/product info — the invoice may need to be created first. If MULTIPLE products mentioned, put each in the products array with name, number and unitPrice)
 - For projects: name, customerName, customerOrgNumber, projectManagerFirstName, projectManagerLastName, projectManagerEmail, startDate, endDate, isInternal
 - For project_invoice (T2): extract customerName, customerOrgNumber, projectName, employeeFirstName, employeeLastName, employeeEmail, activityName, hours, hourlyRate, description. This is when a task mentions logging hours AND generating/creating a project invoice.
 - For payroll_voucher (T2): extract employeeFirstName, employeeLastName, employeeEmail, salaryItems[{description, amount, accountNumber}]. This is when a task mentions payroll/salary/lønn/bonus/Gehalt/salaire. Account 5000=Lønn, 5400=Arbeidsgiveravgift, 1920=Bank.
 - For supplier_invoice (T2): extract supplierName, supplierOrgNumber, invoiceNumber, amountIncludingVat, accountNumber (expense account like 6500), description. This is when a task mentions "supplier invoice"/"leverandørfaktura"/"facture fournisseur"/"Lieferantenrechnung"/"received invoice from supplier". IMPORTANT: "register supplier invoice" or "received invoice from X" = supplier_invoice, NOT create_voucher!
-- CLASSIFICATION PRIORITY: If task mentions "supplier"/"leverandør"/"fournisseur" + "invoice"/"faktura"/"facture" → supplier_invoice. If task mentions "payroll"/"salary"/"lønn"/"Gehalt" → payroll_voucher. If task says create order AND convert to invoice AND/OR register payment (multi-step chain) → register_payment (it handles full chain: customer → product → order → invoice → payment). Only use create_voucher for generic manual journal entries. NEVER classify multi-step order+invoice+payment tasks as "unknown".
+- CLASSIFICATION PRIORITY: If task mentions "Festpreis"/"fastpris"/"fixed price"/"preço fixo"/"prix fixe" + project + invoice/faktura → project_invoice. If task mentions "supplier"/"leverandør"/"fournisseur" + "invoice"/"faktura"/"facture" → supplier_invoice. If task mentions "payroll"/"salary"/"lønn"/"Gehalt" → payroll_voucher. If task says create order AND convert to invoice AND/OR register payment (multi-step chain) → register_payment. Only use create_voucher for generic manual journal entries. NEVER classify multi-step order+invoice+payment tasks as "unknown".
 - For travel expenses: employeeName, employeeEmail, title, departureDate, returnDate, destination, costs[{description, amount}] (e.g. flight ticket, taxi, hotel), perDiem:{days, accommodation (HOTEL/NONE), location, dailyRate}
 - For credit notes: invoiceNumber, invoiceId, customerName, customerOrgNumber, productDescription, amount (amount excluding VAT). Extract ALL of these — on a fresh account we need to create the invoice before crediting it.
 - For updates: search fields (firstName, lastName) AND updates object with new values
@@ -251,7 +251,7 @@ if (!plan.task_type || plan.task_type === 'unknown' || plan.task_type === 'null'
   else if ((t.includes('supplier') || t.includes('leverandør') || t.includes('fournisseur') || t.includes('proveedor') || t.includes('lieferant')) && (t.includes('invoice') || t.includes('faktura') || t.includes('facture') || t.includes('rechnung'))) plan.task_type = 'supplier_invoice';
   else if (t.includes('payroll') || t.includes('salary') || t.includes('lønn') || t.includes('gehalt') || t.includes('salaire')) plan.task_type = 'payroll_voucher';
   else if (t.includes('order') && t.includes('invoice')) plan.task_type = 'create_invoice';
-  else if (t.includes('project') && (t.includes('invoice') || t.includes('hours') || t.includes('timer') || t.includes('hourly'))) plan.task_type = 'project_invoice';
+  else if (t.includes('project') && (t.includes('invoice') || t.includes('hours') || t.includes('timer') || t.includes('hourly') || t.includes('festpreis') || t.includes('fastpris') || t.includes('fixed price') || t.includes('fixpris') || t.includes('prix fixe') || t.includes('preço fixo'))) plan.task_type = 'project_invoice';
   else if ((t.includes('dimension') || t.includes('kostsenter') || t.includes('koststed') || t.includes('kostenstelle') || t.includes('cost center') || t.includes('centre de coût')) && (t.includes('voucher') || t.includes('bilag') || t.includes('journal') || t.includes('bokfør') || t.includes('posting'))) plan.task_type = 'dimension_voucher';
 }
 
@@ -394,14 +394,36 @@ try {
 
       const today = new Date().toISOString().split('T')[0];
       const iDate = p.invoiceDate || today;
-      // Build orderLines with description fallback from prompt-level fields
+      // Also check plan root for lines (Gemini may put them there instead of extracted_params)
+      if (!p.lines && plan.extracted_params && plan.extracted_params.lines) p.lines = plan.extracted_params.lines;
+      if (!p.lines && plan.lines) p.lines = plan.lines;
+      // Build orderLines — create products for each line if product number/name specified
       const defaultDesc = p.productDescription || p.description || 'Service';
       const defaultPrice = p.amount || p.productPrice || 1000;
-      const oLines = (p.lines && p.lines.length > 0 ? p.lines : [{ description: defaultDesc, quantity: 1, unitPrice: defaultPrice }]).map(l => ({
-        description: l.description || l.product || defaultDesc,
-        count: l.quantity || 1,
-        unitPriceExcludingVatCurrency: l.unitPrice || l.amount || defaultPrice
-      }));
+      const rawLines = p.lines && p.lines.length > 0 ? p.lines : [{ description: defaultDesc, quantity: 1, unitPrice: defaultPrice }];
+      const oLines = [];
+      for (const l of rawLines) {
+        const lineDesc = l.description || l.product || defaultDesc;
+        const linePrice = l.unitPrice || l.amount || defaultPrice;
+        const lineQty = l.quantity || 1;
+        const ol = { description: lineDesc, count: lineQty, unitPriceExcludingVatCurrency: linePrice };
+        // ALWAYS create product for each line (competition checks product existence)
+        const prodBody = { name: lineDesc, priceExcludingVatCurrency: linePrice };
+        if (l.productNumber || l.number) prodBody.number = String(l.productNumber || l.number);
+        let pr = await tx('POST', '/product', prodBody);
+        if (!pr.ok && prodBody.number) {
+          // Number conflict — retry without number
+          delete prodBody.number;
+          pr = await tx('POST', '/product', prodBody);
+        }
+        if (!pr.ok) {
+          // Name conflict or other — retry with unique suffix
+          prodBody.name = lineDesc + ' ' + Date.now().toString().slice(-4);
+          pr = await tx('POST', '/product', prodBody);
+        }
+        if (pr.ok) { ol.product = { id: pr.data.value.id }; results.push({ step: 'create_product', ...pr }); }
+        oLines.push(ol);
+      }
 
       const order = await tx('POST', '/order', {
         customer: { id: customerId }, deliveryDate: iDate, orderDate: iDate, orderLines: oLines
@@ -688,12 +710,14 @@ try {
         const parts = p.employeeName.split(' ');
         const emp = await findEmployee(parts[0], parts.length > 1 ? parts.slice(1).join(' ') : null);
         if (emp) eId = emp.id;
-        if (!eId && p.employeeEmail) {
-          const newEmp = await tx('POST', '/employee', {
-            firstName: parts[0] || 'Employee', lastName: parts.slice(1).join(' ') || 'Travel',
-            email: p.employeeEmail, userType: 'STANDARD',
-            department: { id: (await getDefaultDeptId()) || 0 }
-          });
+        const empEmail = p.employeeEmail || p.email || '';
+        if (!eId) {
+          const empBody = { firstName: parts[0] || 'Employee', lastName: parts.slice(1).join(' ') || 'Travel' };
+          if (empEmail) { empBody.email = empEmail; empBody.userType = 'STANDARD'; }
+          else { empBody.userType = 'NO_ACCESS'; }
+          const did = await getDefaultDeptId();
+          if (did) empBody.department = { id: did };
+          const newEmp = await tx('POST', '/employee', empBody);
           if (newEmp.ok) {
             eId = newEmp.data.value.id;
             results.push({ step: 'create_employee', ...newEmp });
