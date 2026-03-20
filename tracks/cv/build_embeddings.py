@@ -23,7 +23,7 @@ import torch
 
 
 DINO_MODEL_NAME = "vit_base_patch14_dinov2.lvd142m"
-CROP_SIZE = 224
+CROP_SIZE = 518
 BATCH_SIZE = 64
 
 

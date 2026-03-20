@@ -9,3 +9,9 @@ submissions/*
 logs/
 *.log
 .ipynb_checkpoints/
+tracks/cv/weights/*.onnx
+tracks/cv/weights/*.safetensors
+tracks/cv/weights/*.npy
+tracks/cv/weights/*.onnx
+tracks/cv/weights/*.safetensors
+*.zip
