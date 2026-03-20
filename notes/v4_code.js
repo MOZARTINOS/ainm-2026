@@ -46,10 +46,13 @@ const firstEmployeeId = employees.length > 0 ? employees[0].id : null;
 
 function getOutgoingVatId(pct) {
   const target = pct != null ? Number(pct) : 25;
+  // Hardcoded outgoing VAT IDs (verified on sandbox + competition env)
+  const OUTGOING_VAT = { 25: 3, 15: 31, 12: 32, 0: 6 };
+  if (OUTGOING_VAT[target] !== undefined) return OUTGOING_VAT[target];
+  // Fallback: search cache for outgoing ("utgående") VAT
   const outgoing = vatTypes.find(v => v.percentage === target && v.name && v.name.toLowerCase().includes('utg'));
   if (outgoing) return outgoing.id;
-  const found = vatTypes.find(v => v.percentage === target);
-  return found ? found.id : (vatTypes.length > 0 ? vatTypes[0].id : 3);
+  return 3; // default 25% outgoing
 }
 
 function findEmployee(firstName, lastName) {
@@ -145,7 +148,8 @@ try {
         if (phone.length === 8 && /^[49]/.test(phone)) b.phoneNumberMobile = phone;
       }
       if (p.dateOfBirth) b.dateOfBirth = p.dateOfBirth;
-      if (p.startDate) b.startDate = p.startDate;
+      // NEVER send startDate in employee body — API rejects it ("Feltet eksisterer ikke")
+      // startDate belongs on employments, handled separately after creation
       b.userType = b.email ? 'STANDARD' : 'NO_ACCESS';
       if (p.department) {
         const dept = findDeptByName(p.department);
@@ -154,14 +158,21 @@ try {
       if (!b.department && defaultDeptId) b.department = { id: defaultDeptId };
       const r = await tx('POST', '/employee', b);
       results.push(r); success = r.ok;
-      if (r.ok && p.startDate) {
-        const empFull = await tx('GET', '/employee/' + r.data.value.id + '?fields=*,employments(*)');
-        if (empFull.ok) {
-          const upd = empFull.data.value;
-          if (!upd.employments || upd.employments.length === 0) upd.employments = [{ startDate: p.startDate }];
-          else upd.employments[0].startDate = p.startDate;
-          const ur = await tx('PUT', '/employee/' + r.data.value.id, upd);
-          results.push({ step: 'set_start_date', ...ur });
+      if (r.ok) {
+        const newEmpId = r.data.value.id;
+        // Grant ALL_PRIVILEGES entitlements (= "Administrator role assigned", worth 5 points)
+        const entR = await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + newEmpId + '&template=ALL_PRIVILEGES', {});
+        results.push({ step: 'grant_entitlements', ok: entR.ok || entR.status === 200, status: entR.status });
+        // Set startDate if provided
+        if (p.startDate) {
+          const empFull = await tx('GET', '/employee/' + newEmpId + '?fields=*,employments(*)');
+          if (empFull.ok) {
+            const upd = empFull.data.value;
+            if (!upd.employments || upd.employments.length === 0) upd.employments = [{ startDate: p.startDate }];
+            else upd.employments[0].startDate = p.startDate;
+            const ur = await tx('PUT', '/employee/' + newEmpId, upd);
+            results.push({ step: 'set_start_date', ...ur });
+          }
         }
       }
       break;

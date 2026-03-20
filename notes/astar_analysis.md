@@ -60,3 +60,58 @@ ocean:   [0.950, 0.014, 0.006, 0.005, 0.021, 0.005]
 Settlements have: population, food, wealth, defense, has_port, alive, owner_id.
 Positions are (x, y) - settlements move around the map between seeds.
 Average population: ~2.5-3.5.
+
+---
+
+# Round 3 Preparation & Key Findings
+
+## Leaderboard (after Round 2)
+- Top teams: 95-99 weighted score (~85-90 raw)
+- Our position: 129th with 15.67 (bug-affected)
+- 176 total teams, 94 with >1 round
+
+## Critical Discovery: FLOOR matters more than expected
+```
+floor=0.01:   upper bound = 94.5 (weighted 104.2)
+floor=0.005:  upper bound = 97.2 (weighted 107.2)
+floor=0.001:  upper bound = 99.4 (weighted 109.6)
+```
+**API accepts values < 0.01!** Changed FLOOR from 0.01 to 0.001.
+
+## Gaussian Smoothing: NOT the answer
+Tested sigma 0.3-2.0 on global priors — score DECREASES with smoothing.
+- sigma=0.0: avg 40.42
+- sigma=1.5: avg 38.35
+
+## Spatial Correlation Analysis
+- Same-type neighbors: cosine similarity **0.993** (near identical!)
+- Different-type neighbors: cosine similarity **0.297**
+- Conclusion: spatial correlation = driven by initial terrain type, already captured by priors
+
+## Cross-seed Correlation
+- Same cell across seeds: cosine similarity **0.706**
+- 52% of cells have >0.95 similarity across seeds
+- Pooling 5 seeds: marginal improvement (14.9→22.7), not silver bullet
+
+## Settlement Distance Effect
+```
+Dist 0:    P(settl)=0.240 | P(empty)=0.513
+Dist 1-2:  P(settl)=0.197 | P(empty)=0.570
+Dist 3-5:  P(settl)=0.188 | P(empty)=0.575
+Dist 11+:  P(settl)=0.093 | P(empty)=0.722
+```
+Moderate signal: settlement probability drops 2.5x at distance 11+ vs 0.
+
+## Round 3 Changes
+1. FLOOR: 0.01 → 0.001
+2. Smart viewport placement (maximize land coverage)
+3. Greedy coverage with per-seed offsets
+4. Settlement proximity boost in predictions
+5. **BUG**: accidentally overwrote seed 0 with test priors (resubmitted with correct priors)
+
+## Round 4 Plan
+1. Save observations to disk (for resubmission with improved floor)
+2. Use FLOOR=0.001 from start
+3. Better viewport: greedy maximize uncovered land cells
+4. Use settlement metadata for alive/ruin prediction
+5. Target: 60+ score raw

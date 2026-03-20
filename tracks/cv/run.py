@@ -1,6 +1,6 @@
 """
 NorgesGruppen object detection pipeline — NM i AI 2026
-Sandbox entry point: python run.py --images /data/images/ --output /output/predictions.json
+Sandbox entry point: python run.py --input /data/images --output /output/predictions.json
 
 Architecture:
   1. YOLOv8s ONNX single-class detector with SAHI tiling
@@ -23,17 +23,21 @@ from safetensors.torch import load_file as load_safetensors
 
 
 # ---------------------------------------------------------------------------
-# Constants
+# Constants  (tuned for speed — L4/A100 GPU, budget 300s / 50 images)
 # ---------------------------------------------------------------------------
-TILE_SIZE = 640
-OVERLAP = 0.30
-CONF_THRESH = 0.001
+TILE_SIZE = 1280
+OVERLAP = 0.15                # was 0.30 — fewer tiles, ~30% speedup
+CONF_THRESH = 0.05            # was 0.001 — far fewer low-quality detections
 WBF_IOU_THRESH = 0.4
-WBF_SKIP_BOX_THRESH = 0.0001
+WBF_SKIP_BOX_THRESH = 0.001   # raised slightly (was 0.0001)
 DINO_MODEL_NAME = "vit_base_patch14_dinov2.lvd142m"
 DINO_EMBED_DIM = 768
-CROP_SIZE = 224
-BATCH_SIZE = 128  # crops per forward pass through DINOv2
+CROP_SIZE = 518
+BATCH_SIZE = 256              # was 128 — L4 has 24GB, A100 even more
+MIN_BOX_AREA = 100            # skip tiny detections (< 100 px²)
+
+# Threshold: if image fits in one tile, skip SAHI tiling entirely
+SKIP_TILE_THRESHOLD = 1280
 
 
 # ---------------------------------------------------------------------------
@@ -68,10 +72,9 @@ def preprocess_tile(tile: np.ndarray) -> np.ndarray:
 
 def decode_yolo_output(output: np.ndarray, conf_thresh: float):
     """
-    Decode raw YOLOv8 output tensor (1, 5, N) → list of [x1,y1,x2,y2,score].
+    Decode raw YOLOv8 output tensor (1, 5, N) → array of [x1,y1,x2,y2,score].
     For single-class detector, output has shape (1, 5, N) where row 4 is objectness.
     """
-    # output shape: (1, 5, N) — transpose to (N, 5)
     preds = output[0].T  # (N, 5)
     scores = preds[:, 4]
     mask = scores > conf_thresh
@@ -79,7 +82,6 @@ def decode_yolo_output(output: np.ndarray, conf_thresh: float):
     if len(preds) == 0:
         return np.empty((0, 5), dtype=np.float32)
 
-    # cx, cy, w, h → x1, y1, x2, y2
     cx, cy, w, h = preds[:, 0], preds[:, 1], preds[:, 2], preds[:, 3]
     x1 = cx - w / 2
     y1 = cy - h / 2
@@ -104,12 +106,29 @@ def run_detector_on_image(session: ort.InferenceSession, img_bgr: np.ndarray):
     img_h, img_w = img_bgr.shape[:2]
     input_name = session.get_inputs()[0].name
 
-    all_boxes_norm = []   # normalised [0,1] for WBF
+    # --- Fast path: image fits in a single tile → skip SAHI overhead ---
+    if img_h <= SKIP_TILE_THRESHOLD and img_w <= SKIP_TILE_THRESHOLD:
+        inp, scale, pad_x, pad_y = preprocess_tile(img_bgr)
+        raw = session.run(None, {input_name: inp})[0]
+        dets = decode_yolo_output(raw, CONF_THRESH)
+        if len(dets) == 0:
+            return np.empty((0, 5), dtype=np.float32)
+
+        # Remove letterbox transform
+        dets[:, 0] = np.clip((dets[:, 0] - pad_x) / scale, 0, img_w)
+        dets[:, 1] = np.clip((dets[:, 1] - pad_y) / scale, 0, img_h)
+        dets[:, 2] = np.clip((dets[:, 2] - pad_x) / scale, 0, img_w)
+        dets[:, 3] = np.clip((dets[:, 3] - pad_y) / scale, 0, img_h)
+        # Filter degenerate boxes
+        valid = (dets[:, 2] > dets[:, 0]) & (dets[:, 3] > dets[:, 1])
+        return dets[valid]
+
+    # --- SAHI tiling path ---
+    all_boxes_norm = []
     all_scores = []
     all_labels = []
 
     for tx, ty in generate_tiles(img_h, img_w, TILE_SIZE, OVERLAP):
-        # Crop tile from image
         x_end = min(tx + TILE_SIZE, img_w)
         y_end = min(ty + TILE_SIZE, img_h)
         tile = img_bgr[ty:y_end, tx:x_end]
@@ -120,25 +139,24 @@ def run_detector_on_image(session: ort.InferenceSession, img_bgr: np.ndarray):
         dets = decode_yolo_output(raw, CONF_THRESH)
 
         for det in dets:
-            # Remove letterbox padding and rescale to tile coords
             bx1 = (det[0] - pad_x) / scale
             by1 = (det[1] - pad_y) / scale
             bx2 = (det[2] - pad_x) / scale
             by2 = (det[3] - pad_y) / scale
 
-            # Clip to tile bounds
             bx1 = max(0, bx1)
             by1 = max(0, by1)
             bx2 = min(tile_w, bx2)
             by2 = min(tile_h, by2)
 
-            # Convert to full-image coords
-            fx1 = bx1 + tx
-            fy1 = by1 + ty
-            fx2 = bx2 + tx
-            fy2 = by2 + ty
+            fx1 = max(0.0, bx1 + tx)
+            fy1 = max(0.0, by1 + ty)
+            fx2 = min(float(img_w), bx2 + tx)
+            fy2 = min(float(img_h), by2 + ty)
 
-            # Normalise for WBF
+            if fx2 <= fx1 or fy2 <= fy1:
+                continue
+
             all_boxes_norm.append([
                 fx1 / img_w, fy1 / img_h,
                 fx2 / img_w, fy2 / img_h,
@@ -158,7 +176,6 @@ def run_detector_on_image(session: ort.InferenceSession, img_bgr: np.ndarray):
         skip_box_thr=WBF_SKIP_BOX_THRESH,
     )
 
-    # De-normalise back to pixel coords
     boxes_out[:, [0, 2]] *= img_w
     boxes_out[:, [1, 3]] *= img_h
 
@@ -172,7 +189,6 @@ def run_detector_on_image(session: ort.InferenceSession, img_bgr: np.ndarray):
 def load_dino_model(weights_dir: Path, device: torch.device):
     """Load DINOv2 ViT-base from timm with safetensors weights."""
     model = timm.create_model(DINO_MODEL_NAME, pretrained=False, num_classes=0)
-    # Try safetensors first, then .pth
     st_path = weights_dir / "dinov2_vitb14.safetensors"
     pth_path = weights_dir / "dinov2_vitb14.pth"
     if st_path.exists():
@@ -182,13 +198,16 @@ def load_dino_model(weights_dir: Path, device: torch.device):
         state_dict = torch.load(str(pth_path), map_location="cpu", weights_only=True)
         model.load_state_dict(state_dict, strict=False)
     else:
-        # Fall back to pretrained download (won't work in sandbox without net)
         model = timm.create_model(DINO_MODEL_NAME, pretrained=True, num_classes=0)
 
     model = model.to(device).eval()
+    # Use half precision on CUDA for ~2x throughput on L4/A100
+    if device.type == "cuda":
+        model = model.half()
     return model
 
 
+@torch.inference_mode()
 def extract_embeddings(model, crops: list[np.ndarray], device: torch.device) -> np.ndarray:
     """
     Extract DINOv2 embeddings for a list of BGR uint8 crops.
@@ -196,6 +215,8 @@ def extract_embeddings(model, crops: list[np.ndarray], device: torch.device) -> 
     """
     if len(crops) == 0:
         return np.empty((0, DINO_EMBED_DIM), dtype=np.float32)
+
+    use_fp16 = device.type == "cuda"
 
     # DINOv2 normalisation (ImageNet stats)
     mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 3, 1, 1)
@@ -214,12 +235,12 @@ def extract_embeddings(model, crops: list[np.ndarray], device: torch.device) -> 
         batch_tensor = np.stack(batch_np)  # (B, 3, H, W)
         batch_tensor = (batch_tensor - mean) / std
         batch_tensor = torch.from_numpy(batch_tensor).to(device)
+        if use_fp16:
+            batch_tensor = batch_tensor.half()
 
-        with torch.no_grad():
-            embeds = model(batch_tensor)  # (B, 768)
+        embeds = model(batch_tensor)  # (B, 768)
 
-        embeds = embeds.cpu().numpy()
-        # L2 normalise
+        embeds = embeds.float().cpu().numpy()
         norms = np.linalg.norm(embeds, axis=1, keepdims=True) + 1e-8
         embeds = embeds / norms
         all_embeds.append(embeds)
@@ -239,7 +260,6 @@ def classify_crops(
     if len(embeddings) == 0:
         return np.array([], dtype=np.int64), np.array([], dtype=np.float32)
 
-    # cosine similarity (embeddings already L2-normalised)
     sim = embeddings @ ref_embeddings.T  # (N, num_refs)
     best_idx = np.argmax(sim, axis=1)
     best_score = sim[np.arange(len(sim)), best_idx]
@@ -254,30 +274,31 @@ def classify_crops(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--images", type=str, required=True, help="Path to images directory")
+    parser.add_argument("--input", type=str, required=True, help="Path to images directory")
     parser.add_argument("--output", type=str, required=True, help="Path to output predictions JSON")
     args = parser.parse_args()
 
-    images_dir = Path(args.images)
+    images_dir = Path(args.input)
     output_path = Path(args.output)
     weights_dir = Path(__file__).parent / "weights"
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # --- Load detector ---
+    # --- Load detector (ONNX with CUDA) ---
     onnx_path = weights_dir / "yolov8s_single.onnx"
     providers = ["CUDAExecutionProvider", "CPUExecutionProvider"]
-    det_session = ort.InferenceSession(str(onnx_path), providers=providers)
+    sess_opts = ort.SessionOptions()
+    sess_opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+    det_session = ort.InferenceSession(str(onnx_path), sess_options=sess_opts, providers=providers)
 
     # --- Load classifier ---
     dino_model = load_dino_model(weights_dir, device)
 
     # --- Load reference embeddings ---
-    ref_embeds = np.load(str(weights_dir / "ref_embeddings.npy"))   # (327, 768)
-    ref_cat_ids = np.load(str(weights_dir / "ref_category_ids.npy"))  # (327,)
-    # L2 normalise references
+    ref_embeds = np.load(str(weights_dir / "ref_embeddings.npy"))
+    ref_cat_ids = np.arange(ref_embeds.shape[0])  # sequential 0..N-1
     ref_norms = np.linalg.norm(ref_embeds, axis=1, keepdims=True) + 1e-8
-    ref_embeds = ref_embeds / ref_norms
+    ref_embeds = (ref_embeds / ref_norms).astype(np.float32)
 
     # --- Collect images ---
     image_paths = sorted(
@@ -287,7 +308,9 @@ def main():
     predictions = []
 
     for img_path in image_paths:
-        image_id = int(img_path.stem)
+        stem = img_path.stem
+        digits = "".join(c for c in stem if c.isdigit())
+        image_id = int(digits) if digits else hash(stem) % 10**6
         img_bgr = cv2.imread(str(img_path))
         if img_bgr is None:
             continue
@@ -297,7 +320,7 @@ def main():
         if len(detections) == 0:
             continue
 
-        # Crop detections for classification
+        # Crop detections for classification — skip tiny boxes
         crops = []
         valid_dets = []
         for det in detections:
@@ -307,6 +330,9 @@ def main():
             x2i = min(img_bgr.shape[1], int(round(x2)))
             y2i = min(img_bgr.shape[0], int(round(y2)))
             if x2i <= x1i or y2i <= y1i:
+                continue
+            # Skip tiny detections that are likely noise
+            if (x2i - x1i) * (y2i - y1i) < MIN_BOX_AREA:
                 continue
             crop = img_bgr[y1i:y2i, x1i:x2i]
             crops.append(crop)
