@@ -2,87 +2,72 @@
   {
     "category": "T1",
     "name": "Employee NO",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_employee",
-    "calls": 2,
-    "err4xx": 2,
-    "time": 39.7,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "calls": 3,
+    "err4xx": 0,
+    "time": 5.5,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Employee EN",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_employee",
     "calls": 3,
-    "err4xx": 3,
-    "time": 22.7,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen.",
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "err4xx": 0,
+    "time": 5.4,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Employee FR",
     "status": "PASS",
     "task_type": "create_employee",
-    "calls": 2,
-    "err4xx": 1,
-    "time": 29.2,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "calls": 3,
+    "err4xx": 0,
+    "time": 4.8,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Employee ES",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_employee",
-    "calls": 1,
-    "err4xx": 1,
-    "time": 26.9,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "calls": 3,
+    "err4xx": 0,
+    "time": 5.9,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Employee DE",
     "status": "PASS",
     "task_type": "create_employee",
-    "calls": 2,
-    "err4xx": 1,
-    "time": 15.7,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "calls": 3,
+    "err4xx": 0,
+    "time": 4.6,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Employee PT",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_employee",
-    "calls": 1,
-    "err4xx": 1,
-    "time": 10.7,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "calls": 3,
+    "err4xx": 0,
+    "time": 5.4,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Employee IT",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_employee",
-    "calls": 1,
-    "err4xx": 1,
-    "time": 22.4,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "calls": 3,
+    "err4xx": 0,
+    "time": 4.8,
+    "errors": []
   },
   {
     "category": "T1",
@@ -91,7 +76,7 @@
     "task_type": "create_employee",
     "calls": 2,
     "err4xx": 0,
-    "time": 4.1,
+    "time": 3.5,
     "errors": []
   },
   {
@@ -100,11 +85,9 @@
     "status": "PASS",
     "task_type": "create_employee",
     "calls": 2,
-    "err4xx": 1,
-    "time": 22.5,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "err4xx": 0,
+    "time": 3.9,
+    "errors": []
   },
   {
     "category": "T1",
@@ -112,11 +95,9 @@
     "status": "PASS",
     "task_type": "create_employee",
     "calls": 2,
-    "err4xx": 1,
-    "time": 12.8,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "err4xx": 0,
+    "time": 4.5,
+    "errors": []
   },
   {
     "category": "T1",
@@ -125,7 +106,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.6,
+    "time": 2.8,
     "errors": []
   },
   {
@@ -135,7 +116,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.2,
+    "time": 3.5,
     "errors": []
   },
   {
@@ -155,7 +136,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.3,
+    "time": 3.4,
     "errors": []
   },
   {
@@ -165,7 +146,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.8,
+    "time": 3.7,
     "errors": []
   },
   {
@@ -175,7 +156,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.6,
+    "time": 2.7,
     "errors": []
   },
   {
@@ -185,7 +166,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.7,
+    "time": 2.8,
     "errors": []
   },
   {
@@ -195,7 +176,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.4,
+    "time": 1.7,
     "errors": []
   },
   {
@@ -205,96 +186,78 @@
     "task_type": "create_supplier",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.1,
+    "time": 2.8,
     "errors": []
   },
   {
     "category": "T1",
     "name": "Product EN 25%",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_product",
-    "calls": 2,
-    "err4xx": 2,
-    "time": 8.8,
-    "errors": [
-      "Produktnummeret 2451 er i bruk.",
-      "Feltet eksisterer ikke i objektet."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 2.7,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Product FR 25%",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_product",
-    "calls": 2,
-    "err4xx": 2,
-    "time": 5.8,
-    "errors": [
-      "Produktnummeret 1327 er i bruk.",
-      "Feltet eksisterer ikke i objektet."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 2.7,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Product DE 25%",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_product",
-    "calls": 2,
-    "err4xx": 2,
-    "time": 6.6,
-    "errors": [
-      "Produktnummeret 3512 er i bruk.",
-      "Feltet eksisterer ikke i objektet."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 3.4,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Product NO 0%",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_product",
     "calls": 1,
-    "err4xx": 1,
-    "time": 18.8,
-    "errors": [
-      "Produktnavnet \"Eksportservice\" er allerede registrert."
-    ]
+    "err4xx": 0,
+    "time": 2.4,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Product EN 15%",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_product",
-    "calls": 2,
-    "err4xx": 2,
-    "time": 5.9,
-    "errors": [
-      "Produktnummeret 8800 er i bruk.",
-      "Feltet eksisterer ikke i objektet."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 2.8,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Product large price",
     "status": "PASS",
     "task_type": "create_product",
-    "calls": 3,
-    "err4xx": 2,
-    "time": 9.8,
-    "errors": [
-      "Produktnavnet \"Enterprise License\" er allerede registrert."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 3.7,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Product decimal price",
     "status": "PASS",
     "task_type": "create_product",
-    "calls": 3,
-    "err4xx": 2,
-    "time": 6.1,
-    "errors": [
-      "Produktnavnet \"Konsulenttime\" er allerede registrert."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 3.1,
+    "errors": []
   },
   {
     "category": "T1",
@@ -303,7 +266,7 @@
     "task_type": "create_department",
     "calls": 3,
     "err4xx": 0,
-    "time": 4.7,
+    "time": 2.5,
     "errors": []
   },
   {
@@ -313,7 +276,7 @@
     "task_type": "create_department",
     "calls": 3,
     "err4xx": 0,
-    "time": 2.4,
+    "time": 2.1,
     "errors": []
   },
   {
@@ -323,7 +286,7 @@
     "task_type": "create_department",
     "calls": 1,
     "err4xx": 0,
-    "time": 1.6,
+    "time": 2.7,
     "errors": []
   },
   {
@@ -333,7 +296,7 @@
     "task_type": "create_department",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.1,
+    "time": 2.6,
     "errors": []
   },
   {
@@ -343,7 +306,7 @@
     "task_type": "create_department",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.4,
+    "time": 2.6,
     "errors": []
   },
   {
@@ -353,7 +316,7 @@
     "task_type": "create_supplier",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.7,
+    "time": 3.1,
     "errors": []
   },
   {
@@ -363,7 +326,7 @@
     "task_type": "create_supplier",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.7,
+    "time": 2.9,
     "errors": []
   },
   {
@@ -373,31 +336,27 @@
     "task_type": "create_supplier",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.8,
+    "time": 2.7,
     "errors": []
   },
   {
     "category": "T1",
     "name": "Project FR linked",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_project",
-    "calls": 3,
-    "err4xx": 3,
-    "time": 24.1,
-    "errors": [
-      "Oppgitt prosjektleder har ikke fått tilgang som prosjektlede",
-      "Det finnes allerede en bruker med denne e-postadressen.",
-      "Kan ikke være null."
-    ]
+    "calls": 2,
+    "err4xx": 0,
+    "time": 5.4,
+    "errors": []
   },
   {
     "category": "T1",
     "name": "Project NO linked",
     "status": "PASS",
     "task_type": "create_project",
-    "calls": 1,
+    "calls": 2,
     "err4xx": 0,
-    "time": 3.8,
+    "time": 5.4,
     "errors": []
   },
   {
@@ -407,7 +366,7 @@
     "task_type": "create_project",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.8,
+    "time": 2.7,
     "errors": []
   },
   {
@@ -417,7 +376,7 @@
     "task_type": "create_project",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.8,
+    "time": 3.1,
     "errors": []
   },
   {
@@ -425,9 +384,9 @@
     "name": "Travel NO",
     "status": "PASS",
     "task_type": "create_travel_expense",
-    "calls": 1,
+    "calls": 2,
     "err4xx": 0,
-    "time": 3.6,
+    "time": 3.9,
     "errors": []
   },
   {
@@ -435,9 +394,9 @@
     "name": "Travel EN",
     "status": "PASS",
     "task_type": "create_travel_expense",
-    "calls": 1,
+    "calls": 2,
     "err4xx": 0,
-    "time": 3.6,
+    "time": 3.4,
     "errors": []
   },
   {
@@ -447,7 +406,27 @@
     "task_type": "create_travel_expense",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.1,
+    "time": 4.9,
+    "errors": []
+  },
+  {
+    "category": "T2",
+    "name": "Travel DE full",
+    "status": "PASS",
+    "task_type": "create_travel_expense",
+    "calls": 5,
+    "err4xx": 0,
+    "time": 6.1,
+    "errors": []
+  },
+  {
+    "category": "T2",
+    "name": "Travel EN costs",
+    "status": "PASS",
+    "task_type": "create_travel_expense",
+    "calls": 6,
+    "err4xx": 0,
+    "time": 7.9,
     "errors": []
   },
   {
@@ -457,7 +436,7 @@
     "task_type": "delete_travel_expense",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.8,
+    "time": 3.4,
     "errors": []
   },
   {
@@ -467,7 +446,7 @@
     "task_type": "delete_travel_expense",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.9,
+    "time": 5.5,
     "errors": []
   },
   {
@@ -477,7 +456,7 @@
     "task_type": "update_employee",
     "calls": 1,
     "err4xx": 0,
-    "time": 4.7,
+    "time": 3.5,
     "errors": []
   },
   {
@@ -487,7 +466,7 @@
     "task_type": "update_employee",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.7,
+    "time": 3.6,
     "errors": []
   },
   {
@@ -497,7 +476,7 @@
     "task_type": "update_employee",
     "calls": 1,
     "err4xx": 0,
-    "time": 5.4,
+    "time": 3.8,
     "errors": []
   },
   {
@@ -507,20 +486,18 @@
     "task_type": "delete_employee",
     "calls": 2,
     "err4xx": 1,
-    "time": 2.5,
+    "time": 2.4,
     "errors": []
   },
   {
     "category": "T1",
     "name": "Delete EN",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "delete_employee",
-    "calls": 1,
-    "err4xx": 0,
-    "time": 2.0,
-    "errors": [
-      "employee not found"
-    ]
+    "calls": 2,
+    "err4xx": 1,
+    "time": 2.1,
+    "errors": []
   },
   {
     "category": "T2",
@@ -529,7 +506,7 @@
     "task_type": "create_invoice",
     "calls": 2,
     "err4xx": 0,
-    "time": 4.8,
+    "time": 7.3,
     "errors": []
   },
   {
@@ -539,7 +516,7 @@
     "task_type": "create_invoice",
     "calls": 3,
     "err4xx": 0,
-    "time": 4.5,
+    "time": 6.3,
     "errors": []
   },
   {
@@ -549,7 +526,7 @@
     "task_type": "create_invoice",
     "calls": 3,
     "err4xx": 0,
-    "time": 5.6,
+    "time": 4.6,
     "errors": []
   },
   {
@@ -559,7 +536,7 @@
     "task_type": "create_invoice",
     "calls": 3,
     "err4xx": 0,
-    "time": 5.3,
+    "time": 4.9,
     "errors": []
   },
   {
@@ -569,7 +546,7 @@
     "task_type": "create_invoice",
     "calls": 2,
     "err4xx": 0,
-    "time": 6.1,
+    "time": 4.4,
     "errors": []
   },
   {
@@ -577,9 +554,9 @@
     "name": "Invoice 33% partial",
     "status": "PASS",
     "task_type": "create_invoice",
-    "calls": 3,
+    "calls": 2,
     "err4xx": 0,
-    "time": 18.4,
+    "time": 17.9,
     "errors": []
   },
   {
@@ -589,7 +566,7 @@
     "task_type": "create_invoice",
     "calls": 3,
     "err4xx": 0,
-    "time": 6.4,
+    "time": 6.1,
     "errors": []
   },
   {
@@ -599,7 +576,7 @@
     "task_type": "create_invoice",
     "calls": 2,
     "err4xx": 0,
-    "time": 8.3,
+    "time": 4.4,
     "errors": []
   },
   {
@@ -609,7 +586,7 @@
     "task_type": "register_payment",
     "calls": 4,
     "err4xx": 1,
-    "time": 5.6,
+    "time": 11.3,
     "errors": [
       "Produktnavnet \"Consulting\" er allerede registrert."
     ]
@@ -621,7 +598,7 @@
     "task_type": "register_payment",
     "calls": 4,
     "err4xx": 1,
-    "time": 8.3,
+    "time": 8.8,
     "errors": [
       "Produktnavnet \"Services IT\" er allerede registrert."
     ]
@@ -633,7 +610,7 @@
     "task_type": "register_payment",
     "calls": 4,
     "err4xx": 1,
-    "time": 8.2,
+    "time": 7.9,
     "errors": [
       "Produktnavnet \"Raadgivning\" er allerede registrert."
     ]
@@ -645,7 +622,7 @@
     "task_type": "register_payment",
     "calls": 4,
     "err4xx": 1,
-    "time": 7.4,
+    "time": 15.3,
     "errors": [
       "Produktnavnet \"Servicio de red\" er allerede registrert."
     ]
@@ -657,7 +634,7 @@
     "task_type": "register_payment",
     "calls": 4,
     "err4xx": 1,
-    "time": 8.2,
+    "time": 11.0,
     "errors": [
       "Produktnavnet \"Beratung\" er allerede registrert."
     ]
@@ -667,12 +644,63 @@
     "name": "Order+inv+pay chain",
     "status": "PASS",
     "task_type": "register_payment",
-    "calls": 4,
-    "err4xx": 1,
-    "time": 11.9,
+    "calls": 5,
+    "err4xx": 2,
+    "time": 7.4,
     "errors": [
-      "Produktnavnet \"Service\" er allerede registrert."
+      "Produktnavnet \"Web Design\" er allerede registrert.",
+      "Produktnavnet \"Software License\" er allerede registrert."
     ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment 2 products PT",
+    "status": "PASS",
+    "task_type": "register_payment",
+    "calls": 5,
+    "err4xx": 0,
+    "time": 7.2,
+    "errors": []
+  },
+  {
+    "category": "T2",
+    "name": "Payment 2 products EN",
+    "status": "PASS",
+    "task_type": "register_payment",
+    "calls": 5,
+    "err4xx": 0,
+    "time": 7.1,
+    "errors": []
+  },
+  {
+    "category": "T2",
+    "name": "Reverse payment DE",
+    "status": "PASS",
+    "task_type": "reverse_payment",
+    "calls": 4,
+    "err4xx": 0,
+    "time": 6.3,
+    "errors": []
+  },
+  {
+    "category": "T2",
+    "name": "Reverse payment EN",
+    "status": "PASS",
+    "task_type": "reverse_payment",
+    "calls": 4,
+    "err4xx": 0,
+    "time": 6.0,
+    "errors": []
+  },
+  {
+    "category": "T2",
+    "name": "Reverse payment NO",
+    "status": "PASS",
+    "task_type": "reverse_payment",
+    "calls": 4,
+    "err4xx": 0,
+    "time": 6.0,
+    "errors": []
   },
   {
     "category": "T2",
@@ -681,7 +709,7 @@
     "task_type": "credit_note",
     "calls": 3,
     "err4xx": 0,
-    "time": 5.1,
+    "time": 4.7,
     "errors": []
   },
   {
@@ -691,7 +719,7 @@
     "task_type": "credit_note",
     "calls": 3,
     "err4xx": 0,
-    "time": 4.5,
+    "time": 4.7,
     "errors": []
   },
   {
@@ -701,7 +729,7 @@
     "task_type": "credit_note",
     "calls": 3,
     "err4xx": 0,
-    "time": 4.6,
+    "time": 3.5,
     "errors": []
   },
   {
@@ -711,7 +739,7 @@
     "task_type": "credit_note",
     "calls": 3,
     "err4xx": 0,
-    "time": 3.9,
+    "time": 4.0,
     "errors": []
   },
   {
@@ -719,24 +747,19 @@
     "name": "ProjInv FR",
     "status": "PASS",
     "task_type": "project_invoice",
-    "calls": 7,
-    "err4xx": 6,
-    "time": 27.8,
-    "errors": [
-      "Oppgitt prosjektleder har ikke fått tilgang som prosjektlede",
-      "Det finnes allerede en bruker med denne e-postadressen.",
-      "Feltet må fylles ut.",
-      "Verdien er ikke av korrekt type for dette feltet."
-    ]
+    "calls": 6,
+    "err4xx": 0,
+    "time": 7.7,
+    "errors": []
   },
   {
     "category": "T2",
     "name": "ProjInv NO",
     "status": "PASS",
     "task_type": "project_invoice",
-    "calls": 5,
+    "calls": 6,
     "err4xx": 0,
-    "time": 6.8,
+    "time": 7.8,
     "errors": []
   },
   {
@@ -744,9 +767,9 @@
     "name": "ProjInv EN",
     "status": "PASS",
     "task_type": "project_invoice",
-    "calls": 5,
+    "calls": 6,
     "err4xx": 0,
-    "time": 7.4,
+    "time": 7.2,
     "errors": []
   },
   {
@@ -756,7 +779,7 @@
     "task_type": "supplier_invoice",
     "calls": 1,
     "err4xx": 0,
-    "time": 4.3,
+    "time": 4.5,
     "errors": []
   },
   {
@@ -766,7 +789,7 @@
     "task_type": "supplier_invoice",
     "calls": 1,
     "err4xx": 0,
-    "time": 4.5,
+    "time": 4.9,
     "errors": []
   },
   {
@@ -776,7 +799,7 @@
     "task_type": "supplier_invoice",
     "calls": 1,
     "err4xx": 0,
-    "time": 4.7,
+    "time": 5.0,
     "errors": []
   },
   {
@@ -784,9 +807,9 @@
     "name": "Payroll EN",
     "status": "PASS",
     "task_type": "payroll_voucher",
-    "calls": 1,
+    "calls": 2,
     "err4xx": 0,
-    "time": 4.8,
+    "time": 5.8,
     "errors": []
   },
   {
@@ -794,9 +817,9 @@
     "name": "Payroll NO",
     "status": "PASS",
     "task_type": "payroll_voucher",
-    "calls": 1,
+    "calls": 2,
     "err4xx": 0,
-    "time": 4.7,
+    "time": 7.0,
     "errors": []
   },
   {
@@ -804,9 +827,9 @@
     "name": "Payroll FR",
     "status": "PASS",
     "task_type": "payroll_voucher",
-    "calls": 1,
+    "calls": 2,
     "err4xx": 0,
-    "time": 4.7,
+    "time": 5.7,
     "errors": []
   },
   {
@@ -814,9 +837,9 @@
     "name": "Payroll DE",
     "status": "PASS",
     "task_type": "payroll_voucher",
-    "calls": 1,
+    "calls": 2,
     "err4xx": 0,
-    "time": 6.1,
+    "time": 6.4,
     "errors": []
   },
   {
@@ -826,35 +849,28 @@
     "task_type": "create_voucher",
     "calls": 1,
     "err4xx": 0,
-    "time": 5.7,
+    "time": 6.7,
     "errors": []
   },
   {
     "category": "T2",
     "name": "Voucher rent EN",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_voucher",
-    "calls": 3,
-    "err4xx": 3,
-    "time": 25.5,
-    "errors": [
-      "Summen av posteringene for 2026-03-20 er ikke lik 0.",
-      "Verdien er ikke av korrekt type for dette feltet."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 6.3,
+    "errors": []
   },
   {
     "category": "T2",
     "name": "Voucher travel EN",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_voucher",
-    "calls": 3,
-    "err4xx": 3,
-    "time": 31.0,
-    "errors": [
-      "Kontoen 7100 Bilgodtgjørelse oppgavepliktig er låst til mva-",
-      "Kontoen 7100 Bilgodtgjørelse oppgavepliktig er låst til mva-",
-      "Verdien er ikke av korrekt type for dette feltet."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 10.2,
+    "errors": []
   },
   {
     "category": "T2",
@@ -863,7 +879,7 @@
     "task_type": "create_voucher",
     "calls": 3,
     "err4xx": 1,
-    "time": 4.7,
+    "time": 4.4,
     "errors": [
       "Kunde mangler."
     ]
@@ -872,10 +888,10 @@
     "category": "T2",
     "name": "Voucher complex",
     "status": "PASS",
-    "task_type": "supplier_invoice",
-    "calls": 2,
+    "task_type": "create_voucher",
+    "calls": 1,
     "err4xx": 0,
-    "time": 9.2,
+    "time": 12.9,
     "errors": []
   },
   {
@@ -885,7 +901,7 @@
     "task_type": "dimension_voucher",
     "calls": 3,
     "err4xx": 2,
-    "time": 5.2,
+    "time": 5.7,
     "errors": [
       "Feltet eksisterer ikke i objektet."
     ]
@@ -897,7 +913,7 @@
     "task_type": "dimension_voucher",
     "calls": 3,
     "err4xx": 2,
-    "time": 5.2,
+    "time": 6.0,
     "errors": [
       "Feltet eksisterer ikke i objektet."
     ]
@@ -908,11 +924,9 @@
     "status": "PASS",
     "task_type": "create_employee",
     "calls": 2,
-    "err4xx": 1,
-    "time": 8.9,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "err4xx": 0,
+    "time": 4.7,
+    "errors": []
   },
   {
     "category": "EDGE",
@@ -921,7 +935,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.2,
+    "time": 2.9,
     "errors": []
   },
   {
@@ -929,25 +943,20 @@
     "name": "Unicode accents",
     "status": "PASS",
     "task_type": "create_customer",
-    "calls": 2,
-    "err4xx": 1,
-    "time": 10.2,
-    "errors": [
-      "E-postadressen må være gyldig."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 4.0,
+    "errors": []
   },
   {
     "category": "EDGE",
     "name": "Zero amount",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_product",
-    "calls": 2,
-    "err4xx": 2,
-    "time": 16.5,
-    "errors": [
-      "Produktnavnet \"Free Trial\" er allerede registrert.",
-      "Feltet eksisterer ikke i objektet."
-    ]
+    "calls": 1,
+    "err4xx": 0,
+    "time": 1.9,
+    "errors": []
   },
   {
     "category": "EDGE",
@@ -956,7 +965,7 @@
     "task_type": "create_invoice",
     "calls": 2,
     "err4xx": 0,
-    "time": 6.0,
+    "time": 4.7,
     "errors": []
   },
   {
@@ -966,7 +975,7 @@
     "task_type": "create_employee",
     "calls": 2,
     "err4xx": 0,
-    "time": 3.0,
+    "time": 4.3,
     "errors": []
   },
   {
@@ -976,7 +985,7 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 1.4,
+    "time": 2.3,
     "errors": []
   },
   {
@@ -986,20 +995,18 @@
     "task_type": "create_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 2.5,
+    "time": 2.8,
     "errors": []
   },
   {
     "category": "EDGE",
     "name": "Mixed lang NO+EN",
-    "status": "FAIL",
+    "status": "PASS",
     "task_type": "create_employee",
-    "calls": 1,
-    "err4xx": 1,
-    "time": 13.1,
-    "errors": [
-      "Det finnes allerede en bruker med denne e-postadressen."
-    ]
+    "calls": 2,
+    "err4xx": 0,
+    "time": 3.1,
+    "errors": []
   },
   {
     "category": "T2",
@@ -1008,7 +1015,7 @@
     "task_type": "update_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.2,
+    "time": 4.5,
     "errors": []
   },
   {
@@ -1018,7 +1025,7 @@
     "task_type": "update_customer",
     "calls": 1,
     "err4xx": 0,
-    "time": 3.3,
+    "time": 2.3,
     "errors": []
   }
 ]

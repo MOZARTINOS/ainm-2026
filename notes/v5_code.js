@@ -212,6 +212,8 @@ RULES:
 - Norwegian: ansatt=employee, kunde=customer, leverandør=supplier, produkt=product, faktura=invoice, betaling=payment, reiseregning=travel_expense, avdeling=department, prosjekt=project, kreditnota=credit_note, bilag/voucher=voucher, slett=delete, oppdater/endre=update
 - "slett reiseregning"/"delete travel expense"/"eliminar informe de viaje" → delete_travel_expense
 - For delete_travel_expense: extract employeeName, title/description to identify which expense to delete
+- CLASSIFICATION PRIORITY: If task mentions reversing/cancelling/stornering a PAYMENT (zurückgebucht/stornieren/reversere/annullere/reverse/cancel payment) → reverse_payment (NOT credit_note!). reverse_payment = create invoice chain + pay + reverse with negative payment. credit_note = create new credit invoice.
+- For reverse_payment: extract customerName, customerOrgNumber, amount, productDescription (same as register_payment)
 - IMPORTANT: "leverandør/supplier/Lieferant/fournisseur/proveedor" → create_supplier (NOT create_customer). "kunde/customer/Kunde/client/cliente" → create_customer
 - Extract ALL parameters. Dates: YYYY-MM-DD. If only day/month, assume 2026.
 - For employees: firstName, lastName, email, phoneNumberMobile, dateOfBirth, startDate, department, isAdmin
@@ -219,13 +221,13 @@ RULES:
 - For suppliers: name, email, phoneNumber, organizationNumber, address, postalCode, city
 - For products: name, number, priceExcludingVat, vatPercentage (default 25)
 - For invoices: customerName, customerOrgNumber, invoiceDate, dueDate, lines[{description, quantity, unitPrice, vatPercentage}], shouldSend (true if task says send/envie/sende/enviar/envoyer/schicken)
-- For payments: invoiceNumber, invoiceId, amount, paymentDate, customerName, customerOrgNumber, productDescription, productPrice (extract ALL customer/product info — the invoice may need to be created first)
+- For payments: invoiceNumber, invoiceId, amount, paymentDate, customerName, customerOrgNumber, productDescription, productPrice, products[{name, number, unitPrice}] (extract ALL customer/product info — the invoice may need to be created first. If MULTIPLE products mentioned, put each in the products array with name, number and unitPrice)
 - For projects: name, customerName, customerOrgNumber, projectManagerFirstName, projectManagerLastName, projectManagerEmail, startDate, endDate, isInternal
 - For project_invoice (T2): extract customerName, customerOrgNumber, projectName, employeeFirstName, employeeLastName, employeeEmail, activityName, hours, hourlyRate, description. This is when a task mentions logging hours AND generating/creating a project invoice.
 - For payroll_voucher (T2): extract employeeFirstName, employeeLastName, employeeEmail, salaryItems[{description, amount, accountNumber}]. This is when a task mentions payroll/salary/lønn/bonus/Gehalt/salaire. Account 5000=Lønn, 5400=Arbeidsgiveravgift, 1920=Bank.
 - For supplier_invoice (T2): extract supplierName, supplierOrgNumber, invoiceNumber, amountIncludingVat, accountNumber (expense account like 6500), description. This is when a task mentions "supplier invoice"/"leverandørfaktura"/"facture fournisseur"/"Lieferantenrechnung"/"received invoice from supplier". IMPORTANT: "register supplier invoice" or "received invoice from X" = supplier_invoice, NOT create_voucher!
 - CLASSIFICATION PRIORITY: If task mentions "supplier"/"leverandør"/"fournisseur" + "invoice"/"faktura"/"facture" → supplier_invoice. If task mentions "payroll"/"salary"/"lønn"/"Gehalt" → payroll_voucher. If task says create order AND convert to invoice AND/OR register payment (multi-step chain) → register_payment (it handles full chain: customer → product → order → invoice → payment). Only use create_voucher for generic manual journal entries. NEVER classify multi-step order+invoice+payment tasks as "unknown".
-- For travel expenses: employeeName, title, departureDate, returnDate, destination
+- For travel expenses: employeeName, employeeEmail, title, departureDate, returnDate, destination, costs[{description, amount}] (e.g. flight ticket, taxi, hotel), perDiem:{days, accommodation (HOTEL/NONE), location, dailyRate}
 - For credit notes: invoiceNumber, invoiceId, customerName, customerOrgNumber, productDescription, amount (amount excluding VAT). Extract ALL of these — on a fresh account we need to create the invoice before crediting it.
 - For updates: search fields (firstName, lastName) AND updates object with new values
 - For vouchers: date, description, postings[{accountNumber, amount, isDebit, description}]
@@ -236,7 +238,7 @@ RULES:
 
 Task: ${task}${fileContext}
 
-Return: {"task_type": "create_employee|create_customer|create_supplier|create_product|create_invoice|register_payment|project_invoice|payroll_voucher|supplier_invoice|dimension_voucher|create_travel_expense|delete_travel_expense|update_employee|update_customer|delete_employee|delete_customer|credit_note|create_department|create_project|create_voucher|unknown", "confidence": 0.0, "extracted_params": {}, "entities": null, "reasoning": ""}
+Return: {"task_type": "create_employee|create_customer|create_supplier|create_product|create_invoice|register_payment|reverse_payment|project_invoice|payroll_voucher|supplier_invoice|dimension_voucher|create_travel_expense|delete_travel_expense|update_employee|update_customer|delete_employee|delete_customer|credit_note|create_department|create_project|create_voucher|unknown", "confidence": 0.0, "extracted_params": {}, "entities": null, "reasoning": ""}
 If multiple entities: {"task_type": "create_department", "confidence": 1.0, "extracted_params": {}, "entities": [{"name": "X"}, {"name": "Y"}, {"name": "Z"}], "reasoning": "..."}`;
 
 const plan = await callGemini(classifyPrompt, pdfFiles);
@@ -244,7 +246,8 @@ const plan = await callGemini(classifyPrompt, pdfFiles);
 // SAFEGUARD: if Gemini fails classification (null/unknown), detect from prompt keywords
 if (!plan.task_type || plan.task_type === 'unknown' || plan.task_type === 'null') {
   const t = task.toLowerCase();
-  if (t.includes('order') && t.includes('invoice') && t.includes('payment')) plan.task_type = 'register_payment';
+  if ((t.includes('stornieren') || t.includes('zurückgebucht') || t.includes('reverse') || t.includes('cancel') || t.includes('annuler') || t.includes('stornere') || t.includes('reversere')) && t.includes('payment') || t.includes('zahlung') || t.includes('betaling') || t.includes('paiement')) plan.task_type = 'reverse_payment';
+  else if (t.includes('order') && t.includes('invoice') && t.includes('payment')) plan.task_type = 'register_payment';
   else if ((t.includes('supplier') || t.includes('leverandør') || t.includes('fournisseur') || t.includes('proveedor') || t.includes('lieferant')) && (t.includes('invoice') || t.includes('faktura') || t.includes('facture') || t.includes('rechnung'))) plan.task_type = 'supplier_invoice';
   else if (t.includes('payroll') || t.includes('salary') || t.includes('lønn') || t.includes('gehalt') || t.includes('salaire')) plan.task_type = 'payroll_voucher';
   else if (t.includes('order') && t.includes('invoice')) plan.task_type = 'create_invoice';
@@ -479,31 +482,42 @@ try {
         }
 
         if (customerId) {
-          // 2b: Create product, then order with product reference
-          const unitPrice = Number(p.productPrice || p.amount || 0);
-          const prodName = p.productDescription || p.description || 'Service';
-          let productId = null;
-          if (unitPrice > 0) {
-            const prod = await tx('POST', '/product', {
-              name: prodName,
-              priceExcludingVatCurrency: unitPrice
-            });
-            results.push({ step: 'create_product', ...prod });
-            if (prod.ok) productId = prod.data.value.id;
+          // 2b: Create products and build orderLines
+          // Support multiple products: p.products[] OR single p.productDescription/productPrice
+          const productList = (p.products && p.products.length > 0) ? p.products
+            : [{ name: p.productDescription || p.description || 'Service', number: p.productNumber, unitPrice: p.productPrice || p.amount || 0 }];
+
+          const orderLines = [];
+          for (const prod of productList) {
+            const prodPrice = Number(prod.unitPrice || prod.price || 0);
+            const prodName = prod.name || prod.description || 'Service';
+            const prodBody = { name: prodName, priceExcludingVatCurrency: prodPrice };
+            if (prod.number) prodBody.number = String(prod.number);
+            const prodRes = await tx('POST', '/product', prodBody);
+            if (!prodRes.ok) {
+              // Retry without number (might conflict) and without vatType
+              delete prodBody.number;
+              const prodRes2 = await tx('POST', '/product', prodBody);
+              results.push({ step: 'create_product', ...prodRes2 });
+              const ol = { description: prodName, count: prod.quantity || 1, unitPriceExcludingVatCurrency: prodPrice };
+              if (prodRes2.ok) ol.product = { id: prodRes2.data.value.id };
+              orderLines.push(ol);
+            } else {
+              results.push({ step: 'create_product', ...prodRes });
+              const ol = { description: prodName, count: prod.quantity || 1, unitPriceExcludingVatCurrency: prodPrice };
+              ol.product = { id: prodRes.data.value.id };
+              orderLines.push(ol);
+            }
+          }
+          if (orderLines.length === 0) {
+            orderLines.push({ description: 'Service', count: 1, unitPriceExcludingVatCurrency: Number(p.amount || 1000) });
           }
 
-          // 2c: Create order with orderLines
-          const orderLine = {
-            description: prodName,
-            count: p.quantity || 1,
-            unitPriceExcludingVatCurrency: unitPrice
-          };
-          if (productId) orderLine.product = { id: productId };
           const order = await tx('POST', '/order', {
             customer: { id: customerId },
             deliveryDate: today,
             orderDate: today,
-            orderLines: [orderLine]
+            orderLines: orderLines
           });
           results.push({ step: 'create_order', ...order });
 
@@ -559,6 +573,54 @@ try {
       } else {
         results.push({ error: 'No invoice found and could not create one' });
       }
+      break;
+    }
+
+    case 'reverse_payment': {
+      // Payment was made but needs to be reversed (bank reversal, chargeback, etc.)
+      // Chain: customer → order → invoice → payment → NEGATIVE payment (reverses it)
+      await ensureBankAccount();
+      const today = new Date().toISOString().split('T')[0];
+      // Create/find customer
+      let rpCustId;
+      if (p.customerName) {
+        const cs = await tx('GET', '/customer?name=' + encodeURIComponent(p.customerName) + '&from=0&count=5');
+        if (cs.ok && cs.data && cs.data.values && cs.data.values.length > 0) rpCustId = cs.data.values[0].id;
+        else {
+          const custBody = { name: p.customerName, isCustomer: true };
+          if (p.customerOrgNumber) custBody.organizationNumber = String(p.customerOrgNumber);
+          const nc = await tx('POST', '/customer', custBody);
+          if (nc.ok) rpCustId = nc.data.value.id;
+          results.push({ step: 'create_customer', ...nc });
+        }
+      }
+      if (!rpCustId) { results.push({ error: 'No customer for reverse_payment' }); break; }
+      // Create order + invoice
+      const rpDesc = p.productDescription || p.description || 'Service';
+      const rpAmount = Number(p.amount || p.productPrice || 0);
+      const rpOrder = await tx('POST', '/order', {
+        customer: { id: rpCustId }, orderDate: today, deliveryDate: today,
+        orderLines: [{ description: rpDesc, count: 1, unitPriceExcludingVatCurrency: rpAmount }]
+      });
+      results.push({ step: 'create_order', ...rpOrder });
+      if (!rpOrder.ok) break;
+      const rpOrdId = rpOrder.data.value.id;
+      const rpInv = await tx('POST', '/invoice', { invoiceDate: today, invoiceDueDate: today, orders: [{ id: rpOrdId }] });
+      results.push({ step: 'create_invoice', ...rpInv });
+      if (!rpInv.ok) break;
+      const rpInvId = rpInv.data.value.id;
+      const rpInvAmt = rpInv.data.value.amount || rpAmount;
+      // Get payment type
+      let rpPtId = 0;
+      const rpPt = await tx('GET', '/invoice/paymentType?from=0&count=5');
+      if (rpPt.ok && rpPt.data && rpPt.data.values && rpPt.data.values.length > 0) rpPtId = rpPt.data.values[0].id;
+      // Register original payment
+      const rpPay = await tx('PUT', '/invoice/' + rpInvId + '/:payment?paymentDate=' + today + '&paymentTypeId=' + rpPtId + '&paidAmount=' + rpInvAmt, {});
+      results.push({ step: 'register_payment', ...rpPay });
+      // Reverse with NEGATIVE payment
+      const rpReverse = await tx('PUT', '/invoice/' + rpInvId + '/:payment?paymentDate=' + today + '&paymentTypeId=' + rpPtId + '&paidAmount=-' + rpInvAmt, {});
+      results.push({ step: 'reverse_payment', ...rpReverse });
+      success = rpReverse.ok;
       break;
     }
 
@@ -620,24 +682,114 @@ try {
     }
 
     case 'create_travel_expense': {
+      // Create employee if specified and not found
       let eId;
       if (p.employeeName) {
         const parts = p.employeeName.split(' ');
         const emp = await findEmployee(parts[0], parts.length > 1 ? parts.slice(1).join(' ') : null);
         if (emp) eId = emp.id;
+        if (!eId && p.employeeEmail) {
+          const newEmp = await tx('POST', '/employee', {
+            firstName: parts[0] || 'Employee', lastName: parts.slice(1).join(' ') || 'Travel',
+            email: p.employeeEmail, userType: 'STANDARD',
+            department: { id: (await getDefaultDeptId()) || 0 }
+          });
+          if (newEmp.ok) {
+            eId = newEmp.data.value.id;
+            results.push({ step: 'create_employee', ...newEmp });
+            await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + eId + '&template=ALL_PRIVILEGES', {});
+          }
+        }
       }
       if (!eId) eId = await getFirstEmployeeId();
       const today = new Date().toISOString().split('T')[0];
+      const depDate = p.departureDate || p.startDate || today;
+      const retDate = p.returnDate || p.endDate || depDate;
       const r = await tx('POST', '/travelExpense', {
         employee: { id: eId },
         title: p.title || p.description || p.purpose || 'Travel Expense',
         travelDetails: {
-          departureDate: p.departureDate || p.startDate || today,
-          returnDate: p.returnDate || p.endDate || p.departureDate || p.startDate || today,
+          departureDate: depDate,
+          returnDate: retDate,
           destination: p.destination || ''
         }
       });
       results.push(r); success = r.ok;
+      // Add costs (flights, taxi, etc.) if specified
+      if (r.ok && p.costs && p.costs.length > 0) {
+        const teId = r.data.value.id;
+        // Cost category mapping (name → id, based on sandbox data)
+        const COST_CATS = {
+          'fly': 34000208, 'flight': 34000208, 'flug': 34000208, 'vol': 34000208, 'avion': 34000208, 'voo': 34000208,
+          'taxi': 34000222, 'drosje': 34000222,
+          'hotell': 34000211, 'hotel': 34000211, 'hôtel': 34000211,
+          'buss': 34000202, 'bus': 34000202,
+          'tog': 34000210, 'train': 34000210, 'zug': 34000210,
+          'parkering': 34000218, 'parking': 34000218,
+          'mat': 34000216, 'food': 34000216, 'meal': 34000216,
+          'ferge': 34000207, 'ferry': 34000207,
+          'leiebil': 34000214, 'rental car': 34000214, 'mietwagen': 34000214,
+        };
+        // Fetch actual categories to find best match
+        let costCats = null;
+        // ALWAYS fetch costCategories from API (IDs differ between sandbox and competition)
+        if (!costCats) {
+          const cc = await tx('GET', '/travelExpense/costCategory?from=0&count=50');
+          costCats = (cc.ok && cc.data && cc.data.values) ? cc.data.values : [];
+        }
+        for (const cost of p.costs) {
+          const costDesc = (cost.description || cost.name || '').toLowerCase();
+          let catId = null;
+          // Match by description keywords against actual categories
+          const KEYWORDS = {
+            'fly': ['fly', 'flight', 'flug', 'vol', 'avion', 'voo', 'billete de avión'],
+            'taxi': ['taxi', 'drosje'],
+            'hotell': ['hotell', 'hotel', 'hôtel'],
+            'buss': ['buss', 'bus'],
+            'tog': ['tog', 'train', 'zug', 'tren'],
+            'parkering': ['parkering', 'parking'],
+            'mat': ['mat', 'food', 'meal', 'comida'],
+            'ferge': ['ferge', 'ferry'],
+            'leiebil': ['leiebil', 'rental', 'mietwagen', 'alquiler'],
+          };
+          for (const [catKey, keywords] of Object.entries(KEYWORDS)) {
+            if (keywords.some(kw => costDesc.includes(kw))) {
+              const match = costCats.find(c => (c.description || '').toLowerCase().includes(catKey));
+              if (match) { catId = match.id; break; }
+            }
+          }
+          // Direct match on category description
+          if (!catId) {
+            const match = costCats.find(c => costDesc.includes((c.description || '').toLowerCase()) || (c.description || '').toLowerCase().includes(costDesc));
+            if (match) catId = match.id;
+          }
+          // Fallback: first travel-related category
+          if (!catId && costCats.length > 0) {
+            catId = costCats.find(c => (c.description || '').toLowerCase().includes('reise'))?.id || costCats[0].id;
+          }
+          if (catId) {
+            const cr = await tx('POST', '/travelExpense/cost', {
+              travelExpense: { id: teId },
+              costCategory: { id: catId },
+              paymentType: { id: 0 },
+              amountCurrencyIncVat: Number(cost.amount || 0),
+              comments: cost.description || ''
+            });
+            results.push({ step: 'add_cost', ...cr });
+          }
+        }
+      }
+      // Add per diem compensation if specified
+      if (r.ok && p.perDiem) {
+        const teId = r.data.value.id;
+        const pd = await tx('POST', '/travelExpense/perDiemCompensation', {
+          travelExpense: { id: teId },
+          overnightAccommodation: p.perDiem.accommodation || 'HOTEL',
+          location: p.perDiem.location || p.destination || 'Norway',
+          count: p.perDiem.days || p.perDiem.count || 1
+        });
+        results.push({ step: 'add_per_diem', ...pd });
+      }
       break;
     }
 
@@ -836,8 +988,14 @@ try {
 
       // 1. Create employee
       let prEmpId;
-      const prFirst = p.employeeFirstName || '';
-      const prLast = p.employeeLastName || '';
+      let prFirst = p.employeeFirstName || '';
+      let prLast = p.employeeLastName || '';
+      // Fallback: parse employeeName if firstName/lastName not extracted
+      if (!prFirst && p.employeeName) {
+        const nameParts = p.employeeName.split(' ');
+        prFirst = nameParts[0] || '';
+        prLast = nameParts.slice(1).join(' ') || '';
+      }
       if (prFirst || prLast) {
         const existingEmp = await findEmployee(prFirst, prLast);
         if (existingEmp) {
@@ -990,12 +1148,15 @@ try {
       let postings = [];
       let row = 1;
 
-      // Debit: Expense account (net amount)
+      // Debit: Expense account (net amount) — with locked vatType for that account
       if (expenseAcct.ok && expenseAcct.data?.values?.length > 0) {
+        const expAcctData = expenseAcct.data.values[0];
+        const expVatId = expAcctData.vatType ? expAcctData.vatType.id : 1; // default ingoing 25%
         postings.push({
           row: row++, date: today,
-          account: { id: expenseAcct.data.values[0].id },
+          account: { id: expAcctData.id },
           supplier: siSuppId ? { id: siSuppId } : undefined,
+          vatType: { id: expVatId },
           amountGross: netAmount, amountGrossCurrency: netAmount,
           description: p.description || 'Supplier invoice ' + (p.invoiceNumber || '')
         });
@@ -1007,6 +1168,7 @@ try {
           row: row++, date: today,
           account: { id: vatAcct.data.values[0].id },
           supplier: siSuppId ? { id: siSuppId } : undefined,
+          vatType: { id: 0 },
           amountGross: vatAmount, amountGrossCurrency: vatAmount,
           description: 'MVA ' + vatPct + '%'
         });
@@ -1018,6 +1180,7 @@ try {
           row: row++, date: today,
           account: { id: supplierAcct.data.values[0].id },
           supplier: siSuppId ? { id: siSuppId } : undefined,
+          vatType: { id: 0 },
           amountGross: -totalInclVat, amountGrossCurrency: -totalInclVat,
           description: 'Leverandørgjeld ' + (p.supplierName || '')
         });
@@ -1085,9 +1248,26 @@ try {
         }
       }
 
+      // 2b. FALLBACK: If dimension API failed, create departments as dimension substitutes
+      let fallbackDeptId = null;
+      if (!dimId && linkedValue) {
+        // Create department with the linked dimension value name
+        const deptR = await tx('POST', '/department', { name: linkedValue });
+        if (deptR.ok) {
+          fallbackDeptId = deptR.data.value.id;
+          results.push({ step: 'create_dept_as_dimension', ...deptR });
+        }
+        // Also create departments for other dimension values
+        for (const valName of dimValues) {
+          if (valName !== linkedValue) {
+            const dR = await tx('POST', '/department', { name: valName });
+            results.push({ step: 'create_dept_' + valName, ...dR });
+          }
+        }
+      }
+
       // 3. Create voucher with balanced postings + dimension reference
       if (expenseAmount > 0) {
-        // Look up expense account
         const acctR = await tx('GET', '/ledger/account?number=' + expenseAcct + '&from=0&count=1');
         const expenseAcctId = (acctR.ok && acctR.data && acctR.data.values && acctR.data.values.length > 0) ? acctR.data.values[0].id : null;
         const bankAcctR = await tx('GET', '/ledger/account?number=1920&from=0&count=1');
@@ -1101,9 +1281,11 @@ try {
             amountGrossCurrency: expenseAmount,
             description: vDesc
           };
-          // Link dimension to expense posting
+          // Link dimension: prefer freeAccountingDimension1, fallback to department
           if (linkedValueId) {
             debitPosting.freeAccountingDimension1 = { id: linkedValueId };
+          } else if (fallbackDeptId) {
+            debitPosting.department = { id: fallbackDeptId };
           }
 
           const creditPosting = {
