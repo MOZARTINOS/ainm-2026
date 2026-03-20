@@ -26,15 +26,15 @@ from safetensors.torch import load_file as load_safetensors
 # Constants  (tuned for speed — L4/A100 GPU, budget 300s / 50 images)
 # ---------------------------------------------------------------------------
 TILE_SIZE = 1280
-OVERLAP = 0.15                # was 0.30 — fewer tiles, ~30% speedup
-CONF_THRESH = 0.05            # was 0.001 — far fewer low-quality detections
+OVERLAP = 0.20                # moderate overlap — balanced coverage vs speed
+CONF_THRESH = 0.02            # lowered for higher recall, but not too low for speed
 WBF_IOU_THRESH = 0.4
 WBF_SKIP_BOX_THRESH = 0.001   # raised slightly (was 0.0001)
 DINO_MODEL_NAME = "vit_base_patch14_dinov2.lvd142m"
 DINO_EMBED_DIM = 768
 CROP_SIZE = 518
 BATCH_SIZE = 256              # was 128 — L4 has 24GB, A100 even more
-MIN_BOX_AREA = 100            # skip tiny detections (< 100 px²)
+MIN_BOX_AREA = 50             # lowered to catch small products
 
 # Threshold: if image fits in one tile, skip SAHI tiling entirely
 SKIP_TILE_THRESHOLD = 1280
@@ -182,6 +182,71 @@ def run_detector_on_image(session: ort.InferenceSession, img_bgr: np.ndarray):
     return np.concatenate([boxes_out, scores_out[:, None]], axis=1)
 
 
+def run_detector_tta(session: ort.InferenceSession, img_bgr: np.ndarray):
+    """
+    Test-Time Augmentation: run detector on original + horizontal flip,
+    merge both sets of detections with WBF for higher recall.
+    """
+    img_h, img_w = img_bgr.shape[:2]
+
+    # Skip TTA for small images — single-tile images don't benefit much
+    if img_h <= SKIP_TILE_THRESHOLD and img_w <= SKIP_TILE_THRESHOLD:
+        return run_detector_on_image(session, img_bgr)
+
+    # Original detections
+    dets_orig = run_detector_on_image(session, img_bgr)
+
+    # Horizontal flip detections
+    img_flip = cv2.flip(img_bgr, 1)
+    dets_flip = run_detector_on_image(session, img_flip)
+
+    # Mirror flip detections back to original coordinates
+    if len(dets_flip) > 0:
+        x1_flip = img_w - dets_flip[:, 2]
+        x2_flip = img_w - dets_flip[:, 0]
+        dets_flip[:, 0] = x1_flip
+        dets_flip[:, 2] = x2_flip
+
+    # Merge with WBF
+    all_boxes = []
+    all_scores = []
+    all_labels = []
+
+    for dets in [dets_orig, dets_flip]:
+        if len(dets) == 0:
+            all_boxes.append(np.empty((0, 4), dtype=np.float32))
+            all_scores.append(np.empty((0,), dtype=np.float32))
+            all_labels.append(np.empty((0,), dtype=np.int32))
+            continue
+        # Normalize to [0, 1]
+        boxes_norm = dets[:, :4].copy()
+        boxes_norm[:, [0, 2]] /= img_w
+        boxes_norm[:, [1, 3]] /= img_h
+        # Clip to valid range
+        boxes_norm = np.clip(boxes_norm, 0.0, 1.0)
+        all_boxes.append(boxes_norm)
+        all_scores.append(dets[:, 4])
+        all_labels.append(np.zeros(len(dets), dtype=np.int32))
+
+    # Skip WBF if both are empty
+    total_dets = sum(len(b) for b in all_boxes)
+    if total_dets == 0:
+        return np.empty((0, 5), dtype=np.float32)
+
+    boxes_out, scores_out, _ = weighted_boxes_fusion(
+        all_boxes,
+        all_scores,
+        all_labels,
+        iou_thr=WBF_IOU_THRESH,
+        skip_box_thr=WBF_SKIP_BOX_THRESH,
+    )
+
+    boxes_out[:, [0, 2]] *= img_w
+    boxes_out[:, [1, 3]] *= img_h
+
+    return np.concatenate([boxes_out, scores_out[:, None]], axis=1)
+
+
 # ---------------------------------------------------------------------------
 # Classification: DINOv2 embeddings
 # ---------------------------------------------------------------------------
@@ -296,7 +361,11 @@ def main():
 
     # --- Load reference embeddings ---
     ref_embeds = np.load(str(weights_dir / "ref_embeddings.npy"))
-    ref_cat_ids = np.arange(ref_embeds.shape[0])  # sequential 0..N-1
+    ref_cat_ids_path = weights_dir / "ref_category_ids.npy"
+    if ref_cat_ids_path.exists():
+        ref_cat_ids = np.load(str(ref_cat_ids_path))
+    else:
+        ref_cat_ids = np.arange(ref_embeds.shape[0])
     ref_norms = np.linalg.norm(ref_embeds, axis=1, keepdims=True) + 1e-8
     ref_embeds = (ref_embeds / ref_norms).astype(np.float32)
 
@@ -315,8 +384,8 @@ def main():
         if img_bgr is None:
             continue
 
-        # Detect
-        detections = run_detector_on_image(det_session, img_bgr)
+        # Detect with TTA (original + horizontal flip, merged via WBF)
+        detections = run_detector_tta(det_session, img_bgr)
         if len(detections) == 0:
             continue
 

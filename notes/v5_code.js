@@ -110,13 +110,15 @@ const classifyPrompt = `You are a Tripletex accounting API expert. Analyze this 
 
 RULES:
 - Task may be in Norwegian, English, Spanish, Portuguese, German, French, Italian.
-- Norwegian: ansatt=employee, kunde=customer, produkt=product, faktura=invoice, betaling=payment, reiseregning=travel_expense, avdeling=department, prosjekt=project, kreditnota=credit_note, bilag/voucher=voucher, slett=delete, oppdater/endre=update
+- Norwegian: ansatt=employee, kunde=customer, leverandør=supplier, produkt=product, faktura=invoice, betaling=payment, reiseregning=travel_expense, avdeling=department, prosjekt=project, kreditnota=credit_note, bilag/voucher=voucher, slett=delete, oppdater/endre=update
+- IMPORTANT: "leverandør/supplier/Lieferant/fournisseur/proveedor" → create_supplier (NOT create_customer). "kunde/customer/Kunde/client/cliente" → create_customer
 - Extract ALL parameters. Dates: YYYY-MM-DD. If only day/month, assume 2026.
 - For employees: firstName, lastName, email, phoneNumberMobile, dateOfBirth, startDate, department, isAdmin
 - For customers: name, email, phoneNumber, organizationNumber, address, postalCode, city, isPrivateIndividual
+- For suppliers: name, email, phoneNumber, organizationNumber, address, postalCode, city
 - For products: name, number, priceExcludingVat, vatPercentage (default 25)
 - For invoices: customerName, invoiceDate, dueDate, lines[{description, quantity, unitPrice, vatPercentage}]
-- For payments: invoiceNumber, invoiceId, amount, paymentDate
+- For payments: invoiceNumber, invoiceId, amount, paymentDate, customerName, customerOrgNumber, productDescription, productPrice (extract ALL customer/product info — the invoice may need to be created first)
 - For travel expenses: employeeName, title, departureDate, returnDate, destination
 - For credit notes: invoiceNumber or invoiceId
 - For updates: search fields (firstName, lastName) AND updates object with new values
@@ -127,7 +129,7 @@ RULES:
 
 Task: ${task}${fileContext}
 
-Return: {"task_type": "create_employee|create_customer|create_product|create_invoice|register_payment|create_travel_expense|update_employee|update_customer|delete_employee|delete_customer|credit_note|create_department|create_project|create_voucher|unknown", "confidence": 0.0, "extracted_params": {}, "entities": null, "reasoning": ""}
+Return: {"task_type": "create_employee|create_customer|create_supplier|create_product|create_invoice|register_payment|create_travel_expense|update_employee|update_customer|delete_employee|delete_customer|credit_note|create_department|create_project|create_voucher|unknown", "confidence": 0.0, "extracted_params": {}, "entities": null, "reasoning": ""}
 If multiple entities: {"task_type": "create_department", "confidence": 1.0, "extracted_params": {}, "entities": [{"name": "X"}, {"name": "Y"}, {"name": "Z"}], "reasoning": "..."}`;
 
 const plan = await callGemini(classifyPrompt, pdfFiles);
@@ -205,6 +207,23 @@ try {
       break;
     }
 
+    case 'create_supplier': {
+      const b = { name: p.name || '', isSupplier: true };
+      if (p.email) b.email = p.email;
+      if (p.phoneNumber) b.phoneNumber = String(p.phoneNumber);
+      if (p.organizationNumber) b.organizationNumber = String(p.organizationNumber);
+      if (p.postalCode || p.city || p.address) {
+        b.postalAddress = {};
+        if (p.address) b.postalAddress.addressLine1 = p.address;
+        if (p.postalCode) b.postalAddress.postalCode = String(p.postalCode);
+        if (p.city) b.postalAddress.city = p.city;
+        b.postalAddress.country = { id: 161 };
+      }
+      const r = await tx('POST', '/supplier', b);
+      results.push(r); success = r.ok;
+      break;
+    }
+
     case 'create_product': {
       const vtId = getOutgoingVatId(p.vatPercentage);
       const b = { name: p.name || '' };
@@ -263,6 +282,11 @@ try {
 
     case 'register_payment': {
       let invId = p.invoiceId;
+      const today = new Date().toISOString().split('T')[0];
+      const payDate = p.paymentDate || today;
+      const payAmount = p.amount || p.productPrice || 0;
+
+      // Step 1: Try to find existing invoice
       if (!invId && p.invoiceNumber) {
         const is = await tx('GET', '/invoice?invoiceNumber=' + p.invoiceNumber + '&from=0&count=5');
         if (is.ok && is.data && is.data.values && is.data.values.length > 0) invId = is.data.values[0].id;
@@ -270,20 +294,93 @@ try {
       if (!invId) {
         const is = await tx('GET', '/invoice?from=0&count=50');
         if (is.ok && is.data && is.data.values) {
-          const outstanding = is.data.values.find(i => i.amountOutstanding > 0);
+          const outstanding = is.data.values.find(i => i.amountOutstanding && i.amountOutstanding > 0);
           if (outstanding) invId = outstanding.id;
-          else if (is.data.values.length > 0) invId = is.data.values[0].id;
         }
       }
-      if (invId) {
-        const payDate = p.paymentDate || new Date().toISOString().split('T')[0];
-        const r = await tx('PUT', '/invoice/' + invId + '/:payment', { paymentDate: payDate, paymentTypeId: 0, amount: p.amount || 0 });
-        results.push(r); success = r.ok;
-        if (!r.ok) {
-          const r2 = await tx('POST', '/payment', { invoice: { id: invId }, amount: p.amount || 0, paymentDate: payDate });
-          results.push({ step: 'fallback', ...r2 }); success = r2.ok;
+
+      // Step 2: If no invoice found, create the full chain: customer → order → invoice
+      if (!invId && (p.customerName || p.customerOrgNumber || p.productDescription)) {
+        // 2a: Find or create customer
+        let customerId;
+        if (p.customerName) {
+          const cs = await tx('GET', '/customer?name=' + encodeURIComponent(p.customerName) + '&from=0&count=5');
+          if (cs.ok && cs.data && cs.data.values && cs.data.values.length > 0) {
+            customerId = cs.data.values[0].id;
+          }
         }
-      } else results.push({ error: 'No invoice found' });
+        if (!customerId) {
+          const custBody = { name: p.customerName || 'Customer', isCustomer: true };
+          if (p.customerOrgNumber) custBody.organizationNumber = String(p.customerOrgNumber);
+          const nc = await tx('POST', '/customer', custBody);
+          results.push({ step: 'create_customer', ...nc });
+          if (nc.ok) customerId = nc.data.value.id;
+        }
+        if (!customerId) {
+          const ac = await tx('GET', '/customer?from=0&count=1');
+          if (ac.ok && ac.data && ac.data.values && ac.data.values.length > 0) customerId = ac.data.values[0].id;
+        }
+
+        if (customerId) {
+          // 2b: Create order with line items
+          const unitPrice = Number(p.productPrice || p.amount || 0);
+          const vtId = getOutgoingVatId(p.vatPercentage || 25);
+          const orderLines = [{
+            description: p.productDescription || p.description || 'Service',
+            count: p.quantity || 1,
+            unitCostCurrency: unitPrice,
+            vatType: { id: vtId }
+          }];
+          const order = await tx('POST', '/order', {
+            customer: { id: customerId },
+            deliveryDate: today,
+            orderDate: today,
+            orderLines: orderLines
+          });
+          results.push({ step: 'create_order', ...order });
+
+          // 2c: Convert order to invoice
+          if (order.ok) {
+            const orderId = order.data.value.id;
+            const inv = await tx('PUT', '/order/' + orderId + '/:invoice?invoiceDate=' + today + '&sendToCustomer=false', {});
+            results.push({ step: 'create_invoice', ...inv });
+            if (inv.ok && inv.data && inv.data.value) {
+              invId = inv.data.value.id;
+            }
+          }
+        }
+      }
+
+      // Step 3: Register payment on the invoice
+      if (invId) {
+        // Get the actual invoice amount if we need it
+        let actualAmount = payAmount;
+        if (!actualAmount || actualAmount === 0) {
+          const invDetail = await tx('GET', '/invoice/' + invId);
+          if (invDetail.ok && invDetail.data && invDetail.data.value) {
+            actualAmount = invDetail.data.value.amount || invDetail.data.value.amountOutstanding || 0;
+          }
+        }
+        const r = await tx('PUT', '/invoice/' + invId + '/:payment', {
+          paymentDate: payDate,
+          paymentTypeId: 0,
+          amount: actualAmount
+        });
+        results.push({ step: 'payment', ...r });
+        success = r.ok;
+        if (!r.ok) {
+          // Fallback: POST /payment
+          const r2 = await tx('POST', '/payment', {
+            invoice: { id: invId },
+            amount: actualAmount,
+            paymentDate: payDate
+          });
+          results.push({ step: 'payment_fallback', ...r2 });
+          success = r2.ok;
+        }
+      } else {
+        results.push({ error: 'No invoice found and could not create one' });
+      }
       break;
     }
 

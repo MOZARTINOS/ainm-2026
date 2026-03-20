@@ -109,9 +109,46 @@ Moderate signal: settlement probability drops 2.5x at distance 11+ vs 0.
 4. Settlement proximity boost in predictions
 5. **BUG**: accidentally overwrote seed 0 with test priors (resubmitted with correct priors)
 
-## Round 4 Plan
-1. Save observations to disk (for resubmission with improved floor)
-2. Use FLOOR=0.001 from start
-3. Better viewport: greedy maximize uncovered land cells
-4. Use settlement metadata for alive/ruin prediction
-5. Target: 60+ score raw
+---
+
+# Round 3 Results
+
+## Score: 34.04 (rank 127, weighted 39.40)
+- Seeds: [27.97, 36.50, 34.53, 34.93, 36.26]
+- Seed 0 = 27.97 (accidentally overwritten with priors-only)
+- Seeds 1-4 avg = 35.56 (with observations)
+
+## CRITICAL: Transition distributions CHANGE between rounds!
+```
+                 Round 2          Round 3          Delta
+plains→settl:    18.6%            0.3%            -18.3%!!
+plains→empty:    61.2%           79.1%            +17.9%
+forest→settl:    19.3%            0.3%            -19.0%!!
+forest→forest:   28.4%           38.8%            +10.4%
+settlement→settl: 24.0%           0.6%            -23.4%!!
+```
+Round 3 was a "low-settlement" world — almost no settlements at all.
+Our R2 priors predicted ~20% settlement everywhere → massive KL loss.
+
+## Score Impact
+- R2 priors (wrong) on R3 data: avg 22.30
+- R3 priors (correct) on R3 data: avg 39.06
+- Our actual (R2 priors + observations): avg 34.04
+- Observations partially compensated but couldn't fully fix wrong priors
+
+## KL Breakdown (R2 priors on R3 data)
+- forest class: 65.2% of KL (over-predicted empty, under-predicted forest)
+- empty class: 43.3% of KL (under-predicted empty probability)
+- settlement class: -7.5% (overprediction, but offset by log ratio)
+
+## Key Lesson: Regime Detection
+Each round has different dynamics. Using 1-2 early queries to detect the "regime":
+- If many settlements appear → high-settlement round (use R2-like priors)
+- If few/no settlements → low-settlement round (use R3-like priors)
+
+## Round 4+ Plan
+1. **Regime detection**: Use 2-3 initial queries to estimate settlement density
+2. **Adaptive priors**: Interpolate between R2 and R3 priors based on regime
+3. **FLOOR=0.001**: Already implemented
+4. **Save observations**: For resubmission capability
+5. **Target: 50+ raw score** (realistic with adaptive priors)
