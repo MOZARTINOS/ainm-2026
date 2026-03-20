@@ -1,0 +1,518 @@
+{
+  "meta": {
+    "description": "T2 test cases for NM i AI Tripletex competition",
+    "version": "1.0",
+    "created": "2026-03-20",
+    "task_types": [
+      "supplier_invoice",
+      "payroll_voucher",
+      "register_payment",
+      "credit_note",
+      "project_invoice"
+    ],
+    "notes": {
+      "supplier_invoice": "Register incoming supplier invoice as voucher (Leverandørfaktura). API flow: create supplier -> POST /ledger/voucher with voucherType Leverandørfaktura. Use vatType 1 on expense account for automatic VAT split.",
+      "payroll_voucher": "Create payroll voucher with employee reference. API flow: create employee -> POST /ledger/voucher with salary account postings (5000 Lønn) and bank credit (1920).",
+      "register_payment": "Full order-to-payment chain. API flow: create customer -> create product -> POST /order -> POST /invoice -> PUT /invoice/:payment.",
+      "credit_note": "Issue credit note for invoice. API flow: create customer -> POST /order -> POST /invoice -> PUT /invoice/:createCreditNote.",
+      "project_invoice": "Log hours on project, generate invoice. API flow: create customer -> create employee -> POST /project -> POST /activity -> POST /project/projectActivity -> POST /timesheet/entry -> POST /order -> POST /invoice."
+    }
+  },
+
+  "supplier_invoice": [
+    {
+      "id": "si_en_1",
+      "lang": "en",
+      "prompt": "Register a supplier invoice from Staples Norge AS (org. number 912345678) for 12500 NOK including VAT. The invoice is for office supplies and should be posted to account 6800. Invoice number is F-2026-0042.",
+      "expected": {
+        "supplier_name": "Staples Norge AS",
+        "supplier_org": "912345678",
+        "amount_incl_vat": 12500,
+        "expense_account": 6800,
+        "invoice_number": "F-2026-0042",
+        "vat_pct": 25,
+        "net_amount": 10000,
+        "vat_amount": 2500
+      },
+      "checks": [
+        { "type": "voucher_exists", "description": "A voucher should be created" },
+        { "type": "supplier_exists", "name": "Staples Norge AS" },
+        { "type": "posting_account", "account": 6800, "amount_positive": true },
+        { "type": "posting_account", "account": 2400, "amount_negative": true },
+        { "type": "posting_supplier_ref", "account": 2400 }
+      ]
+    },
+    {
+      "id": "si_no_1",
+      "lang": "no",
+      "prompt": "Registrer en leverandørfaktura fra Clas Ohlson AS (org.nr. 923456789) på 7500 kr inkl. mva. Fakturaen gjelder kontorrekvisita og skal bokføres på konto 6800. Fakturanummer er 2026-1234.",
+      "expected": {
+        "supplier_name": "Clas Ohlson AS",
+        "supplier_org": "923456789",
+        "amount_incl_vat": 7500,
+        "expense_account": 6800,
+        "invoice_number": "2026-1234",
+        "vat_pct": 25,
+        "net_amount": 6000,
+        "vat_amount": 1500
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "supplier_exists", "name": "Clas Ohlson AS" },
+        { "type": "posting_account", "account": 6800, "amount_positive": true },
+        { "type": "posting_account", "account": 2400, "amount_negative": true }
+      ]
+    },
+    {
+      "id": "si_fr_1",
+      "lang": "fr",
+      "prompt": "Enregistrez une facture fournisseur de Bureau Vallée AS (numéro d'organisation 934567890) pour un montant de 15000 NOK TTC. La facture concerne des fournitures de bureau et doit être comptabilisée sur le compte 6800. Numéro de facture : FV-2026-099.",
+      "expected": {
+        "supplier_name": "Bureau Vallée AS",
+        "supplier_org": "934567890",
+        "amount_incl_vat": 15000,
+        "expense_account": 6800,
+        "invoice_number": "FV-2026-099"
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "supplier_exists", "name": "Bureau Vallée AS" },
+        { "type": "posting_account", "account": 6800, "amount_positive": true }
+      ]
+    },
+    {
+      "id": "si_pt_1",
+      "lang": "pt",
+      "prompt": "Registre uma fatura do fornecedor Escritório Total AS (número da organização 945678901) no valor de 20000 NOK com IVA incluído. A fatura refere-se a material de escritório e deve ser lançada na conta 6500. Número da fatura: PT-2026-055.",
+      "expected": {
+        "supplier_name": "Escritório Total AS",
+        "supplier_org": "945678901",
+        "amount_incl_vat": 20000,
+        "expense_account": 6500,
+        "invoice_number": "PT-2026-055"
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "supplier_exists", "name": "Escritório Total AS" },
+        { "type": "posting_account", "account": 6500, "amount_positive": true }
+      ]
+    },
+    {
+      "id": "si_de_1",
+      "lang": "de",
+      "prompt": "Erfassen Sie eine Lieferantenrechnung von Bürobedarf Schmidt AS (Organisationsnummer 956789012) über 8750 NOK inklusive Mehrwertsteuer. Die Rechnung betrifft Büromaterial und soll auf Konto 6800 gebucht werden. Rechnungsnummer: DE-2026-033.",
+      "expected": {
+        "supplier_name": "Bürobedarf Schmidt AS",
+        "supplier_org": "956789012",
+        "amount_incl_vat": 8750,
+        "expense_account": 6800,
+        "invoice_number": "DE-2026-033"
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "supplier_exists", "name": "Bürobedarf Schmidt AS" },
+        { "type": "posting_account", "account": 6800, "amount_positive": true }
+      ]
+    }
+  ],
+
+  "payroll_voucher": [
+    {
+      "id": "pv_en_1",
+      "lang": "en",
+      "prompt": "Run payroll for employee Lars Hansen (lars.hansen@example.com). Monthly salary is 45000 NOK (account 5000) and bonus 5000 NOK (account 5000). Total 50000 NOK should be paid from bank account 1920.",
+      "expected": {
+        "employee_first": "Lars",
+        "employee_last": "Hansen",
+        "employee_email": "lars.hansen@example.com",
+        "salary_items": [
+          { "description": "Monthly salary", "amount": 45000, "account": 5000 },
+          { "description": "Bonus", "amount": 5000, "account": 5000 }
+        ],
+        "total": 50000,
+        "bank_account": 1920
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "employee_exists", "firstName": "Lars", "lastName": "Hansen" },
+        { "type": "posting_account", "account": 5000, "amount_positive": true },
+        { "type": "posting_account", "account": 1920, "amount_negative": true },
+        { "type": "posting_employee_ref", "account": 5000 }
+      ]
+    },
+    {
+      "id": "pv_no_1",
+      "lang": "no",
+      "prompt": "Kjør lønnsbilag for ansatt Kari Olsen (kari.olsen@firma.no). Fastlønn 38000 kr (konto 5000) og overtidsgodtgjørelse 8000 kr (konto 5000). Totalt 46000 kr utbetales fra bankkonto 1920.",
+      "expected": {
+        "employee_first": "Kari",
+        "employee_last": "Olsen",
+        "employee_email": "kari.olsen@firma.no",
+        "total": 46000
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "employee_exists", "firstName": "Kari", "lastName": "Olsen" },
+        { "type": "posting_account", "account": 5000, "amount_positive": true },
+        { "type": "posting_account", "account": 1920, "amount_negative": true }
+      ]
+    },
+    {
+      "id": "pv_fr_1",
+      "lang": "fr",
+      "prompt": "Exécutez le bulletin de paie pour l'employé Pierre Dupont (pierre.dupont@example.fr). Salaire mensuel de 42000 NOK (compte 5000) et prime de 3000 NOK (compte 5000). Le total de 45000 NOK doit être versé depuis le compte bancaire 1920.",
+      "expected": {
+        "employee_first": "Pierre",
+        "employee_last": "Dupont",
+        "employee_email": "pierre.dupont@example.fr",
+        "total": 45000
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "employee_exists", "firstName": "Pierre", "lastName": "Dupont" },
+        { "type": "posting_account", "account": 5000, "amount_positive": true }
+      ]
+    },
+    {
+      "id": "pv_pt_1",
+      "lang": "pt",
+      "prompt": "Execute a folha de pagamento para o funcionário João Silva (joao.silva@example.pt). Salário mensal de 40000 NOK (conta 5000) e bônus de 10000 NOK (conta 5000). O total de 50000 NOK deve ser pago da conta bancária 1920.",
+      "expected": {
+        "employee_first": "João",
+        "employee_last": "Silva",
+        "employee_email": "joao.silva@example.pt",
+        "total": 50000
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "employee_exists", "firstName": "João", "lastName": "Silva" }
+      ]
+    },
+    {
+      "id": "pv_de_1",
+      "lang": "de",
+      "prompt": "Erstellen Sie einen Gehaltsbeleg für den Mitarbeiter Max Müller (max.mueller@example.de). Monatsgehalt 35000 NOK (Konto 5000) und Bonus 15000 NOK (Konto 5000). Insgesamt 50000 NOK sollen vom Bankkonto 1920 ausgezahlt werden.",
+      "expected": {
+        "employee_first": "Max",
+        "employee_last": "Müller",
+        "employee_email": "max.mueller@example.de",
+        "total": 50000
+      },
+      "checks": [
+        { "type": "voucher_exists" },
+        { "type": "employee_exists", "firstName": "Max", "lastName": "Müller" }
+      ]
+    }
+  ],
+
+  "register_payment": [
+    {
+      "id": "rp_en_1",
+      "lang": "en",
+      "prompt": "Create an order for customer Nordic Tech AS (org. number 987654321) for a product called 'Cloud Hosting Service' priced at 8000 NOK excluding VAT, then convert the order to an invoice and register payment for the full amount. Payment date is 2026-03-20.",
+      "expected": {
+        "customer_name": "Nordic Tech AS",
+        "customer_org": "987654321",
+        "product_name": "Cloud Hosting Service",
+        "product_price": 8000,
+        "payment_date": "2026-03-20"
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Nordic Tech AS" },
+        { "type": "order_exists" },
+        { "type": "invoice_exists" },
+        { "type": "invoice_paid", "amount_outstanding": 0 }
+      ]
+    },
+    {
+      "id": "rp_no_1",
+      "lang": "no",
+      "prompt": "Opprett en ordre for kunde Fjord Consulting AS (org.nr. 876543210) for produktet 'Konsulenttjenester' til 15000 kr eks. mva, konverter ordren til faktura og registrer betaling for hele beløpet. Betalingsdato er 2026-03-20.",
+      "expected": {
+        "customer_name": "Fjord Consulting AS",
+        "customer_org": "876543210",
+        "product_name": "Konsulenttjenester",
+        "product_price": 15000,
+        "payment_date": "2026-03-20"
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Fjord Consulting AS" },
+        { "type": "invoice_exists" },
+        { "type": "invoice_paid", "amount_outstanding": 0 }
+      ]
+    },
+    {
+      "id": "rp_fr_1",
+      "lang": "fr",
+      "prompt": "Créez une commande pour le client Solutions Numériques AS (numéro d'organisation 765432109) pour un produit 'Service de développement' au prix de 20000 NOK hors TVA, convertissez la commande en facture et enregistrez le paiement intégral. Date de paiement : 2026-03-20.",
+      "expected": {
+        "customer_name": "Solutions Numériques AS",
+        "customer_org": "765432109",
+        "product_name": "Service de développement",
+        "product_price": 20000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Solutions Numériques AS" },
+        { "type": "invoice_exists" },
+        { "type": "invoice_paid", "amount_outstanding": 0 }
+      ]
+    },
+    {
+      "id": "rp_pt_1",
+      "lang": "pt",
+      "prompt": "Crie um pedido para o cliente Tecnologia Nórdica AS (número da organização 654321098) para um produto chamado 'Serviço de Hospedagem' ao preço de 12000 NOK sem IVA, converta o pedido em fatura e registre o pagamento integral. Data de pagamento: 2026-03-20.",
+      "expected": {
+        "customer_name": "Tecnologia Nórdica AS",
+        "customer_org": "654321098",
+        "product_name": "Serviço de Hospedagem",
+        "product_price": 12000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Tecnologia Nórdica AS" },
+        { "type": "invoice_exists" },
+        { "type": "invoice_paid", "amount_outstanding": 0 }
+      ]
+    },
+    {
+      "id": "rp_de_1",
+      "lang": "de",
+      "prompt": "Erstellen Sie eine Bestellung für den Kunden Digital Lösungen AS (Organisationsnummer 543210987) für das Produkt 'IT-Beratungsdienst' zum Preis von 18000 NOK ohne Mehrwertsteuer, wandeln Sie die Bestellung in eine Rechnung um und erfassen Sie die vollständige Zahlung. Zahlungsdatum: 2026-03-20.",
+      "expected": {
+        "customer_name": "Digital Lösungen AS",
+        "customer_org": "543210987",
+        "product_name": "IT-Beratungsdienst",
+        "product_price": 18000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Digital Lösungen AS" },
+        { "type": "invoice_exists" },
+        { "type": "invoice_paid", "amount_outstanding": 0 }
+      ]
+    }
+  ],
+
+  "credit_note": [
+    {
+      "id": "cn_en_1",
+      "lang": "en",
+      "prompt": "Issue a credit note for an invoice to customer Skyline AS (org. number 111222333). The original invoice was for 'Web Development' at 25000 NOK excluding VAT.",
+      "expected": {
+        "customer_name": "Skyline AS",
+        "customer_org": "111222333",
+        "product_name": "Web Development",
+        "amount": 25000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Skyline AS" },
+        { "type": "invoice_exists" },
+        { "type": "credit_note_exists" }
+      ]
+    },
+    {
+      "id": "cn_no_1",
+      "lang": "no",
+      "prompt": "Opprett en kreditnota for en faktura til kunde Nordlys Teknologi AS (org.nr. 222333444). Den opprinnelige fakturaen var for 'Programvareutvikling' til 30000 kr eks. mva.",
+      "expected": {
+        "customer_name": "Nordlys Teknologi AS",
+        "customer_org": "222333444",
+        "product_name": "Programvareutvikling",
+        "amount": 30000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Nordlys Teknologi AS" },
+        { "type": "invoice_exists" },
+        { "type": "credit_note_exists" }
+      ]
+    },
+    {
+      "id": "cn_fr_1",
+      "lang": "fr",
+      "prompt": "Émettez une note de crédit pour une facture au client Digital Nord AS (numéro d'organisation 333444555). La facture originale concernait 'Développement web' à 18000 NOK hors TVA.",
+      "expected": {
+        "customer_name": "Digital Nord AS",
+        "customer_org": "333444555",
+        "product_name": "Développement web",
+        "amount": 18000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Digital Nord AS" },
+        { "type": "credit_note_exists" }
+      ]
+    },
+    {
+      "id": "cn_pt_1",
+      "lang": "pt",
+      "prompt": "Emita uma nota de crédito para uma fatura ao cliente Soluções Digitais AS (número da organização 444555666). A fatura original era de 'Consultoria em TI' a 22000 NOK sem IVA.",
+      "expected": {
+        "customer_name": "Soluções Digitais AS",
+        "customer_org": "444555666",
+        "product_name": "Consultoria em TI",
+        "amount": 22000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Soluções Digitais AS" },
+        { "type": "credit_note_exists" }
+      ]
+    },
+    {
+      "id": "cn_de_1",
+      "lang": "de",
+      "prompt": "Erstellen Sie eine Gutschrift für eine Rechnung an den Kunden Technologie Nord AS (Organisationsnummer 555666777). Die ursprüngliche Rechnung war für 'Softwareentwicklung' zu 35000 NOK ohne Mehrwertsteuer.",
+      "expected": {
+        "customer_name": "Technologie Nord AS",
+        "customer_org": "555666777",
+        "product_name": "Softwareentwicklung",
+        "amount": 35000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Technologie Nord AS" },
+        { "type": "credit_note_exists" }
+      ]
+    }
+  ],
+
+  "project_invoice": [
+    {
+      "id": "pi_en_1",
+      "lang": "en",
+      "prompt": "Create a project called 'Website Redesign' for customer Aurora Digital AS (org. number 666777888). Employee Erik Johansen (erik.johansen@example.com) should log 40 hours of 'Development' work at an hourly rate of 1200 NOK. Generate an invoice for the project.",
+      "expected": {
+        "customer_name": "Aurora Digital AS",
+        "customer_org": "666777888",
+        "project_name": "Website Redesign",
+        "employee_first": "Erik",
+        "employee_last": "Johansen",
+        "employee_email": "erik.johansen@example.com",
+        "activity_name": "Development",
+        "hours": 40,
+        "hourly_rate": 1200,
+        "total_amount": 48000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Aurora Digital AS" },
+        { "type": "employee_exists", "firstName": "Erik", "lastName": "Johansen" },
+        { "type": "project_exists", "name": "Website Redesign" },
+        { "type": "timesheet_entry_exists" },
+        { "type": "invoice_exists" }
+      ]
+    },
+    {
+      "id": "pi_no_1",
+      "lang": "no",
+      "prompt": "Opprett et prosjekt kalt 'Mobilapp Utvikling' for kunde Vestland Tech AS (org.nr. 777888999). Ansatt Ingrid Berg (ingrid.berg@firma.no) skal registrere 25 timer med 'Utvikling' til en timepris på 950 NOK. Generer en faktura for prosjektet.",
+      "expected": {
+        "customer_name": "Vestland Tech AS",
+        "customer_org": "777888999",
+        "project_name": "Mobilapp Utvikling",
+        "employee_first": "Ingrid",
+        "employee_last": "Berg",
+        "employee_email": "ingrid.berg@firma.no",
+        "activity_name": "Utvikling",
+        "hours": 25,
+        "hourly_rate": 950,
+        "total_amount": 23750
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Vestland Tech AS" },
+        { "type": "employee_exists", "firstName": "Ingrid", "lastName": "Berg" },
+        { "type": "project_exists", "name": "Mobilapp Utvikling" },
+        { "type": "invoice_exists" }
+      ]
+    },
+    {
+      "id": "pi_fr_1",
+      "lang": "fr",
+      "prompt": "Créez un projet appelé 'Refonte du site web' pour le client Numérique Fjord AS (numéro d'organisation 888999000). L'employé Marc Leblanc (marc.leblanc@example.fr) doit enregistrer 30 heures de travail 'Design' à un taux horaire de 1100 NOK. Générez une facture pour le projet.",
+      "expected": {
+        "customer_name": "Numérique Fjord AS",
+        "customer_org": "888999000",
+        "project_name": "Refonte du site web",
+        "employee_first": "Marc",
+        "employee_last": "Leblanc",
+        "hours": 30,
+        "hourly_rate": 1100
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Numérique Fjord AS" },
+        { "type": "project_exists", "name": "Refonte du site web" },
+        { "type": "invoice_exists" }
+      ]
+    },
+    {
+      "id": "pi_pt_1",
+      "lang": "pt",
+      "prompt": "Crie um projeto chamado 'Migração para Nuvem' para o cliente Cloud Services AS (número da organização 999000111). O funcionário Ana Costa (ana.costa@example.pt) deve registrar 35 horas de trabalho 'Development' a uma taxa horária de 1000 NOK. Gere uma fatura para o projeto.",
+      "expected": {
+        "customer_name": "Cloud Services AS",
+        "customer_org": "999000111",
+        "project_name": "Migração para Nuvem",
+        "employee_first": "Ana",
+        "employee_last": "Costa",
+        "hours": 35,
+        "hourly_rate": 1000
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "Cloud Services AS" },
+        { "type": "project_exists", "name": "Migração para Nuvem" },
+        { "type": "invoice_exists" }
+      ]
+    },
+    {
+      "id": "pi_de_1",
+      "lang": "de",
+      "prompt": "Erstellen Sie ein Projekt namens 'Datenbankoptimierung' für den Kunden DataStar AS (Organisationsnummer 112233445). Der Mitarbeiter Hans Weber (hans.weber@example.de) soll 20 Stunden 'Development' zu einem Stundensatz von 1500 NOK erfassen. Erstellen Sie eine Rechnung für das Projekt.",
+      "expected": {
+        "customer_name": "DataStar AS",
+        "customer_org": "112233445",
+        "project_name": "Datenbankoptimierung",
+        "employee_first": "Hans",
+        "employee_last": "Weber",
+        "hours": 20,
+        "hourly_rate": 1500
+      },
+      "checks": [
+        { "type": "customer_exists", "name": "DataStar AS" },
+        { "type": "project_exists", "name": "Datenbankoptimierung" },
+        { "type": "invoice_exists" }
+      ]
+    }
+  ],
+
+  "api_reference": {
+    "key_accounts": {
+      "1920": { "name": "Bank", "vatLocked": true, "vatType": 0 },
+      "2400": { "name": "Leverandørgjeld", "vatLocked": true, "vatType": 0 },
+      "2710": { "name": "Inngående MVA, høy sats", "vatLocked": true, "vatType": 0, "note": "isInactive=true on sandbox, may not be usable directly" },
+      "5000": { "name": "Lønn til ansatte", "vatLocked": true, "vatType": 0 },
+      "6500": { "name": "Motordrevet verktøy", "vatLocked": false, "legalVatTypes": [0, 1, 12] },
+      "6800": { "name": "Kontorkostnader", "vatLocked": false, "legalVatTypes": [0, 1, 12] }
+    },
+    "vat_types": {
+      "0": "Ingen avgiftsbehandling",
+      "1": "Fradrag inngående avgift, høy sats (25%)",
+      "3": "Utgående avgift, høy sats (25%)",
+      "6": "Ingen utgående avgift (utenfor mva-loven)",
+      "11": "Fradrag inngående avgift, middels sats (15%)",
+      "12": "Fradrag inngående avgift, lav sats (12%)",
+      "31": "Utgående avgift, middels sats (15%)",
+      "32": "Utgående avgift, lav sats (12%)"
+    },
+    "voucher_types": {
+      "Leverandørfaktura": "For supplier invoices",
+      "Lønnsbilag": "For payroll vouchers",
+      "Utgående faktura": "For outgoing invoices (auto-created)",
+      "Betaling": "For payment vouchers"
+    },
+    "critical_findings": [
+      "supplierInvoice POST endpoint returns 500 — use /ledger/voucher with voucherType=Leverandørfaktura instead",
+      "vatType 1 on expense account (6500/6800) causes automatic VAT split: amountGross=total incl VAT, system calculates net",
+      "Account 2710 is isInactive=true on sandbox — may cause issues. Use vatType 1 on expense line and let system handle VAT posting",
+      "Account 5000 (Lønn) has vatLocked=true, vatType=0 — never set vatType on salary postings",
+      "Bank account 1920 needs bankAccountNumber set before invoice/payment operations",
+      "invoice/paymentType returns: id 34000233 (Kontant), id 34000234 (Betalt til bank)",
+      "Activities: id 5685603 'Fakturerbart arbeid' is isChargeable=true — use for billable project work",
+      "project/hourlyRates: use fixedRate field, hourlyRateModel='TYPE_FIXED_HOURLY_RATE'",
+      "Norway country ID = 161 (NOT 162)"
+    ]
+  }
+}

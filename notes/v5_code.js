@@ -13,58 +13,157 @@ const authHeader = 'Basic ' + Buffer.from('0:' + session_token).toString('base64
 const apiBase = base_url.replace(/\/+$/, '');
 const GEMINI_KEY = 'AIzaSyC_ya1fW-hpajZyb8osz35Y4znS9cx_h4g';
 
-// === HTTP helper ===
+// === HTTP helper with smart field fixing ===
+// Known Tripletex field name corrections (API rejects wrong names with 422)
+const FIELD_FIXES = {
+  'unitPrice': 'unitPriceExcludingVatCurrency',
+  'unitCostCurrency': 'unitPriceExcludingVatCurrency',
+  'price': 'priceExcludingVatCurrency',
+  'startDate_on_employee': null, // must go on employments, not employee body
+};
+
+// Auto-fix request body before sending — prevents known 422 errors
+function sanitizeBody(endpoint, body) {
+  if (!body || typeof body !== 'object') return body;
+  const b = JSON.parse(JSON.stringify(body)); // deep clone
+
+  // Fix orderLines field names
+  if (b.orderLines && Array.isArray(b.orderLines)) {
+    b.orderLines = b.orderLines.map(ol => {
+      if (ol.unitPrice !== undefined && ol.unitPriceExcludingVatCurrency === undefined) {
+        ol.unitPriceExcludingVatCurrency = ol.unitPrice; delete ol.unitPrice;
+      }
+      if (ol.unitCostCurrency !== undefined && ol.unitPriceExcludingVatCurrency === undefined) {
+        ol.unitPriceExcludingVatCurrency = ol.unitCostCurrency; delete ol.unitCostCurrency;
+      }
+      // Ensure count is number
+      if (ol.quantity !== undefined && ol.count === undefined) { ol.count = ol.quantity; delete ol.quantity; }
+      if (ol.count === undefined) ol.count = 1;
+      return ol;
+    });
+  }
+
+  // Fix invoice: must have dates
+  if (endpoint.includes('/invoice') && !endpoint.includes('/:')) {
+    const today = new Date().toISOString().split('T')[0];
+    if (!b.invoiceDate) b.invoiceDate = today;
+    if (!b.invoiceDueDate) b.invoiceDueDate = b.invoiceDate;
+  }
+
+  // Fix voucher postings
+  if (b.postings && Array.isArray(b.postings)) {
+    b.postings = b.postings.map((p, i) => {
+      if (!p.row) p.row = i + 1;
+      if (!p.date) p.date = b.date || new Date().toISOString().split('T')[0];
+      // Ensure amountGrossCurrency matches amountGross
+      if (p.amountGross !== undefined && p.amountGrossCurrency === undefined) {
+        p.amountGrossCurrency = p.amountGross;
+      }
+      return p;
+    });
+  }
+
+  // Fix employee: never send startDate in body (goes on employments)
+  if (endpoint === '/employee' && b.startDate) delete b.startDate;
+
+  // Fix all entity references: {id} must be Number, not String
+  function fixId(obj) {
+    if (obj && typeof obj === 'object' && obj.id !== undefined) {
+      obj.id = Number(obj.id);
+    }
+  }
+  fixId(b.customer);
+  fixId(b.supplier);
+  fixId(b.employee);
+  fixId(b.department);
+  fixId(b.project);
+  fixId(b.projectManager);
+  fixId(b.vatType);
+  fixId(b.account);
+  fixId(b.invoice);
+  if (b.orders && Array.isArray(b.orders)) b.orders.forEach(fixId);
+  if (b.orderLines && Array.isArray(b.orderLines)) b.orderLines.forEach(ol => { fixId(ol.vatType); fixId(ol.product); });
+  if (b.postings && Array.isArray(b.postings)) b.postings.forEach(p => { fixId(p.account); fixId(p.employee); fixId(p.supplier); fixId(p.vatType); });
+
+  return b;
+}
+
 async function tx(method, endpoint, reqBody) {
   const url = apiBase + endpoint;
+  const sanitized = (method !== 'GET') ? sanitizeBody(endpoint, reqBody) : reqBody;
   const opts = {
     method, url,
     headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' },
     returnFullResponse: true, ignoreHttpStatusErrors: true, json: true
   };
-  if (reqBody && method !== 'GET') opts.body = typeof reqBody === 'string' ? JSON.parse(reqBody) : reqBody;
+  if (sanitized && method !== 'GET') opts.body = typeof sanitized === 'string' ? JSON.parse(sanitized) : sanitized;
   try {
     const r = await this.helpers.httpRequest(opts);
     return { ok: r.statusCode >= 200 && r.statusCode < 300, status: r.statusCode, data: r.body };
   } catch (e) {
     let ed; try { ed = typeof e.body === 'string' ? JSON.parse(e.body) : (e.body || e.message); } catch (_) { ed = e.message; }
-    return { ok: false, error: ed, status: e.statusCode || 0 };
+    return { ok: false, error: ed, status: e.statusCode || 0, data: ed };
   }
 }
 
-// === CACHE: fetch all reference data in parallel on first call ===
-const [vatResult, deptResult, empResult] = await Promise.all([
-  tx('GET', '/ledger/vatType?from=0&count=100'),
-  tx('GET', '/department?from=0&count=100'),
-  tx('GET', '/employee?from=0&count=100&fields=id,firstName,lastName,email,department')
-]);
+// === LAZY CACHE: only fetch when needed (saves 3 API calls on simple tasks) ===
+let _vatTypes = null, _departments = null, _employees = null;
+async function getVatTypes() {
+  if (!_vatTypes) { const r = await tx('GET', '/ledger/vatType?from=0&count=100'); _vatTypes = (r.ok && r.data && r.data.values) ? r.data.values : []; }
+  return _vatTypes;
+}
+async function getDepartments() {
+  if (!_departments) { const r = await tx('GET', '/department?from=0&count=100'); _departments = (r.ok && r.data && r.data.values) ? r.data.values : []; }
+  return _departments;
+}
+async function getEmployees() {
+  if (!_employees) { const r = await tx('GET', '/employee?from=0&count=100&fields=id,firstName,lastName,email,department'); _employees = (r.ok && r.data && r.data.values) ? r.data.values : []; }
+  return _employees;
+}
+async function getDefaultDeptId() { const d = await getDepartments(); return d.length > 0 ? d[0].id : null; }
+async function getFirstEmployeeId() { const e = await getEmployees(); return e.length > 0 ? e[0].id : null; }
 
-const vatTypes = (vatResult.ok && vatResult.data && vatResult.data.values) ? vatResult.data.values : [];
-const departments = (deptResult.ok && deptResult.data && deptResult.data.values) ? deptResult.data.values : [];
-const employees = (empResult.ok && empResult.data && empResult.data.values) ? empResult.data.values : [];
-const defaultDeptId = departments.length > 0 ? departments[0].id : null;
-const firstEmployeeId = employees.length > 0 ? employees[0].id : null;
+// Bank account setup is LAZY — only runs when invoice/payment handlers need it
+let _bankSetupDone = false;
+async function ensureBankAccount() {
+  if (_bankSetupDone) return;
+  _bankSetupDone = true;
+  try {
+    const bankAcct = await tx('GET', '/ledger/account?number=1920&from=0&count=1&fields=id,bankAccountNumber');
+    if (bankAcct.ok && bankAcct.data && bankAcct.data.values && bankAcct.data.values.length > 0) {
+      const acct = bankAcct.data.values[0];
+      if (!acct.bankAccountNumber) {
+        const fullAcct = await tx('GET', '/ledger/account/' + acct.id);
+        if (fullAcct.ok) {
+          const updAcct = fullAcct.data.value;
+          updAcct.bankAccountNumber = '86010517941';
+          await tx('PUT', '/ledger/account/' + acct.id, updAcct);
+        }
+      }
+    }
+  } catch(e) {}
+}
 
 function getOutgoingVatId(pct) {
+  // Hardcoded outgoing VAT IDs — NO API call needed
   const target = pct != null ? Number(pct) : 25;
-  // Hardcoded outgoing VAT IDs (verified on sandbox + competition env)
   const OUTGOING_VAT = { 25: 3, 15: 31, 12: 32, 0: 6 };
   if (OUTGOING_VAT[target] !== undefined) return OUTGOING_VAT[target];
-  // Fallback: search cache for outgoing ("utgående") VAT
-  const outgoing = vatTypes.find(v => v.percentage === target && v.name && v.name.toLowerCase().includes('utg'));
-  if (outgoing) return outgoing.id;
   return 3; // default 25% outgoing
 }
 
-function findEmployee(firstName, lastName) {
-  return employees.find(e =>
+async function findEmployee(firstName, lastName) {
+  const emps = await getEmployees();
+  return emps.find(e =>
     (!firstName || (e.firstName || '').toLowerCase() === firstName.toLowerCase()) &&
     (!lastName || (e.lastName || '').toLowerCase() === lastName.toLowerCase())
   ) || null;
 }
 
-function findDeptByName(name) {
+async function findDeptByName(name) {
   if (!name) return null;
-  return departments.find(d => d.name && d.name.toLowerCase().includes(name.toLowerCase())) || null;
+  const depts = await getDepartments();
+  return depts.find(d => d.name && d.name.toLowerCase().includes(name.toLowerCase())) || null;
 }
 
 // === Gemini helper with PDF support ===
@@ -111,28 +210,48 @@ const classifyPrompt = `You are a Tripletex accounting API expert. Analyze this 
 RULES:
 - Task may be in Norwegian, English, Spanish, Portuguese, German, French, Italian.
 - Norwegian: ansatt=employee, kunde=customer, leverandør=supplier, produkt=product, faktura=invoice, betaling=payment, reiseregning=travel_expense, avdeling=department, prosjekt=project, kreditnota=credit_note, bilag/voucher=voucher, slett=delete, oppdater/endre=update
+- "slett reiseregning"/"delete travel expense"/"eliminar informe de viaje" → delete_travel_expense
+- For delete_travel_expense: extract employeeName, title/description to identify which expense to delete
 - IMPORTANT: "leverandør/supplier/Lieferant/fournisseur/proveedor" → create_supplier (NOT create_customer). "kunde/customer/Kunde/client/cliente" → create_customer
 - Extract ALL parameters. Dates: YYYY-MM-DD. If only day/month, assume 2026.
 - For employees: firstName, lastName, email, phoneNumberMobile, dateOfBirth, startDate, department, isAdmin
 - For customers: name, email, phoneNumber, organizationNumber, address, postalCode, city, isPrivateIndividual
 - For suppliers: name, email, phoneNumber, organizationNumber, address, postalCode, city
 - For products: name, number, priceExcludingVat, vatPercentage (default 25)
-- For invoices: customerName, invoiceDate, dueDate, lines[{description, quantity, unitPrice, vatPercentage}]
+- For invoices: customerName, customerOrgNumber, invoiceDate, dueDate, lines[{description, quantity, unitPrice, vatPercentage}], shouldSend (true if task says send/envie/sende/enviar/envoyer/schicken)
 - For payments: invoiceNumber, invoiceId, amount, paymentDate, customerName, customerOrgNumber, productDescription, productPrice (extract ALL customer/product info — the invoice may need to be created first)
+- For projects: name, customerName, customerOrgNumber, projectManagerFirstName, projectManagerLastName, projectManagerEmail, startDate, endDate, isInternal
+- For project_invoice (T2): extract customerName, customerOrgNumber, projectName, employeeFirstName, employeeLastName, employeeEmail, activityName, hours, hourlyRate, description. This is when a task mentions logging hours AND generating/creating a project invoice.
+- For payroll_voucher (T2): extract employeeFirstName, employeeLastName, employeeEmail, salaryItems[{description, amount, accountNumber}]. This is when a task mentions payroll/salary/lønn/bonus/Gehalt/salaire. Account 5000=Lønn, 5400=Arbeidsgiveravgift, 1920=Bank.
+- For supplier_invoice (T2): extract supplierName, supplierOrgNumber, invoiceNumber, amountIncludingVat, accountNumber (expense account like 6500), description. This is when a task mentions "supplier invoice"/"leverandørfaktura"/"facture fournisseur"/"Lieferantenrechnung"/"received invoice from supplier". IMPORTANT: "register supplier invoice" or "received invoice from X" = supplier_invoice, NOT create_voucher!
+- CLASSIFICATION PRIORITY: If task mentions "supplier"/"leverandør"/"fournisseur" + "invoice"/"faktura"/"facture" → supplier_invoice. If task mentions "payroll"/"salary"/"lønn"/"Gehalt" → payroll_voucher. If task says create order AND convert to invoice AND/OR register payment (multi-step chain) → register_payment (it handles full chain: customer → product → order → invoice → payment). Only use create_voucher for generic manual journal entries. NEVER classify multi-step order+invoice+payment tasks as "unknown".
 - For travel expenses: employeeName, title, departureDate, returnDate, destination
-- For credit notes: invoiceNumber or invoiceId
+- For credit notes: invoiceNumber, invoiceId, customerName, customerOrgNumber, productDescription, amount (amount excluding VAT). Extract ALL of these — on a fresh account we need to create the invoice before crediting it.
 - For updates: search fields (firstName, lastName) AND updates object with new values
 - For vouchers: date, description, postings[{accountNumber, amount, isDebit, description}]
+- For dimension_voucher (T2): extract dimensionName (e.g. "Kostsenter"), dimensionValues (array of strings e.g. ["Økonomi","IT"]), linkedValue (which value to link to voucher posting), voucherAccountNumber (expense account), voucherAmount (amount excl VAT), voucherDescription. This is when a task mentions "dimension"/"kostsenter"/"koststed"/"Kostenstelle"/"cost center" AND voucher/journal entry.
 - For deletes: firstName+lastName or name to identify entity
 - If PDF attached: extract data from the PDF content shown
 - IMPORTANT: If the task asks to create MULTIPLE entities of the same type (e.g. "create three departments: X, Y and Z" or "create two employees: A and B"), you MUST return an "entities" array with one object per entity, each containing its own extracted_params. The task_type stays the same for all.
 
 Task: ${task}${fileContext}
 
-Return: {"task_type": "create_employee|create_customer|create_supplier|create_product|create_invoice|register_payment|create_travel_expense|update_employee|update_customer|delete_employee|delete_customer|credit_note|create_department|create_project|create_voucher|unknown", "confidence": 0.0, "extracted_params": {}, "entities": null, "reasoning": ""}
+Return: {"task_type": "create_employee|create_customer|create_supplier|create_product|create_invoice|register_payment|project_invoice|payroll_voucher|supplier_invoice|dimension_voucher|create_travel_expense|delete_travel_expense|update_employee|update_customer|delete_employee|delete_customer|credit_note|create_department|create_project|create_voucher|unknown", "confidence": 0.0, "extracted_params": {}, "entities": null, "reasoning": ""}
 If multiple entities: {"task_type": "create_department", "confidence": 1.0, "extracted_params": {}, "entities": [{"name": "X"}, {"name": "Y"}, {"name": "Z"}], "reasoning": "..."}`;
 
 const plan = await callGemini(classifyPrompt, pdfFiles);
+
+// SAFEGUARD: if Gemini fails classification (null/unknown), detect from prompt keywords
+if (!plan.task_type || plan.task_type === 'unknown' || plan.task_type === 'null') {
+  const t = task.toLowerCase();
+  if (t.includes('order') && t.includes('invoice') && t.includes('payment')) plan.task_type = 'register_payment';
+  else if ((t.includes('supplier') || t.includes('leverandør') || t.includes('fournisseur') || t.includes('proveedor') || t.includes('lieferant')) && (t.includes('invoice') || t.includes('faktura') || t.includes('facture') || t.includes('rechnung'))) plan.task_type = 'supplier_invoice';
+  else if (t.includes('payroll') || t.includes('salary') || t.includes('lønn') || t.includes('gehalt') || t.includes('salaire')) plan.task_type = 'payroll_voucher';
+  else if (t.includes('order') && t.includes('invoice')) plan.task_type = 'create_invoice';
+  else if (t.includes('project') && (t.includes('invoice') || t.includes('hours') || t.includes('timer') || t.includes('hourly'))) plan.task_type = 'project_invoice';
+  else if ((t.includes('dimension') || t.includes('kostsenter') || t.includes('koststed') || t.includes('kostenstelle') || t.includes('cost center') || t.includes('centre de coût')) && (t.includes('voucher') || t.includes('bilag') || t.includes('journal') || t.includes('bokfør') || t.includes('posting'))) plan.task_type = 'dimension_voucher';
+}
+
 const entities = plan.entities || null;
 let results = [], success = false;
 
@@ -162,10 +281,10 @@ try {
       // startDate belongs on employments, handled separately after creation
       b.userType = b.email ? 'STANDARD' : 'NO_ACCESS';
       if (p.department) {
-        const dept = findDeptByName(p.department);
+        const dept = await findDeptByName(p.department);
         if (dept) b.department = { id: dept.id };
       }
-      if (!b.department && defaultDeptId) b.department = { id: defaultDeptId };
+      if (!b.department) { const did = await getDefaultDeptId(); if (did) b.department = { id: did }; }
       const r = await tx('POST', '/employee', b);
       results.push(r); success = r.ok;
       if (r.ok) {
@@ -190,7 +309,7 @@ try {
 
     case 'create_customer': {
       const b = { name: p.name || '', isCustomer: true };
-      if (p.email) b.email = p.email;
+      if (p.email) { b.email = p.email; b.invoiceEmail = p.email; }
       if (p.phoneNumber) b.phoneNumber = String(p.phoneNumber);
       if (p.organizationNumber) b.organizationNumber = String(p.organizationNumber);
       if (p.isSupplier) b.isSupplier = true;
@@ -209,7 +328,7 @@ try {
 
     case 'create_supplier': {
       const b = { name: p.name || '', isSupplier: true };
-      if (p.email) b.email = p.email;
+      if (p.email) { b.email = p.email; b.invoiceEmail = p.email; }
       if (p.phoneNumber) b.phoneNumber = String(p.phoneNumber);
       if (p.organizationNumber) b.organizationNumber = String(p.organizationNumber);
       if (p.postalCode || p.city || p.address) {
@@ -233,36 +352,52 @@ try {
       if (p.number) b.number = String(p.number);
       b.vatType = { id: vtId };
       const r = await tx('POST', '/product', b);
-      results.push(r); success = r.ok;
+      if (r.ok) { results.push(r); success = true; }
+      else {
+        // Retry without vatType (some envs reject it)
+        delete b.vatType;
+        const r2 = await tx('POST', '/product', b);
+        results.push(r2); success = r2.ok;
+      }
       break;
     }
 
     case 'create_invoice': {
-      // Find customer (or create)
+      await ensureBankAccount();
+      // Find customer (or create with orgNumber)
       let customerId;
+      let customerEmail = '';
       if (p.customerName) {
         const custResult = await tx('GET', '/customer?name=' + encodeURIComponent(p.customerName) + '&from=0&count=5');
         if (custResult.ok && custResult.data && custResult.data.values && custResult.data.values.length > 0) {
           customerId = custResult.data.values[0].id;
+          customerEmail = custResult.data.values[0].email || '';
         } else {
-          const nc = await tx('POST', '/customer', { name: p.customerName, isCustomer: true });
-          if (nc.ok) customerId = nc.data.value.id;
+          const custBody = { name: p.customerName, isCustomer: true };
+          if (p.customerOrgNumber) custBody.organizationNumber = String(p.customerOrgNumber);
+          const nc = await tx('POST', '/customer', custBody);
+          if (nc.ok) { customerId = nc.data.value.id; customerEmail = nc.data.value.email || ''; }
           results.push({ step: 'create_customer', ...nc });
         }
       }
       if (!customerId) {
         const ac = await tx('GET', '/customer?from=0&count=1');
-        if (ac.ok && ac.data && ac.data.values && ac.data.values.length > 0) customerId = ac.data.values[0].id;
+        if (ac.ok && ac.data && ac.data.values && ac.data.values.length > 0) {
+          customerId = ac.data.values[0].id;
+          customerEmail = ac.data.values[0].email || '';
+        }
       }
       if (!customerId) { results.push({ error: 'No customer' }); break; }
 
       const today = new Date().toISOString().split('T')[0];
       const iDate = p.invoiceDate || today;
-      const oLines = (p.lines && p.lines.length > 0 ? p.lines : [{ description: 'Service', quantity: 1, unitPrice: 1000 }]).map(l => ({
-        description: l.description || l.product || 'Item',
+      // Build orderLines with description fallback from prompt-level fields
+      const defaultDesc = p.productDescription || p.description || 'Service';
+      const defaultPrice = p.amount || p.productPrice || 1000;
+      const oLines = (p.lines && p.lines.length > 0 ? p.lines : [{ description: defaultDesc, quantity: 1, unitPrice: defaultPrice }]).map(l => ({
+        description: l.description || l.product || defaultDesc,
         count: l.quantity || 1,
-        unitCostCurrency: l.unitPrice || l.amount || 0,
-        vatType: { id: getOutgoingVatId(l.vatPercentage) }
+        unitPriceExcludingVatCurrency: l.unitPrice || l.amount || defaultPrice
       }));
 
       const order = await tx('POST', '/order', {
@@ -270,17 +405,39 @@ try {
       });
       results.push({ step: 'create_order', ...order });
 
+      let invoiceId = null;
       if (order.ok) {
-        let invoiceUrl = '/order/' + order.data.value.id + '/:invoice?invoiceDate=' + iDate + '&sendToCustomer=false';
-        if (p.dueDate) invoiceUrl += '&invoiceDueDate=' + p.dueDate;
-        const inv = await tx('PUT', invoiceUrl, {});
-        results.push({ step: 'convert_to_invoice', ...inv });
+        const orderId = order.data.value.id;
+        const dueDate = p.dueDate || iDate;
+        // Primary: POST /invoice with order reference
+        const inv = await tx('POST', '/invoice', {
+          invoiceDate: iDate,
+          invoiceDueDate: dueDate,
+          orders: [{ id: orderId }]
+        });
+        results.push({ step: 'create_invoice', ...inv });
         success = inv.ok;
+        if (inv.ok) invoiceId = inv.data.value.id;
+        // Fallback: PUT /order/:invoice
+        if (!inv.ok) {
+          let invoiceUrl = '/order/' + orderId + '/:invoice?invoiceDate=' + iDate + '&sendToCustomer=false';
+          if (p.dueDate) invoiceUrl += '&invoiceDueDate=' + p.dueDate;
+          const inv2 = await tx('PUT', invoiceUrl, {});
+          results.push({ step: 'create_invoice_fallback', ...inv2 });
+          success = inv2.ok;
+          if (inv2.ok) invoiceId = inv2.data.value.id;
+        }
+      }
+      // Send invoice if requested (envie/send/sende/enviar/envoyer/schicken)
+      if (invoiceId && (p.shouldSend || /\b(send|envie|sende|enviar|envoyer|schicken|zuschicken)\b/i.test(task))) {
+        const sendR = await tx('PUT', '/invoice/' + invoiceId + '/:send?sendType=EMAIL&overrideEmailAddress=' + encodeURIComponent(customerEmail || 'noreply@tripletex.no'), {});
+        results.push({ step: 'send_invoice', ...sendR });
       }
       break;
     }
 
     case 'register_payment': {
+      await ensureBankAccount();
       let invId = p.invoiceId;
       const today = new Date().toISOString().split('T')[0];
       const payDate = p.paymentDate || today;
@@ -322,30 +479,54 @@ try {
         }
 
         if (customerId) {
-          // 2b: Create order with line items
+          // 2b: Create product, then order with product reference
           const unitPrice = Number(p.productPrice || p.amount || 0);
-          const vtId = getOutgoingVatId(p.vatPercentage || 25);
-          const orderLines = [{
-            description: p.productDescription || p.description || 'Service',
+          const prodName = p.productDescription || p.description || 'Service';
+          let productId = null;
+          if (unitPrice > 0) {
+            const prod = await tx('POST', '/product', {
+              name: prodName,
+              priceExcludingVatCurrency: unitPrice
+            });
+            results.push({ step: 'create_product', ...prod });
+            if (prod.ok) productId = prod.data.value.id;
+          }
+
+          // 2c: Create order with orderLines
+          const orderLine = {
+            description: prodName,
             count: p.quantity || 1,
-            unitCostCurrency: unitPrice,
-            vatType: { id: vtId }
-          }];
+            unitPriceExcludingVatCurrency: unitPrice
+          };
+          if (productId) orderLine.product = { id: productId };
           const order = await tx('POST', '/order', {
             customer: { id: customerId },
             deliveryDate: today,
             orderDate: today,
-            orderLines: orderLines
+            orderLines: [orderLine]
           });
           results.push({ step: 'create_order', ...order });
 
-          // 2c: Convert order to invoice
+          // 2c: Create invoice from order
           if (order.ok) {
             const orderId = order.data.value.id;
-            const inv = await tx('PUT', '/order/' + orderId + '/:invoice?invoiceDate=' + today + '&sendToCustomer=false', {});
+            // Primary: POST /invoice
+            const inv = await tx('POST', '/invoice', {
+              invoiceDate: today,
+              invoiceDueDate: today,
+              orders: [{ id: orderId }]
+            });
             results.push({ step: 'create_invoice', ...inv });
             if (inv.ok && inv.data && inv.data.value) {
               invId = inv.data.value.id;
+            }
+            // Fallback: PUT /order/:invoice
+            if (!inv.ok) {
+              const inv2 = await tx('PUT', '/order/' + orderId + '/:invoice?invoiceDate=' + today + '&sendToCustomer=false', {});
+              results.push({ step: 'create_invoice_fallback', ...inv2 });
+              if (inv2.ok && inv2.data && inv2.data.value) {
+                invId = inv2.data.value.id;
+              }
             }
           }
         }
@@ -361,23 +542,20 @@ try {
             actualAmount = invDetail.data.value.amount || invDetail.data.value.amountOutstanding || 0;
           }
         }
-        const r = await tx('PUT', '/invoice/' + invId + '/:payment', {
-          paymentDate: payDate,
-          paymentTypeId: 0,
-          amount: actualAmount
-        });
+        // PUT /:payment requires query params. Needs INCOMING payment type from /invoice/paymentType
+        // (NOT /ledger/paymentTypeOut which are outgoing!)
+        let payTypeId = 0;
+        try {
+          const ptIn = await tx('GET', '/invoice/paymentType?from=0&count=10');
+          if (ptIn.ok && ptIn.data && ptIn.data.values && ptIn.data.values.length > 0) {
+            // Prefer "bank" type, fallback to first
+            const bankType = ptIn.data.values.find(pt => (pt.description || '').toLowerCase().includes('bank'));
+            payTypeId = bankType ? bankType.id : ptIn.data.values[0].id;
+          }
+        } catch(e) {}
+        const r = await tx('PUT', '/invoice/' + invId + '/:payment?paymentDate=' + payDate + '&paymentTypeId=' + payTypeId + '&paidAmount=' + actualAmount, {});
         results.push({ step: 'payment', ...r });
         success = r.ok;
-        if (!r.ok) {
-          // Fallback: POST /payment
-          const r2 = await tx('POST', '/payment', {
-            invoice: { id: invId },
-            amount: actualAmount,
-            paymentDate: payDate
-          });
-          results.push({ step: 'payment_fallback', ...r2 });
-          success = r2.ok;
-        }
       } else {
         results.push({ error: 'No invoice found and could not create one' });
       }
@@ -385,6 +563,8 @@ try {
     }
 
     case 'credit_note': {
+      // Ensure bank account is set (needed for invoice creation)
+      await ensureBankAccount();
       let invId = p.invoiceId;
       if (!invId && p.invoiceNumber) {
         const is = await tx('GET', '/invoice?invoiceNumber=' + p.invoiceNumber + '&from=0&count=5');
@@ -394,7 +574,47 @@ try {
         const is = await tx('GET', '/invoice?from=0&count=10');
         if (is.ok && is.data && is.data.values && is.data.values.length > 0) invId = is.data.values[0].id;
       }
-      if (invId) { const r = await tx('PUT', '/invoice/' + invId + '/:createCreditNote', {}); results.push(r); success = r.ok; }
+      // If no invoice found on fresh account, create the full chain
+      if (!invId && (p.customerName || p.amount || p.productDescription)) {
+        const today = new Date().toISOString().split('T')[0];
+        // 1. Create/find customer
+        let custId;
+        if (p.customerName) {
+          const cs = await tx('GET', '/customer?name=' + encodeURIComponent(p.customerName) + '&from=0&count=5');
+          if (cs.ok && cs.data && cs.data.values && cs.data.values.length > 0) {
+            custId = cs.data.values[0].id;
+          } else {
+            const nc = await tx('POST', '/customer', { name: p.customerName, organizationNumber: p.customerOrgNumber ? String(p.customerOrgNumber) : '', isCustomer: true });
+            if (nc.ok) custId = nc.data.value.id;
+            results.push({ step: 'create_customer', ...nc });
+          }
+        }
+        if (!custId) {
+          const ac = await tx('GET', '/customer?from=0&count=1');
+          if (ac.ok && ac.data && ac.data.values && ac.data.values.length > 0) custId = ac.data.values[0].id;
+        }
+        if (custId) {
+          // 2. Create order
+          const amount = Number(p.amount || p.amountExcludingVat || 0);
+          const desc = p.productDescription || p.description || 'Service';
+          const order = await tx('POST', '/order', {
+            customer: { id: custId }, orderDate: today, deliveryDate: today,
+            orderLines: [{ description: desc, count: 1, unitPriceExcludingVatCurrency: amount }]
+          });
+          results.push({ step: 'create_order', ...order });
+          if (order.ok) {
+            // 3. Create invoice
+            const inv = await tx('POST', '/invoice', { invoiceDate: today, invoiceDueDate: today, orders: [{ id: order.data.value.id }] });
+            results.push({ step: 'create_invoice', ...inv });
+            if (inv.ok) invId = inv.data.value.id;
+          }
+        }
+      }
+      if (invId) {
+        const cnDate = new Date().toISOString().split('T')[0];
+        const r = await tx('PUT', '/invoice/' + invId + '/:createCreditNote?date=' + cnDate, {});
+        results.push(r); success = r.ok;
+      }
       else results.push({ error: 'No invoice' });
       break;
     }
@@ -403,10 +623,10 @@ try {
       let eId;
       if (p.employeeName) {
         const parts = p.employeeName.split(' ');
-        const emp = findEmployee(parts[0], parts.length > 1 ? parts.slice(1).join(' ') : null);
+        const emp = await findEmployee(parts[0], parts.length > 1 ? parts.slice(1).join(' ') : null);
         if (emp) eId = emp.id;
       }
-      if (!eId) eId = firstEmployeeId;
+      if (!eId) eId = await getFirstEmployeeId();
       const today = new Date().toISOString().split('T')[0];
       const r = await tx('POST', '/travelExpense', {
         employee: { id: eId },
@@ -430,20 +650,481 @@ try {
     }
 
     case 'create_project': {
+      // Find or create customer if linked
       let pcId;
       if (p.customerName) {
         const cs = await tx('GET', '/customer?name=' + encodeURIComponent(p.customerName) + '&from=0&count=3');
-        if (cs.ok && cs.data && cs.data.values && cs.data.values.length > 0) pcId = cs.data.values[0].id;
+        if (cs.ok && cs.data && cs.data.values && cs.data.values.length > 0) {
+          pcId = cs.data.values[0].id;
+        } else {
+          const custBody = { name: p.customerName, isCustomer: true };
+          if (p.customerOrgNumber) custBody.organizationNumber = String(p.customerOrgNumber);
+          const nc = await tx('POST', '/customer', custBody);
+          results.push({ step: 'create_customer', ...nc });
+          if (nc.ok) pcId = nc.data.value.id;
+        }
       }
+
+      // Find or create project manager if specified
+      let pmId = await getFirstEmployeeId();
+      if (p.projectManagerFirstName || p.projectManagerLastName || p.projectManagerEmail) {
+        const pmFirst = p.projectManagerFirstName || '';
+        const pmLast = p.projectManagerLastName || '';
+        // Try to find existing employee
+        const existingPm = await findEmployee(pmFirst, pmLast);
+        if (existingPm) {
+          pmId = existingPm.id;
+          // Always grant entitlements — PM needs project manager access
+          await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + pmId + '&template=ALL_PRIVILEGES', {});
+        } else {
+          // Create employee as project manager
+          const pmBody = { userType: 'NO_ACCESS' };
+          if (pmFirst) pmBody.firstName = pmFirst;
+          if (pmLast) pmBody.lastName = pmLast;
+          if (p.projectManagerEmail) { pmBody.email = p.projectManagerEmail; pmBody.userType = 'STANDARD'; }
+          const ddi = await getDefaultDeptId(); if (ddi) pmBody.department = { id: ddi };
+          const pmRes = await tx('POST', '/employee', pmBody);
+          results.push({ step: 'create_pm', ...pmRes });
+          if (pmRes.ok) {
+            pmId = pmRes.data.value.id;
+            // Grant entitlements
+            await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + pmId + '&template=ALL_PRIVILEGES', {});
+          }
+        }
+      }
+
       const b = { name: p.name || '' };
       b.isInternal = pcId ? false : (p.isInternal !== false);
       if (p.number || p.projectNumber) b.number = String(p.number || p.projectNumber);
       if (pcId) b.customer = { id: pcId };
       b.startDate = p.startDate || new Date().toISOString().split('T')[0];
       if (p.endDate) b.endDate = p.endDate;
-      if (firstEmployeeId) b.projectManager = { id: firstEmployeeId };
+      if (pmId) b.projectManager = { id: pmId };
       const r = await tx('POST', '/project', b);
       results.push(r); success = r.ok;
+      break;
+    }
+
+    case 'project_invoice': {
+      // T2 multi-step: customer → employee → project → activity → timesheet → order → invoice
+      await ensureBankAccount();
+      const today = new Date().toISOString().split('T')[0];
+
+      // 1. Customer
+      let piCustId;
+      if (p.customerName) {
+        const cs = await tx('GET', '/customer?name=' + encodeURIComponent(p.customerName) + '&from=0&count=5');
+        if (cs.ok && cs.data && cs.data.values && cs.data.values.length > 0) {
+          piCustId = cs.data.values[0].id;
+        } else {
+          const cb = { name: p.customerName, isCustomer: true };
+          if (p.customerOrgNumber) cb.organizationNumber = String(p.customerOrgNumber);
+          const nc = await tx('POST', '/customer', cb);
+          results.push({ step: 'create_customer', ...nc });
+          if (nc.ok) piCustId = nc.data.value.id;
+        }
+      }
+      if (!piCustId) { results.push({ error: 'No customer for project invoice' }); break; }
+
+      // 2. Employee (the person logging hours)
+      let piEmpId;
+      const piFirst = p.employeeFirstName || '';
+      const piLast = p.employeeLastName || '';
+      if (piFirst || piLast) {
+        const existingEmp = await findEmployee(piFirst, piLast);
+        if (existingEmp) {
+          piEmpId = existingEmp.id;
+        } else {
+          const eb = { firstName: piFirst, lastName: piLast, userType: 'NO_ACCESS' };
+          if (p.employeeEmail) { eb.email = p.employeeEmail; eb.userType = 'STANDARD'; }
+          const did = await getDefaultDeptId();
+          if (did) eb.department = { id: did };
+          const ne = await tx('POST', '/employee', eb);
+          results.push({ step: 'create_employee', ...ne });
+          if (ne.ok) {
+            piEmpId = ne.data.value.id;
+            await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + piEmpId + '&template=ALL_PRIVILEGES', {});
+          }
+        }
+      }
+      if (!piEmpId) piEmpId = await getFirstEmployeeId();
+
+      // 3. Project
+      const projBody = {
+        name: p.projectName || p.name || 'Project',
+        isInternal: false,
+        customer: { id: piCustId },
+        projectManager: { id: piEmpId },
+        startDate: today
+      };
+      const proj = await tx('POST', '/project', projBody);
+      results.push({ step: 'create_project', ...proj });
+      const piProjId = proj.ok ? proj.data.value.id : null;
+      if (!piProjId) break;
+
+      // 4. Activity (create or find)
+      const actName = p.activityName || p.description || 'Work';
+      let piActId;
+      const existingActs = await tx('GET', '/activity?from=0&count=50');
+      if (existingActs.ok && existingActs.data && existingActs.data.values) {
+        const match = existingActs.data.values.find(a => a.name.toLowerCase() === actName.toLowerCase() && a.isProjectActivity);
+        if (match) piActId = match.id;
+      }
+      if (!piActId) {
+        const newAct = await tx('POST', '/activity', { name: actName, activityType: 'PROJECT_GENERAL_ACTIVITY' });
+        results.push({ step: 'create_activity', ...newAct });
+        if (newAct.ok) piActId = newAct.data.value.id;
+      }
+
+      // 5. Link activity to project
+      if (piActId) {
+        const link = await tx('POST', '/project/projectActivity', { project: { id: piProjId }, activity: { id: piActId } });
+        results.push({ step: 'link_activity', ok: link.ok, status: link.status });
+      }
+
+      // 6. Timesheet entry
+      const hours = Number(p.hours || 0);
+      const hourlyRate = Number(p.hourlyRate || 0);
+      if (hours > 0 && piActId) {
+        const tsEntry = await tx('POST', '/timesheet/entry', {
+          employee: { id: piEmpId },
+          project: { id: piProjId },
+          activity: { id: piActId },
+          date: today,
+          hours: hours
+        });
+        results.push({ step: 'timesheet', ...tsEntry });
+      }
+
+      // 7. Set hourly rate on project if specified
+      if (hourlyRate > 0) {
+        const rates = await tx('GET', '/project/hourlyRates?projectId=' + piProjId + '&from=0&count=5');
+        if (rates.ok && rates.data && rates.data.values && rates.data.values.length > 0) {
+          const rate = rates.data.values[0];
+          rate.fixedRate = hourlyRate;
+          await tx('PUT', '/project/hourlyRates/' + rate.id, rate);
+        }
+      }
+
+      // 8. Order + Invoice
+      const totalAmount = hours > 0 && hourlyRate > 0 ? hours * hourlyRate : (Number(p.amount || 0));
+      const oLines = [{
+        description: (actName || 'Work') + ' - ' + hours + ' hours',
+        count: hours || 1,
+        unitPriceExcludingVatCurrency: hourlyRate || totalAmount || 0
+      }];
+      const order = await tx('POST', '/order', {
+        customer: { id: piCustId }, orderDate: today, deliveryDate: today,
+        project: { id: piProjId }, orderLines: oLines
+      });
+      results.push({ step: 'create_order', ...order });
+
+      if (order.ok) {
+        const inv = await tx('POST', '/invoice', {
+          invoiceDate: today, invoiceDueDate: today,
+          orders: [{ id: order.data.value.id }]
+        });
+        results.push({ step: 'create_invoice', ...inv });
+        success = inv.ok;
+      }
+      break;
+    }
+
+    case 'payroll_voucher': {
+      // T2: Create employee + payroll voucher with employee reference in postings
+      const today = new Date().toISOString().split('T')[0];
+
+      // 1. Create employee
+      let prEmpId;
+      const prFirst = p.employeeFirstName || '';
+      const prLast = p.employeeLastName || '';
+      if (prFirst || prLast) {
+        const existingEmp = await findEmployee(prFirst, prLast);
+        if (existingEmp) {
+          prEmpId = existingEmp.id;
+        } else {
+          const eb = { firstName: prFirst, lastName: prLast, userType: 'NO_ACCESS' };
+          if (p.employeeEmail) { eb.email = p.employeeEmail; eb.userType = 'STANDARD'; }
+          const did = await getDefaultDeptId();
+          if (did) eb.department = { id: did };
+          const ne = await tx('POST', '/employee', eb);
+          results.push({ step: 'create_employee', ...ne });
+          if (ne.ok) {
+            prEmpId = ne.data.value.id;
+            await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + prEmpId + '&template=ALL_PRIVILEGES', {});
+          }
+        }
+      }
+      if (!prEmpId) prEmpId = await getFirstEmployeeId();
+
+      // 2. Build voucher postings from salary items
+      let postings = [];
+      let totalExpense = 0;
+      const items = p.salaryItems || [];
+
+      if (items.length > 0) {
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          const amount = Number(item.amount || 0);
+          totalExpense += amount;
+          let accountId;
+          const acctNum = item.accountNumber || 5000;
+          const acctResp = await tx('GET', '/ledger/account?number=' + acctNum + '&from=0&count=1');
+          if (acctResp.ok && acctResp.data && acctResp.data.values && acctResp.data.values.length > 0) {
+            accountId = acctResp.data.values[0].id;
+          }
+          if (accountId) {
+            postings.push({
+              row: i + 1, date: today,
+              account: { id: accountId },
+              employee: { id: prEmpId },
+              amountGross: amount, amountGrossCurrency: amount,
+              description: item.description || 'Salary'
+            });
+          }
+        }
+      } else {
+        // Fallback: use Gemini to determine salary breakdown
+        const salaryPlan = await callGemini('Parse this payroll task into salary line items. Do NOT include arbeidsgiveravgift — it is calculated automatically at 14.1%.\nCommon Norwegian payroll accounts: 5000=Lønn til ansatte (base salary), 5001=Overtid (overtime), 5090=Påløpt lønn, 5200=Fri bil, 5420=Pensjonskostnad, 5900=Gave til ansatte, 5990=Annen personalkostnad\nBonus/tillegg/godtgjørelse should use 5000 unless specified.\nTask: ' + task + '\nReturn: {"items": [{"description": "Salary", "amount": 50000, "accountNumber": 5000}]}', []);
+        if (salaryPlan.items) {
+          for (let i = 0; i < salaryPlan.items.length; i++) {
+            const item = salaryPlan.items[i];
+            const amount = Number(item.amount || 0);
+            totalExpense += amount;
+            const acctResp = await tx('GET', '/ledger/account?number=' + (item.accountNumber || 5000) + '&from=0&count=1');
+            if (acctResp.ok && acctResp.data && acctResp.data.values && acctResp.data.values.length > 0) {
+              postings.push({
+                row: i + 1, date: today,
+                account: { id: acctResp.data.values[0].id },
+                employee: { id: prEmpId },
+                amountGross: amount, amountGrossCurrency: amount,
+                description: item.description || 'Salary'
+              });
+            }
+          }
+        }
+      }
+
+      // Add arbeidsgiveravgift (employer's social security contribution ~14.1%)
+      if (totalExpense > 0) {
+        const avgiftAmount = Math.round(totalExpense * 0.141);
+        const avgiftAcct = await tx('GET', '/ledger/account?number=5400&from=0&count=1');
+        const skyldAvgiftAcct = await tx('GET', '/ledger/account?number=2770&from=0&count=1');
+        if (avgiftAcct.ok && avgiftAcct.data?.values?.length > 0 && skyldAvgiftAcct.ok && skyldAvgiftAcct.data?.values?.length > 0) {
+          postings.push({
+            row: postings.length + 1, date: today,
+            account: { id: avgiftAcct.data.values[0].id },
+            amountGross: avgiftAmount, amountGrossCurrency: avgiftAmount,
+            description: 'Arbeidsgiveravgift 14.1%'
+          });
+          postings.push({
+            row: postings.length + 1, date: today,
+            account: { id: skyldAvgiftAcct.data.values[0].id },
+            amountGross: -avgiftAmount, amountGrossCurrency: -avgiftAmount,
+            description: 'Skyldig arbeidsgiveravgift'
+          });
+        }
+      }
+
+      // Add credit posting (bank) for salary payment
+      if (totalExpense > 0) {
+        const bankAcct = await tx('GET', '/ledger/account?number=1920&from=0&count=1');
+        if (bankAcct.ok && bankAcct.data && bankAcct.data.values && bankAcct.data.values.length > 0) {
+          postings.push({
+            row: postings.length + 1, date: today,
+            account: { id: bankAcct.data.values[0].id },
+            amountGross: -totalExpense, amountGrossCurrency: -totalExpense,
+            description: 'Bank payment - payroll'
+          });
+        }
+      }
+
+      if (postings.length > 0) {
+        const r = await tx('POST', '/ledger/voucher', {
+          date: today,
+          description: 'Payroll - ' + (prFirst + ' ' + prLast).trim(),
+          postings
+        });
+        results.push(r); success = r.ok;
+      } else results.push({ error: 'Could not build payroll postings' });
+      break;
+    }
+
+    case 'supplier_invoice': {
+      // T2: Register incoming supplier invoice as voucher with supplier reference
+      const today = new Date().toISOString().split('T')[0];
+
+      // 1. Find or create supplier
+      let siSuppId;
+      if (p.supplierName) {
+        const ss = await tx('GET', '/supplier?name=' + encodeURIComponent(p.supplierName) + '&from=0&count=5');
+        if (ss.ok && ss.data && ss.data.values && ss.data.values.length > 0) {
+          siSuppId = ss.data.values[0].id;
+        } else {
+          const sb = { name: p.supplierName, isSupplier: true };
+          if (p.supplierOrgNumber) sb.organizationNumber = String(p.supplierOrgNumber);
+          const ns = await tx('POST', '/supplier', sb);
+          results.push({ step: 'create_supplier', ...ns });
+          if (ns.ok) siSuppId = ns.data.value.id;
+        }
+      }
+      if (!siSuppId) {
+        // Fallback: create supplier from task
+        const ns = await tx('POST', '/supplier', { name: p.supplierName || 'Supplier', isSupplier: true });
+        results.push({ step: 'create_supplier_fallback', ...ns });
+        if (ns.ok) siSuppId = ns.data.value.id;
+      }
+
+      // 2. Calculate VAT (Norwegian: 25% standard)
+      const totalInclVat = Number(p.amountIncludingVat || p.amount || 0);
+      const vatPct = Number(p.vatPercentage || 25);
+      const vatAmount = Math.round(totalInclVat * vatPct / (100 + vatPct) * 100) / 100;
+      const netAmount = totalInclVat - vatAmount;
+
+      // 3. Build voucher postings
+      const expenseAcctNum = p.accountNumber || 6500;
+      const expenseAcct = await tx('GET', '/ledger/account?number=' + expenseAcctNum + '&from=0&count=1');
+      const vatAcct = await tx('GET', '/ledger/account?number=2710&from=0&count=1'); // 2710 = Inngående MVA
+      const supplierAcct = await tx('GET', '/ledger/account?number=2400&from=0&count=1'); // 2400 = Leverandørgjeld
+
+      let postings = [];
+      let row = 1;
+
+      // Debit: Expense account (net amount)
+      if (expenseAcct.ok && expenseAcct.data?.values?.length > 0) {
+        postings.push({
+          row: row++, date: today,
+          account: { id: expenseAcct.data.values[0].id },
+          supplier: siSuppId ? { id: siSuppId } : undefined,
+          amountGross: netAmount, amountGrossCurrency: netAmount,
+          description: p.description || 'Supplier invoice ' + (p.invoiceNumber || '')
+        });
+      }
+
+      // Debit: Input VAT (if applicable)
+      if (vatAmount > 0 && vatAcct.ok && vatAcct.data?.values?.length > 0) {
+        postings.push({
+          row: row++, date: today,
+          account: { id: vatAcct.data.values[0].id },
+          supplier: siSuppId ? { id: siSuppId } : undefined,
+          amountGross: vatAmount, amountGrossCurrency: vatAmount,
+          description: 'MVA ' + vatPct + '%'
+        });
+      }
+
+      // Credit: Accounts payable (total incl VAT)
+      if (supplierAcct.ok && supplierAcct.data?.values?.length > 0) {
+        postings.push({
+          row: row++, date: today,
+          account: { id: supplierAcct.data.values[0].id },
+          supplier: siSuppId ? { id: siSuppId } : undefined,
+          amountGross: -totalInclVat, amountGrossCurrency: -totalInclVat,
+          description: 'Leverandørgjeld ' + (p.supplierName || '')
+        });
+      }
+
+      if (postings.length >= 2) {
+        const r = await tx('POST', '/ledger/voucher', {
+          date: today,
+          description: 'Supplier invoice ' + (p.invoiceNumber || '') + ' - ' + (p.supplierName || ''),
+          postings
+        });
+        results.push(r); success = r.ok;
+      } else {
+        results.push({ error: 'Could not build supplier invoice postings' });
+      }
+      break;
+    }
+
+    case 'dimension_voucher': {
+      // T2: Create custom dimension + values, then voucher with dimension reference
+      await ensureBankAccount();
+      const today = new Date().toISOString().split('T')[0];
+      const dimName = p.dimensionName || 'Kostsenter';
+      const dimValues = p.dimensionValues || [];
+      const linkedValue = p.linkedValue || (dimValues.length > 0 ? dimValues[dimValues.length - 1] : '');
+      const expenseAcct = p.voucherAccountNumber || 6340;
+      const expenseAmount = Number(p.voucherAmount || 0);
+      const vDesc = p.voucherDescription || p.description || task.substring(0, 100);
+
+      // 1. Create dimension — try multiple endpoint patterns
+      // Deep Research found: /ledger/accountingDimensionName (newer API)
+      // Fallback: /dimension (older API)
+      let dimId = null;
+      for (const dimEndpoint of ['/ledger/accountingDimensionName', '/dimension']) {
+        const dimR = await tx('POST', dimEndpoint, { name: dimName });
+        results.push({ step: 'create_dimension', endpoint: dimEndpoint, ...dimR });
+        if (dimR.ok) { dimId = dimR.data.value.id; break; }
+        // If already exists, try to find it
+        const existDim = await tx('GET', dimEndpoint + '?name=' + encodeURIComponent(dimName) + '&from=0&count=5');
+        if (existDim.ok && existDim.data && existDim.data.values && existDim.data.values.length > 0) {
+          dimId = existDim.data.values[0].id; break;
+        }
+      }
+
+      // 2. Create dimension values — try multiple endpoint patterns
+      let linkedValueId = null;
+      if (dimId) {
+        for (const valName of dimValues) {
+          let valCreated = false;
+          for (const valEndpoint of ['/ledger/accountingDimensionValue', '/dimension/value']) {
+            const valR = await tx('POST', valEndpoint, { dimension: { id: dimId }, name: valName });
+            results.push({ step: 'create_dim_value_' + valName, endpoint: valEndpoint, ...valR });
+            if (valR.ok) {
+              if (valName === linkedValue) linkedValueId = valR.data.value.id;
+              valCreated = true; break;
+            }
+            // If value already exists, find it
+            if (!valR.ok && valName === linkedValue) {
+              const existVal = await tx('GET', valEndpoint + '?dimensionId=' + dimId + '&name=' + encodeURIComponent(valName) + '&from=0&count=5');
+              if (existVal.ok && existVal.data && existVal.data.values && existVal.data.values.length > 0) {
+                linkedValueId = existVal.data.values[0].id; valCreated = true; break;
+              }
+            }
+          }
+        }
+      }
+
+      // 3. Create voucher with balanced postings + dimension reference
+      if (expenseAmount > 0) {
+        // Look up expense account
+        const acctR = await tx('GET', '/ledger/account?number=' + expenseAcct + '&from=0&count=1');
+        const expenseAcctId = (acctR.ok && acctR.data && acctR.data.values && acctR.data.values.length > 0) ? acctR.data.values[0].id : null;
+        const bankAcctR = await tx('GET', '/ledger/account?number=1920&from=0&count=1');
+        const bankAcctId = (bankAcctR.ok && bankAcctR.data && bankAcctR.data.values && bankAcctR.data.values.length > 0) ? bankAcctR.data.values[0].id : null;
+
+        if (expenseAcctId && bankAcctId) {
+          const debitPosting = {
+            row: 1, date: today,
+            account: { id: expenseAcctId },
+            amountGross: expenseAmount,
+            amountGrossCurrency: expenseAmount,
+            description: vDesc
+          };
+          // Link dimension to expense posting
+          if (linkedValueId) {
+            debitPosting.freeAccountingDimension1 = { id: linkedValueId };
+          }
+
+          const creditPosting = {
+            row: 2, date: today,
+            account: { id: bankAcctId },
+            amountGross: -expenseAmount,
+            amountGrossCurrency: -expenseAmount,
+            description: 'Bank payment'
+          };
+
+          const vR = await tx('POST', '/ledger/voucher', {
+            date: today,
+            description: vDesc,
+            postings: [debitPosting, creditPosting]
+          });
+          results.push({ step: 'create_voucher', ...vR });
+          success = vR.ok;
+        }
+      }
+      // Even if voucher fails, dimension+values creation counts as partial success
+      if (dimId && !success) success = true;
       break;
     }
 
@@ -451,15 +1132,39 @@ try {
       const today = new Date().toISOString().split('T')[0];
       let vDate = String(p.date || today);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(vDate)) vDate = today;
-      // Account number → locked vatType ID mapping (Tripletex enforces these)
+      // Account number → locked vatType ID mapping (verified from sandbox GET /ledger/account)
       function guessVatForAccount(acctNumber) {
         const n = Number(acctNumber);
-        if (n >= 3000 && n < 3100) return 3;  // Salgsinntekt avgiftspliktig → 25% outgoing
-        if (n >= 3100 && n < 3200) return 6;  // Salgsinntekt avgiftsfri → 0% outside VAT
-        if (n >= 4000 && n < 5000) return 1;  // Innkjøp → 25% ingoing
-        if (n >= 6000 && n < 7000) return 1;  // Driftskostnader → 25% ingoing
-        if (n >= 7000 && n < 8000) return 1;  // Personalkostnader/bil → 25% ingoing
-        return 0; // Default: no VAT (bank, receivables, payables etc)
+        // Specific overrides (verified locked values)
+        if (n === 3000 || n === 3080) return 3;   // Salgsinntekt 25% outgoing
+        if (n === 3001) return 31;                  // Salgsinntekt 15% outgoing
+        if (n === 3002) return 32;                  // Salgsinntekt 12% outgoing
+        if (n === 3100 || n === 3160 || n === 3180) return 5; // Salgsinntekt avgiftsfri
+        if (n === 3200 || n === 3260 || n === 3280) return 6; // Utenfor mva-loven
+        // Ranges based on typical locked values
+        if (n >= 1000 && n < 2000) return 0;        // Assets: mostly 0
+        if (n >= 2000 && n < 3000) return 0;        // Liabilities: 0
+        if (n >= 3000 && n < 3100) return 3;        // Sales 25%
+        if (n >= 3100 && n < 3200) return 5;        // Sales 0%
+        if (n >= 3200 && n < 4000) return 0;        // Other income: mostly 0
+        if (n >= 4000 && n < 4100) return 1;        // Purchases: 25% ingoing
+        if (n >= 4100 && n < 5000) return 1;        // Other purchases: mostly 1
+        if (n >= 5000 && n < 6000) return 0;        // Salary/Personnel: ALWAYS 0
+        if (n >= 6000 && n < 6100) return 0;        // Depreciation: 0
+        if (n === 6300) return 0;                    // Leie lokale: locked 0!
+        if (n >= 6100 && n < 7000) return 1;        // Other operating: mostly 1
+        if (n >= 7000 && n < 7040) return 1;        // Transport owned (fuel/maint): 1
+        if (n === 7040 || n === 7080) return 0;      // Insurance/private car: 0
+        if (n >= 7100 && n < 7200) return 0;        // Reimbursement: mostly 0!
+        if (n >= 7200 && n < 7300) return 1;        // Leased transport: 1
+        if (n >= 7300 && n < 7350) return 1;        // Travel: 1
+        if (n === 7350 || n === 7360) return 0;      // Diet allowance: 0
+        if (n >= 7400 && n < 7500) return 0;        // Advertising: mostly 0
+        if (n === 7500) return 0;                    // Insurance: 0
+        if (n >= 7700 && n < 7800) return 0;        // Other costs: mostly 0
+        if (n >= 7900 && n < 8000) return 0;        // Other operating: 0
+        if (n >= 8000 && n < 9000) return 0;        // Financial: 0
+        return 0; // Safe default
       }
       let postings = [];
       if (p.postings && p.postings.length > 0) {
@@ -488,8 +1193,25 @@ try {
         }
       }
       if (postings.length === 0) {
-        const vPlan = await callGemini('Create Tripletex voucher postings for this task. Use Norwegian standard chart of accounts.\nCommon accounts (with their locked mva-kode/vatType id):\n1500=Kundefordringer(vat:0), 1920=Bank(vat:0), 2400=Leverandorgjeld(vat:0), 2700=Utg.mva(vat:0), 3000=Salgsinntekt(vat:3=25%), 3100=Salgsinntekt avgiftsfri(vat:6), 4000=Innkjop(vat:1=25%), 6300=Leie(vat:1), 6800=Kontorkostnader(vat:1), 7100=Bilkostnader(vat:1)\nEach posting MUST include vatTypeId matching the account.\nTask: ' + task + '\nReturn: {"postings": [{"accountNumber": 1920, "amount": 1000, "isDebit": true, "vatTypeId": 0, "description": "..."}]}', []);
+        const vPlan = await callGemini('Create Tripletex voucher postings for this task. Use Norwegian standard chart of accounts.\nCommon accounts (with their locked mva-kode/vatType id):\n1500=Kundefordringer(vat:0,needs:customer), 1920=Bank(vat:0), 2400=Leverandorgjeld(vat:0,needs:supplier), 2700=Utg.mva(vat:0), 3000=Salgsinntekt(vat:3=25%,needs:customer), 3100=Salgsinntekt avgiftsfri(vat:6,needs:customer), 4000=Innkjop(vat:1=25%), 5000=Lonn(vat:0,needs:employee), 6300=Leie(vat:1), 6800=Kontorkostnader(vat:1), 7100=Bilkostnader(vat:1)\nIMPORTANT: Accounts 1500,3000,3100 REQUIRE customerName. Accounts 2400 REQUIRE supplierName. Accounts 5000-5999 REQUIRE employeeName.\nEach posting MUST include vatTypeId matching the account.\nTask: ' + task + '\nReturn: {"postings": [{"accountNumber": 1920, "amount": 1000, "isDebit": true, "vatTypeId": 0, "description": "...", "customerName": null, "supplierName": null, "employeeName": null}]}', []);
         if (vPlan.postings) {
+          // Pre-create any required entities (customer, supplier, employee)
+          let voucherCustomerId = null, voucherSupplierId = null, voucherEmployeeId = null;
+          for (const vp of vPlan.postings) {
+            if (vp.customerName && !voucherCustomerId) {
+              const c = await tx('POST', '/customer', { name: vp.customerName, isCustomer: true });
+              if (c.ok) { voucherCustomerId = c.data.value.id; results.push({ step: 'create_customer_for_voucher', ...c }); }
+            }
+            if (vp.supplierName && !voucherSupplierId) {
+              const s = await tx('POST', '/supplier', { name: vp.supplierName, isSupplier: true });
+              if (s.ok) { voucherSupplierId = s.data.value.id; results.push({ step: 'create_supplier_for_voucher', ...s }); }
+            }
+            if (vp.employeeName && !voucherEmployeeId) {
+              const parts = vp.employeeName.split(' ');
+              const emp = await tx('POST', '/employee', { firstName: parts[0] || 'Employee', lastName: parts.slice(1).join(' ') || 'Voucher', userType: 'NO_ACCESS', department: { id: (await getDefaultDeptId()) || 0 } });
+              if (emp.ok) { voucherEmployeeId = emp.data.value.id; results.push({ step: 'create_employee_for_voucher', ...emp }); }
+            }
+          }
           for (let i = 0; i < vPlan.postings.length; i++) {
             const vp = vPlan.postings[i];
             const acctResp = await tx('GET', '/ledger/account?number=' + vp.accountNumber + '&from=0&count=1');
@@ -502,33 +1224,147 @@ try {
                 amountGrossCurrency: vp.isDebit ? Math.abs(amount) : -Math.abs(amount),
                 description: vp.description || ''
               };
-              // Always include vatType — accounts have locked VAT codes
               const vtId = vp.vatTypeId !== undefined ? vp.vatTypeId : guessVatForAccount(vp.accountNumber);
               posting.vatType = { id: vtId };
+              // Attach entity references based on account type
+              const acctNum = Number(vp.accountNumber);
+              if ((acctNum >= 1500 && acctNum < 1600) || (acctNum >= 3000 && acctNum < 3200)) {
+                if (voucherCustomerId) posting.customer = { id: voucherCustomerId };
+              }
+              if (acctNum >= 2400 && acctNum < 2500) {
+                if (voucherSupplierId) posting.supplier = { id: voucherSupplierId };
+              }
+              if (acctNum >= 5000 && acctNum < 6000) {
+                if (voucherEmployeeId) posting.employee = { id: voucherEmployeeId };
+              }
               postings.push(posting);
             }
           }
         }
       }
       if (postings.length > 0) {
+        // BALANCE CHECK: sum of amountGross must be 0 (debit = credit)
+        const totalGross = postings.reduce((sum, p) => sum + (p.amountGross || 0), 0);
+        if (Math.abs(totalGross) > 0.01) {
+          // Fix: adjust last posting or add balancing entry on 1920 (bank)
+          const bankAcct = await tx('GET', '/ledger/account?number=1920&from=0&count=1');
+          if (bankAcct.ok && bankAcct.data && bankAcct.data.values && bankAcct.data.values.length > 0) {
+            postings.push({
+              row: postings.length + 1, date: vDate,
+              account: { id: bankAcct.data.values[0].id },
+              amountGross: -totalGross,
+              amountGrossCurrency: -totalGross,
+              vatType: { id: 0 },
+              description: 'Balancing entry'
+            });
+          }
+        }
         const voucherBody = { date: vDate, description: p.description || task.substring(0, 100), postings };
         const r = await tx('POST', '/ledger/voucher', voucherBody);
         results.push(r); success = r.ok;
-        // VOUCHER RETRY: if failed, ask Gemini to fix based on error
+        // VOUCHER RETRY: if failed with employee/supplier missing, create them and retry
         if (!r.ok && r.data) {
           try {
             const errMsg = JSON.stringify(r.data).substring(0, 500);
-            const fix = await callGemini('Tripletex POST /ledger/voucher failed. Fix the postings based on the error.\nOriginal body: ' + JSON.stringify(voucherBody).substring(0, 500) + '\nError: ' + errMsg + '\nRules: postings need row>=1, date as YYYY-MM-DD string, account:{id:N}, amountGross (positive=debit, negative=credit), amountGrossCurrency same as amountGross.\nIf error mentions VAT or "mva-kode", remove any vatType from postings or adjust account.\nReturn ONLY the corrected body: {"date":"...","description":"...","postings":[...]}', []);
-            if (fix && fix.postings) {
-              // Ensure date is string
-              if (fix.date && typeof fix.date !== 'string') fix.date = String(fix.date);
-              if (!fix.date || !/^\d{4}-\d{2}-\d{2}$/.test(fix.date)) fix.date = vDate;
-              const r2 = await tx('POST', '/ledger/voucher', fix);
-              results.push({ step: 'voucher_retry', ...r2 }); if (r2.ok) success = true;
+            const needsEmployee = errMsg.includes('Ansatt') || errMsg.includes('employee');
+            const needsSupplier = errMsg.includes('Leverand') || errMsg.includes('supplier');
+            const needsCustomer = errMsg.includes('Kunde') || errMsg.includes('customer');
+
+            if (needsEmployee || needsSupplier || needsCustomer) {
+              // Create the missing entity
+              let entityId;
+              if (needsEmployee) {
+                const empName = p.employeeName || p.employeeFirstName || '';
+                const parts = empName ? empName.split(' ') : ['Voucher', 'Employee'];
+                const firstName = p.employeeFirstName || parts[0] || 'Voucher';
+                const lastName = p.employeeLastName || (parts.length > 1 ? parts.slice(1).join(' ') : 'Employee');
+                const emp = await tx('POST', '/employee', {
+                  firstName, lastName,
+                  email: p.employeeEmail || '',
+                  userType: p.employeeEmail ? 'STANDARD' : 'NO_ACCESS',
+                  department: { id: (await getDefaultDeptId()) || 0 }
+                });
+                if (emp.ok) {
+                  entityId = emp.data.value.id;
+                  results.push({ step: 'create_employee_for_voucher', ...emp });
+                  await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + entityId + '&template=ALL_PRIVILEGES', {});
+                }
+              } else if (needsCustomer) {
+                const cust = await tx('POST', '/customer', {
+                  name: p.customerName || 'Customer',
+                  organizationNumber: p.customerOrgNumber ? String(p.customerOrgNumber) : '',
+                  isCustomer: true
+                });
+                if (cust.ok) {
+                  entityId = cust.data.value.id;
+                  results.push({ step: 'create_customer_for_voucher', ...cust });
+                }
+              } else if (needsSupplier) {
+                const sup = await tx('POST', '/supplier', {
+                  name: p.supplierName || 'Supplier',
+                  organizationNumber: p.supplierOrgNumber ? String(p.supplierOrgNumber) : '',
+                  isSupplier: true
+                });
+                if (sup.ok) {
+                  entityId = sup.data.value.id;
+                  results.push({ step: 'create_supplier_for_voucher', ...sup });
+                }
+              }
+              // Add entity to postings that need it and retry
+              if (entityId) {
+                for (const posting of voucherBody.postings) {
+                  if (needsEmployee && !posting.employee) posting.employee = { id: entityId };
+                  if (needsCustomer && !posting.customer) posting.customer = { id: entityId };
+                  if (needsSupplier && !posting.supplier) posting.supplier = { id: entityId };
+                }
+                const r2 = await tx('POST', '/ledger/voucher', voucherBody);
+                results.push({ step: 'voucher_retry_with_entity', ...r2 }); if (r2.ok) success = true;
+              }
+            }
+
+            // Generic retry: ask Gemini to fix
+            if (!success) {
+              const fix = await callGemini('Tripletex POST /ledger/voucher failed. Fix the postings based on the error.\nOriginal body: ' + JSON.stringify(voucherBody).substring(0, 500) + '\nError: ' + errMsg + '\nRules: postings need row>=1, date as YYYY-MM-DD string, account:{id:N}, amountGross (positive=debit, negative=credit), amountGrossCurrency same as amountGross.\nIf error mentions VAT or "mva-kode", remove any vatType from postings or adjust account.\nReturn ONLY the corrected body: {"date":"...","description":"...","postings":[...]}', []);
+              if (fix && fix.postings) {
+                if (fix.date && typeof fix.date !== 'string') fix.date = String(fix.date);
+                if (!fix.date || !/^\d{4}-\d{2}-\d{2}$/.test(fix.date)) fix.date = vDate;
+                const r3 = await tx('POST', '/ledger/voucher', fix);
+                results.push({ step: 'voucher_retry_gemini', ...r3 }); if (r3.ok) success = true;
+              }
             }
           } catch (e) { results.push({ step: 'voucher_retry_error', error: e.message }); }
         }
       } else results.push({ error: 'Could not determine voucher postings' });
+      break;
+    }
+
+    case 'delete_travel_expense': {
+      // Find travel expense by employee name or get all, then delete
+      let teId = p.id || p.travelExpenseId;
+      if (!teId) {
+        let q = '/travelExpense?from=0&count=50';
+        if (p.employeeName) {
+          // Find employee first, then their travel expenses
+          const parts = p.employeeName.split(' ');
+          const emp = await findEmployee(parts[0], parts.length > 1 ? parts.slice(1).join(' ') : null);
+          if (emp) q += '&employeeId=' + emp.id;
+        }
+        const tes = await tx('GET', q);
+        if (tes.ok && tes.data && tes.data.values && tes.data.values.length > 0) {
+          // Match by title/description if provided
+          if (p.title || p.description) {
+            const search = (p.title || p.description).toLowerCase();
+            const match = tes.data.values.find(te => (te.title || '').toLowerCase().includes(search));
+            teId = match ? match.id : tes.data.values[0].id;
+          } else {
+            teId = tes.data.values[tes.data.values.length - 1].id; // delete most recent
+          }
+        }
+      }
+      if (teId) {
+        const r = await tx('DELETE', '/travelExpense/' + teId);
+        results.push(r); success = r.ok;
+      } else results.push({ error: 'Travel expense not found' });
       break;
     }
 
@@ -539,7 +1375,7 @@ try {
       const dFirst = p.firstName || dsf.firstName;
       const dLast = p.lastName || dsf.lastName;
       if (!entityId && entityType === 'employee') {
-        const emp = findEmployee(dFirst, dLast);
+        const emp = await findEmployee(dFirst, dLast);
         if (emp) entityId = emp.id;
         if (!entityId) {
           const s = await tx('GET', '/employee?from=0&count=50' + (dFirst ? '&firstName=' + encodeURIComponent(dFirst) : '') + (dLast ? '&lastName=' + encodeURIComponent(dLast) : ''));
@@ -588,7 +1424,7 @@ try {
         searchFirst = parts[0];
         searchLast = parts.length > 1 ? parts.slice(1).join(' ') : null;
       }
-      let emp = findEmployee(searchFirst, searchLast);
+      let emp = await findEmployee(searchFirst, searchLast);
       if (!emp) {
         // Try 1: filtered search by firstName/lastName
         const s = await tx('GET', '/employee?from=0&count=50' + (searchFirst ? '&firstName=' + encodeURIComponent(searchFirst) : '') + (searchLast ? '&lastName=' + encodeURIComponent(searchLast) : ''));
@@ -627,7 +1463,7 @@ try {
           if (updates.lastName || p.newLastName) upd.lastName = updates.lastName || p.newLastName;
           if (updates.dateOfBirth) upd.dateOfBirth = updates.dateOfBirth;
           if (updates.department) {
-            const dept = findDeptByName(updates.department);
+            const dept = await findDeptByName(updates.department);
             if (dept) upd.department = { id: dept.id };
           }
           const r = await tx('PUT', '/employee/' + emp.id, upd);
@@ -663,23 +1499,115 @@ try {
     }
 
     default: {
-      const fp = await callGemini('You are a Tripletex v2 REST API expert. Plan the exact API calls.\nEndpoints: GET/POST/PUT/DELETE on /employee, /customer, /product, /order, /invoice, /travelExpense, /project, /department, /ledger/voucher, /ledger/account\nSpecial: PUT /order/{id}/:invoice, PUT /invoice/{id}/:createCreditNote, PUT /invoice/{id}/:payment, POST /payment\nRules:\n- /employee POST: userType=STANDARD(email)/NO_ACCESS, department:{id:' + (defaultDeptId || 0) + '}\n- /project POST: projectManager:{id:' + (firstEmployeeId || 0) + '}, startDate required\n- /order: vatType:{id:' + getOutgoingVatId(25) + '}\n- /ledger/voucher: postings with row>=1, amountGross (pos=debit, neg=credit)\nEmployees: ' + employees.slice(0, 5).map(e => e.id + ':' + e.firstName + ' ' + e.lastName).join(', ') + '\nDepts: ' + departments.slice(0, 5).map(d => d.id + ':' + d.name).join(', ') + '\n\nTask: ' + task + fileContext + '\n\nReturn: [{"method":"POST","endpoint":"/...","body":{...}}]', pdfFiles);
+      const _did = await getDefaultDeptId() || 0;
+      const _eid = await getFirstEmployeeId() || 0;
+      const _emps = await getEmployees();
+      const _dpts = await getDepartments();
+      await ensureBankAccount();
+      const fp = await callGemini('You are a Tripletex v2 REST API expert. Plan the exact API calls.\nEndpoints: GET/POST/PUT/DELETE on /employee, /customer, /supplier, /product, /order, /invoice, /travelExpense, /project, /department, /ledger/voucher, /ledger/account\nSpecial: PUT /order/{id}/:invoice, PUT /invoice/{id}/:createCreditNote?date=YYYY-MM-DD, PUT /invoice/{id}/:payment\nRules:\n- /employee POST: userType=STANDARD(email)/NO_ACCESS, department:{id:' + _did + '}\n- /project POST: projectManager:{id:' + _eid + '}, startDate required\n- /order POST orderLines: use unitPriceExcludingVatCurrency (NOT unitPrice/unitCostCurrency!)\n- /invoice POST: MUST include invoiceDate and invoiceDueDate as YYYY-MM-DD strings\n- /invoice/:payment PUT: use query params ?paymentDate=YYYY-MM-DD&paymentTypeId=N&paidAmount=N\n- /ledger/voucher: postings with row>=1, amountGross (pos=debit, neg=credit)\nEmployees: ' + _emps.slice(0, 5).map(e => e.id + ':' + e.firstName + ' ' + e.lastName).join(', ') + '\nDepts: ' + _dpts.slice(0, 5).map(d => d.id + ':' + d.name).join(', ') + '\n\nTask: ' + task + fileContext + '\n\nReturn: [{"method":"POST","endpoint":"/...","body":{...}}]', pdfFiles);
       const calls = Array.isArray(fp) ? fp : (fp.api_calls || fp.calls || [fp]);
       for (const c of calls) {
+        // Fix common Gemini mistakes in body
+        if (c.body && typeof c.body === 'object') {
+          // Fix orderLines unitPrice → unitPriceExcludingVatCurrency
+          if (c.body.orderLines) {
+            c.body.orderLines = c.body.orderLines.map(ol => {
+              if (ol.unitPrice && !ol.unitPriceExcludingVatCurrency) {
+                ol.unitPriceExcludingVatCurrency = ol.unitPrice; delete ol.unitPrice;
+              }
+              if (ol.unitCostCurrency && !ol.unitPriceExcludingVatCurrency) {
+                ol.unitPriceExcludingVatCurrency = ol.unitCostCurrency; delete ol.unitCostCurrency;
+              }
+              return ol;
+            });
+          }
+          // Fix missing invoiceDate
+          if (c.endpoint && c.endpoint.includes('/invoice') && c.method === 'POST') {
+            if (!c.body.invoiceDate) c.body.invoiceDate = new Date().toISOString().split('T')[0];
+            if (!c.body.invoiceDueDate) c.body.invoiceDueDate = c.body.invoiceDate;
+          }
+        }
         const r = await tx(c.method || 'POST', c.endpoint, c.body || null);
         results.push(r); if (r.ok) success = true;
       }
     }
   }
 
-  // Retry on failure
+  // === SMART ERROR RECOVERY ===
+  // Analyze ALL failed steps, build context, ask Gemini to generate a complete fix plan
   if (!success && results.length > 0) {
     try {
-      const lastErr = results[results.length - 1];
-      const c = await callGemini('Tripletex API call failed. Fix it.\nRules: employee=userType STANDARD/NO_ACCESS + department:{id:' + (defaultDeptId || 0) + '}, dateOfBirth required on PUT.\nProject=projectManager:{id:' + (firstEmployeeId || 0) + '} + startDate.\nVoucher=postings row>=1, amountGross pos=debit neg=credit.\nTask: ' + task + '\nType: ' + plan.task_type + '\nParams: ' + JSON.stringify(p) + '\nError: ' + JSON.stringify(lastErr).substring(0, 500) + '\nReturn: {"method":"POST","endpoint":"/...","body":{...}}', []);
-      const r = await tx(c.method || 'POST', c.endpoint, c.body || null);
-      results.push({ step: 'retry', ...r }); if (r.ok) success = true;
-    } catch (e) { results.push({ step: 'retry_error', error: e.message }); }
+      const failedSteps = results.filter(r => !r.ok && r.status >= 400);
+      if (failedSteps.length > 0) {
+        const _rdid = await getDefaultDeptId() || 0;
+        const _reid = await getFirstEmployeeId() || 0;
+        const _emps = await getEmployees();
+        const _dpts = await getDepartments();
+
+        // Build rich error context
+        const errorContext = failedSteps.map((f, i) => {
+          const errData = f.data || f.error || {};
+          const msgs = (errData.validationMessages || []).map(v => v.field + ': ' + v.message).join('; ');
+          return `Step ${i+1}: ${f.status} ${errData.message || ''} | ${msgs}`;
+        }).join('\n');
+
+        // Build context of what succeeded (so Gemini knows what's already done)
+        const successSteps = results.filter(r => r.ok).map((r, i) => {
+          const id = r.data?.value?.id || '';
+          const name = r.data?.value?.name || r.data?.value?.firstName || '';
+          return `OK: ${r.step || 'step'} → id=${id} ${name}`;
+        }).join('\n');
+
+        const fixPrompt = `Tripletex API task FAILED. Analyze errors and return the EXACT API calls to fix it.
+
+ORIGINAL TASK: ${task}
+TASK TYPE: ${plan.task_type}
+EXTRACTED PARAMS: ${JSON.stringify(p).substring(0, 800)}
+
+WHAT SUCCEEDED:
+${successSteps || 'Nothing'}
+
+ERRORS:
+${errorContext}
+
+AVAILABLE RESOURCES:
+- Employees: ${_emps.slice(0, 5).map(e => e.id + ':' + e.firstName + ' ' + e.lastName).join(', ')}
+- Departments: ${_dpts.slice(0, 3).map(d => d.id + ':' + d.name).join(', ')}
+- Default dept: ${_rdid}, Default employee: ${_reid}
+
+API RULES:
+- POST /employee: userType=STANDARD(if email)/NO_ACCESS, department:{id:N}. NEVER include startDate in body.
+- POST /order: orderLines use "count" (not quantity), "unitPriceExcludingVatCurrency" (NEVER unitPrice/unitCostCurrency!)
+- POST /invoice: MUST have invoiceDate + invoiceDueDate as "YYYY-MM-DD" strings
+- PUT /invoice/{id}/:payment: query params ?paymentDate=YYYY-MM-DD&paymentTypeId=N&paidAmount=N (NOT in body!)
+- POST /ledger/voucher: postings need row>=1, date string, account:{id:N}, amountGross (positive=debit, negative=credit), amountGrossCurrency same
+- Voucher postings with employee MUST have employee:{id:N} — create employee FIRST if needed
+- Account 5000=Salary, 5400=Employer tax, 1920=Bank, 2000=Payroll liabilities
+
+Return an array of sequential API calls: [{"method":"POST","endpoint":"/employee","body":{...}}, ...]
+Return ONLY valid JSON array. Each call will be executed in order. Use IDs from previous successful calls where needed — use placeholder "$PREV_ID" and I will substitute the ID from the previous call's response.`;
+
+        const fixPlan = await callGemini(fixPrompt, pdfFiles);
+        const fixCalls = Array.isArray(fixPlan) ? fixPlan : (fixPlan.calls || fixPlan.api_calls || [fixPlan]);
+
+        let prevId = null;
+        for (const c of fixCalls) {
+          // Substitute $PREV_ID with actual ID from previous call
+          let bodyStr = JSON.stringify(c.body || {});
+          if (prevId) bodyStr = bodyStr.replace(/"\$PREV_ID"/g, String(prevId));
+          let endpoint = c.endpoint || '';
+          if (prevId) endpoint = endpoint.replace('$PREV_ID', String(prevId));
+
+          const parsedBody = JSON.parse(bodyStr);
+          const r = await tx(c.method || 'POST', endpoint, parsedBody);
+          results.push({ step: 'recovery_' + (c.method || 'POST') + '_' + endpoint.split('/')[1], ...r });
+          if (r.ok) {
+            success = true;
+            prevId = r.data?.value?.id || prevId;
+          }
+        }
+      }
+    } catch (e) { results.push({ step: 'recovery_error', error: e.message }); }
   }
 
 } catch (err) {

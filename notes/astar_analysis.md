@@ -146,9 +146,32 @@ Each round has different dynamics. Using 1-2 early queries to detect the "regime
 - If many settlements appear → high-settlement round (use R2-like priors)
 - If few/no settlements → low-settlement round (use R3-like priors)
 
-## Round 4+ Plan
-1. **Regime detection**: Use 2-3 initial queries to estimate settlement density
-2. **Adaptive priors**: Interpolate between R2 and R3 priors based on regime
-3. **FLOOR=0.001**: Already implemented
-4. **Save observations**: For resubmission capability
-5. **Target: 50+ raw score** (realistic with adaptive priors)
+## Round 4: Score 41.68, Rank 73
+- Regime detection worked (SETTLEMENT, correct)
+- FLOOR=0.001 applied
+- But still using SHARED initial_grid for all seeds
+
+## CRITICAL BUG FOUND: Per-seed grids
+`/rounds/{round_id}` returns `initial_states` — EACH seed has its own grid + settlements!
+- ~42% of cells differ between seeds
+- We were using one shared grid → wrong terrain priors for ~40% of cells
+- Fixed in v4, resubmitted Round 5 before deadline
+
+## API Endpoints We Weren't Using
+- `GET /my-predictions/{round_id}` — check submitted predictions quality
+- `GET /rounds/{round_id}` → `initial_states[seed].grid` — per-seed terrain (FREE!)
+- `GET /rounds/{round_id}` → `initial_states[seed].settlements` — per-seed settlement positions (FREE!)
+- Simulate returns: population, food, wealth, defense, has_port, alive, owner_id
+
+## Score Formula (confirmed)
+`score = 100 × exp(-3 × weighted_kl)`
+`weighted_kl = Σ(entropy(cell) × KL(gt, pred)) / Σ(entropy(cell))`
+Only dynamic cells count (entropy > 0)
+
+## Round 6+ Plan
+1. **Per-seed grids** from `/rounds/{id}` (v4, done)
+2. **Free regime detection** from initial_states settlement count (no queries needed!)
+3. **Settlement metadata** from simulate: use population/food/defense to predict alive/ruin
+4. **FLOOR=0.001**
+5. **Save observations** for resubmission
+6. **Target: 55+ raw score**
