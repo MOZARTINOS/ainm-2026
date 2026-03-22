@@ -1,7 +1,7 @@
 # run.py Inference Pipeline Test Results
 
 **Date:** 2026-03-20
-**VM:** GCP A100-SXM4-40GB (root@34.10.132.71 via Hetzner relay)
+**VM:** GCP A100-SXM4-40GB (root@REDACTED_IP via Hetzner relay)
 **Python:** 3.12.3, PyTorch 2.7.1+cu128, onnxruntime-gpu 1.24.4, timm 0.9.12
 
 ---

@@ -11,7 +11,7 @@ const pdfFiles = d.pdfFiles || [];
 const authHeader = 'Basic ' + Buffer.from('0:' + session_token).toString('base64');
 const apiBase = base_url.replace(/\/+$/, '');
 const _helpers = this.helpers;
-const GEMINI_KEY = 'AIzaSyC_ya1fW-hpajZyb8osz35Y4znS9cx_h4g';
+const GEMINI_KEY = 'GEMINI_API_KEY_REDACTED';
 
 // Multi-entity support
 const entities = d.entities || null;

@@ -36,7 +36,7 @@ async function tripletexCall(method, endpoint, reqBody) {
 async function callGemini(prompt) {
   const r = await this.helpers.httpRequest({
     method: 'POST',
-    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyC_ya1fW-hpajZyb8osz35Y4znS9cx_h4g',
+    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=GEMINI_API_KEY_REDACTED',
     body: {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.0, responseMimeType: 'application/json' }

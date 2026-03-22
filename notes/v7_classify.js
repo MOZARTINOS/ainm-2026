@@ -4,7 +4,7 @@ const d = items[0].json;
 const task = d.task || '';
 const fileContext = d.fileContext || '';
 const pdfFiles = d.pdfFiles || [];
-const GEMINI_KEY = 'AIzaSyC_ya1fW-hpajZyb8osz35Y4znS9cx_h4g';
+const GEMINI_KEY = 'GEMINI_API_KEY_REDACTED';
 
 const _helpers = this.helpers;
 const callGemini = async (prompt, pdfs) => {

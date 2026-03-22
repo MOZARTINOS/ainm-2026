@@ -20,7 +20,7 @@ norgesgruppen_final.zip
 All imports are sandbox-safe. No blocked imports (os, sys, subprocess, pickle, requests, multiprocessing, threading, yaml, gc, getattr).
 
 ## L4 VM Test Results
-- **VM**: root@34.61.97.240 (NVIDIA L4, 23 GB VRAM)
+- **VM**: root@REDACTED_IP (NVIDIA L4, 23 GB VRAM)
 - **Images processed**: 50
 - **Total predictions**: 11,189
 - **Unique image IDs**: 50 (all images processed)

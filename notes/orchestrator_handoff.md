@@ -30,7 +30,7 @@
 - Webhook: https://n8n.visam.no/webhook/tripletex-solve
 - Workflow: WK54ADS72hF36hg2 on n8n.visam.no
 - n8n API key: YOUR_JWT_TOKEN_HERE
-- Gemini API: AIzaSyC_ya1fW-hpajZyb8osz35Y4znS9cx_h4g (gemini-2.5-flash)
+- Gemini API: GEMINI_API_KEY_REDACTED (gemini-2.5-flash)
 - Sandbox: https://kkpqfuj-amager.tripletex.dev/v2
 - Sandbox token: eyJ0b2tlbklkIjoyMTQ3NjUyNjY1LCJ0b2tlbiI6ImQ4MjhkZDgzLTgxYjMtNDc5Yi04Yzk0LTBmNWU3NzcyODdlYyJ9
 - КРИТИЧНОЕ ПРАВИЛО: Country Norway = 161, NOT 162 (Nepal)! Проверять grep перед КАЖДЫМ деплоем.
@@ -41,7 +41,7 @@
 - Код: F:\Workfolder\NM i AI main\repo\tracks\cv\
 - ZIP: F:\Workfolder\NM i AI main\norgesgruppen_final.zip (374.5 MB) — СТАРЫЙ, без YOLOv8m
 
-### Open Claw — Telegram бот на Hetzner (89.167.48.151)
+### Open Claw — Telegram бот на Hetzner (REDACTED_IP)
 - Статус: ACTIVE, monitoring
 - SSH key: /home/node/.openclaw/workspace/gcp_key
 - Задачи: Slack monitoring, leaderboard tracking, GCP health checks
@@ -52,8 +52,8 @@
 ## INFRASTRUCTURE
 
 ### GCP (project: ai-nm26osl-1861, user: devstar18611@gcplab.me)
-- L4 VM: 34.61.97.240 (us-central1-a, g2-standard-8) — testing
-- A100 VM: 34.10.132.71 (us-central1-a, a2-highgpu-1g) — training done
+- L4 VM: REDACTED_IP (us-central1-a, g2-standard-8) — testing
+- A100 VM: REDACTED_IP (us-central1-a, a2-highgpu-1g) — training done
 - GCS: gs://nmiai-train-data-2026/
 - H100 quota = 0 (not available)
 
@@ -63,8 +63,8 @@
 - DINOv2 registers: dinov2_vitb14.safetensors (346MB)
 - Reference embeddings: ref_embeddings.npy (1594, 768), ref_category_ids.npy
 
-### Hetzner (89.167.48.151)
-- SSH: ssh -i ~/.ssh/hetzner_key root@89.167.48.151
+### Hetzner (REDACTED_IP)
+- SSH: ssh -i ~/.ssh/hetzner_key root@REDACTED_IP
 - Open Claw Docker container running
 - GCP key: /root/.ssh/gcp_key and /root/.openclaw/workspace/gcp_key
 

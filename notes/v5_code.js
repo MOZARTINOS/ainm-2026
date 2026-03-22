@@ -11,7 +11,7 @@ if (!task || !base_url || !session_token) return [{ json: { status: 'completed' 
 
 const authHeader = 'Basic ' + Buffer.from('0:' + session_token).toString('base64');
 const apiBase = base_url.replace(/\/+$/, '');
-const GEMINI_KEY = 'AIzaSyC_ya1fW-hpajZyb8osz35Y4znS9cx_h4g';
+const GEMINI_KEY = 'GEMINI_API_KEY_REDACTED';
 
 // === HTTP helper with smart field fixing ===
 // Known Tripletex field name corrections (API rejects wrong names with 422)

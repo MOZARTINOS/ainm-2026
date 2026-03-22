@@ -61,9 +61,9 @@ Output: JSON array with {image_id, category_id, bbox:[x,y,w,h], score}
 - Product images: F:/Workfolder/NM i AI main/submission data/NM_NGD_product_images/
 
 ## GCP VMs
-- L4 (test): root@34.61.97.240 (via Hetzner 89.167.48.151)
-- A100 (training): root@34.10.132.71 (via Hetzner)
-- SSH: ssh -i ~/.ssh/hetzner_key root@89.167.48.151 "ssh -i /root/.ssh/gcp_key root@IP 'COMMAND'"
+- L4 (test): root@REDACTED_IP (via Hetzner REDACTED_IP)
+- A100 (training): root@REDACTED_IP (via Hetzner)
+- SSH: ssh -i ~/.ssh/hetzner_key root@REDACTED_IP "ssh -i /root/.ssh/gcp_key root@IP 'COMMAND'"
 
 ## Что нужно сделать
 

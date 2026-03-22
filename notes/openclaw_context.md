@@ -76,6 +76,6 @@ Save to /home/node/.openclaw/workspace/intel_findings.md with:
 - How it could help us
 
 ## GCP Training Monitor (SECONDARY PRIORITY)
-- A100 VM: ssh -i /home/node/.openclaw/workspace/gcp_key root@34.10.132.71
+- A100 VM: ssh -i /home/node/.openclaw/workspace/gcp_key root@REDACTED_IP
 - L4 VM: ssh -i /home/node/.openclaw/workspace/gcp_key root@34.9.220.246
 - Training is COMPLETE (mAP 99.0%). Only check if asked.

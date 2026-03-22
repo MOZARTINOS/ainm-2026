@@ -54,6 +54,6 @@ TTA is only applied to images larger than 1280px (SAHI path), skipped for small 
 
 ### L4 Connection
 ```
-ssh -o StrictHostKeyChecking=no -i ~/.ssh/hetzner_key root@89.167.48.151 "ssh -o StrictHostKeyChecking=no -i /root/.ssh/gcp_key root@34.61.97.240 'COMMAND'"
+ssh -o StrictHostKeyChecking=no -i ~/.ssh/hetzner_key root@REDACTED_IP "ssh -o StrictHostKeyChecking=no -i /root/.ssh/gcp_key root@REDACTED_IP 'COMMAND'"
 ```
 Updated run.py and new embeddings are deployed on L4 at `/root/cv/`.
