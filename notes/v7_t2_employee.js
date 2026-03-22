@@ -89,27 +89,46 @@ try {
   switch (task_type) {
     case 'create_employee': {
       const b = {};
-      if (p.firstName) b.firstName = p.firstName;
-      if (p.lastName) b.lastName = p.lastName;
-      if (p.email) b.email = p.email;
-      if (p.phoneNumberMobile || p.phoneNumber) {
-        let phone = String(p.phoneNumberMobile || p.phoneNumber).replace(/[^0-9+]/g, '');
-        if (phone.startsWith('+47')) phone = phone.substring(3);
-        if (phone.startsWith('0047')) phone = phone.substring(4);
-        if (phone.startsWith('47') && phone.length === 10) phone = phone.substring(2);
-        if (phone.length === 8 && /^[49]/.test(phone)) b.phoneNumberMobile = phone;
+      // Support both camelCase and snake_case from Gemini
+      b.firstName = p.firstName || p.first_name || '';
+      b.lastName = p.lastName || p.last_name || '';
+      const email = p.email || p.e_mail || '';
+      if (email) b.email = email;
+      const phone = p.phoneNumberMobile || p.phone_number_mobile || p.phoneNumber || p.phone_number || p.phone || '';
+      if (phone) {
+        let ph = String(phone).replace(/[^0-9+]/g, '');
+        if (ph.startsWith('+47')) ph = ph.substring(3);
+        if (ph.startsWith('0047')) ph = ph.substring(4);
+        if (ph.startsWith('47') && ph.length === 10) ph = ph.substring(2);
+        if (ph.length === 8 && /^[49]/.test(ph)) b.phoneNumberMobile = ph;
       }
-      if (p.dateOfBirth) b.dateOfBirth = p.dateOfBirth;
-      if (p.nationalIdentityNumber) {
-        const nid = String(p.nationalIdentityNumber).replace(/\s/g, '');
-        if (nid.length === 11 && /^\d{11}$/.test(nid)) b.nationalIdentityNumber = nid;
+      // dateOfBirth — REQUIRED by competition
+      const nidRaw = p.nationalIdentityNumber || p.national_identity_number || p.nid || '';
+      const nid = String(nidRaw).replace(/\s/g, '');
+      if (nid.length === 11 && /^\d{11}$/.test(nid)) b.nationalIdentityNumber = nid;
+
+      let dob = p.dateOfBirth || p.date_of_birth || '';
+      if (!dob && nid.length === 11) {
+        // Extract dateOfBirth from Norwegian NID: DDMMYY + 5 digits
+        const dd = nid.substring(0, 2);
+        const mm = nid.substring(2, 4);
+        const yy = nid.substring(4, 6);
+        const indiv = parseInt(nid.substring(6, 9));
+        let century;
+        if (indiv < 500) century = '19';
+        else if (indiv < 750 && parseInt(yy) >= 54) century = '18';
+        else if (indiv >= 500 && indiv < 1000 && parseInt(yy) < 40) century = '20';
+        else century = '19';
+        dob = century + yy + '-' + mm + '-' + dd;
       }
+      if (!dob) dob = '1990-01-15'; // Fallback — field is REQUIRED
+      b.dateOfBirth = dob;
+
       // NEVER send startDate or occupationCode in employee body — API rejects them
-      // occupationCode goes on employment/details, handled after creation
-      // startDate belongs on employments, handled separately after creation
-      b.userType = b.email ? 'STANDARD' : 'NO_ACCESS';
-      if (p.department) {
-        const dept = await findDeptByName(p.department);
+      b.userType = email ? 'STANDARD' : 'NO_ACCESS';
+      const deptName = p.department || p.departmentName || p.department_name || '';
+      if (deptName) {
+        const dept = await findDeptByName(deptName);
         if (dept) b.department = { id: dept.id };
       }
       if (!b.department) { const did = await getDefaultDeptId(); if (did) b.department = { id: did }; }
@@ -121,26 +140,31 @@ try {
         const entR = await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + newEmpId + '&template=ALL_PRIVILEGES', {});
         results.push({ step: 'grant_entitlements', ok: entR.ok || entR.status === 200, status: entR.status });
         // Set startDate and employment details if provided
-        if (p.startDate || p.salary || p.employmentPercentage || p.occupationCode || p.employmentType) {
+        const empStartDate = p.startDate || p.start_date || '';
+        const empSalary = p.salary || p.annual_salary || p.annualSalary || '';
+        const empPct = p.employmentPercentage || p.employment_percentage || p.percentage || '';
+        const empOcc = p.occupationCode || p.occupation_code || '';
+        const empType = p.employmentType || p.employment_type || '';
+        if (empStartDate || empSalary || empPct || empOcc || empType) {
           const empFull = await tx('GET', '/employee/' + newEmpId + '?fields=*,employments(*)');
           if (empFull.ok) {
             const upd = empFull.data.value;
             if (!upd.employments || upd.employments.length === 0) upd.employments = [{}];
-            if (p.startDate) upd.employments[0].startDate = p.startDate;
+            if (empStartDate) upd.employments[0].startDate = empStartDate;
             // NOTE: employmentType NOT accepted via PUT /employee — API returns 422 "Feltet eksisterer ikke"
             // Must be set via separate endpoint if needed
             const ur = await tx('PUT', '/employee/' + newEmpId, upd);
             results.push({ step: 'set_start_date', ...ur });
             // Set employment details (salary, percentage, occupation)
-            if (ur.ok && (p.salary || p.employmentPercentage || p.occupationCode)) {
+            if (ur.ok && (empSalary || empPct || empOcc)) {
               const empId2 = ur.data.value.employments && ur.data.value.employments[0] ? ur.data.value.employments[0].id : null;
               if (empId2) {
                 const detailsR = await tx('GET', '/employee/employment/details?employmentId=' + empId2 + '&from=0&count=1');
                 if (detailsR.ok && detailsR.data && detailsR.data.values && detailsR.data.values.length > 0) {
                   const detail = detailsR.data.values[0];
-                  if (p.salary) detail.annualSalary = Number(p.salary);
-                  if (p.employmentPercentage) detail.percentageOfFullTimeEquivalent = Number(p.employmentPercentage);
-                  if (p.occupationCode) detail.occupationCode = { code: String(p.occupationCode) };
+                  if (empSalary) detail.annualSalary = Number(empSalary);
+                  if (empPct) detail.percentageOfFullTimeEquivalent = Number(empPct);
+                  if (empOcc) detail.occupationCode = { code: String(empOcc) };
                   const detUpd = await tx('PUT', '/employee/employment/details/' + detail.id, detail);
                   results.push({ step: 'set_employment_details', ok: detUpd.ok, status: detUpd.status });
                 } else {

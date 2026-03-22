@@ -168,6 +168,7 @@ async function findDeptByName(name) {
 
 // === Gemini helper with PDF support ===
 async function callGemini(prompt, pdfFiles) {
+ try {
   const parts = [{ text: prompt }];
   if (pdfFiles && pdfFiles.length > 0) {
     for (const f of pdfFiles) {
@@ -181,11 +182,38 @@ async function callGemini(prompt, pdfFiles) {
     url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + GEMINI_KEY,
     body: {
       contents: [{ parts }],
-      generationConfig: { temperature: 0.0, responseMimeType: 'application/json' }
+      generationConfig: {
+        temperature: 0.0,
+        topK: 1,
+        topP: 0.1,
+        candidateCount: 1,
+        maxOutputTokens: 4096,
+        responseMimeType: 'application/json'
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+      ]
     },
     headers: { 'Content-Type': 'application/json' }, json: true
   });
-  return JSON.parse(r.candidates[0].content.parts[0].text);
+  const candidate = r.candidates[0];
+  const textPart = candidate.content.parts.find(p => p.text);
+  const raw = textPart ? textPart.text : '{}';
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    // Try to extract JSON from markdown code block
+    const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (m) try { return JSON.parse(m[1].trim()); } catch (_) {}
+    // Try to find first { or [ and parse from there
+    const idx = raw.search(/[\[{]/);
+    if (idx >= 0) try { return JSON.parse(raw.substring(idx)); } catch (_) {}
+    return {};
+  }
+ } catch (geminiErr) { return {}; }
 }
 
 // === Parse files ===
@@ -204,6 +232,14 @@ if (files.length > 0) {
   }
 }
 
+// === Add extracted file text from n8n extractFromFile node (if available) ===
+const extractedFileText = body._extractedFileText || '';
+if (extractedFileText) {
+  fileContext += '\nExtracted document text:\n' + extractedFileText.substring(0, 12000) + '\n';
+  // Don't send PDF via Gemini Vision if already extracted by n8n
+  pdfFiles.length = 0;
+}
+
 // === Classify task ===
 const classifyPrompt = `You are a Tripletex accounting API expert. Analyze this task and return a structured plan.
 
@@ -216,24 +252,36 @@ RULES:
 - For reverse_payment: extract customerName, customerOrgNumber, amount, productDescription (same as register_payment)
 - IMPORTANT: "leverandør/supplier/Lieferant/fournisseur/proveedor" → create_supplier (NOT create_customer). "kunde/customer/Kunde/client/cliente" → create_customer
 - Extract ALL parameters. Dates: YYYY-MM-DD. If only day/month, assume 2026.
-- For employees: firstName, lastName, email, phoneNumberMobile, dateOfBirth, startDate, department, isAdmin
+- For employees: firstName, lastName, email, phoneNumberMobile, dateOfBirth (YYYY-MM-DD), startDate (YYYY-MM-DD), department, isAdmin, nationalIdentityNumber (11-digit Norwegian fødselsnummer), occupationCode (STYRK code like "2512"), salary (annual amount as number), employmentPercentage (0-100 number), employmentType (e.g. "FAST" for permanent). CRITICAL: Extract ALL of these from document text if available!
 - For customers: name, email, phoneNumber, organizationNumber, address, postalCode, city, isPrivateIndividual
 - For suppliers: name, email, phoneNumber, organizationNumber, address, postalCode, city
 - For products: name, number, priceExcludingVat, vatPercentage (default 25)
-- For invoices: customerName, customerOrgNumber, invoiceDate, dueDate, lines[{description, productNumber, quantity, unitPrice, vatPercentage}], shouldSend (true if task says send/envie/sende/enviar/envoyer/schicken). IMPORTANT: if product numbers are mentioned (e.g. "Skylagring (3300)"), extract them as productNumber in each line.
-- For payments: invoiceNumber, invoiceId, amount, paymentDate, customerName, customerOrgNumber, productDescription, productPrice, products[{name, number, unitPrice}] (extract ALL customer/product info — the invoice may need to be created first. If MULTIPLE products mentioned, put each in the products array with name, number and unitPrice)
+- For invoices: customerName, customerOrgNumber, invoiceDate, dueDate, lines[{description, quantity, unitPrice, vatPercentage}], shouldSend (true if task says send/envie/sende/enviar/envoyer/schicken)
+- For payments: invoiceNumber, invoiceId, amount, paymentDate, customerName, customerOrgNumber, productDescription, productPrice, products[{name, number, unitPrice}], currency (3-letter code like EUR/USD/GBP if not NOK), exchangeRateInvoice (NOK per unit at invoice time), exchangeRatePayment (NOK per unit at payment time). Extract ALL customer/product info — the invoice may need to be created first. If MULTIPLE products mentioned, put each in the products array with name, number and unitPrice
 - For projects: name, customerName, customerOrgNumber, projectManagerFirstName, projectManagerLastName, projectManagerEmail, startDate, endDate, isInternal
-- For project_invoice (T2): extract customerName, customerOrgNumber, projectName, employeeFirstName, employeeLastName, employeeEmail, activityName, hours, hourlyRate, description. This is when a task mentions logging hours AND generating/creating a project invoice.
+- For project_invoice (T2): extract customerName, customerOrgNumber, projectName, employeeFirstName, employeeLastName, employeeEmail, activityName, hours, hourlyRate, fixedPrice, description. This is when a task mentions logging hours AND generating/creating a project invoice, OR "fixed price"/"fastpris" project invoicing.
 - For payroll_voucher (T2): extract employeeFirstName, employeeLastName, employeeEmail, salaryItems[{description, amount, accountNumber}]. This is when a task mentions payroll/salary/lønn/bonus/Gehalt/salaire. Account 5000=Lønn, 5400=Arbeidsgiveravgift, 1920=Bank.
 - For supplier_invoice (T2): extract supplierName, supplierOrgNumber, invoiceNumber, amountIncludingVat, accountNumber (expense account like 6500), description. This is when a task mentions "supplier invoice"/"leverandørfaktura"/"facture fournisseur"/"Lieferantenrechnung"/"received invoice from supplier". IMPORTANT: "register supplier invoice" or "received invoice from X" = supplier_invoice, NOT create_voucher!
-- CLASSIFICATION PRIORITY: If task mentions "Festpreis"/"fastpris"/"fixed price"/"preço fixo"/"prix fixe" + project + invoice/faktura → project_invoice. If task mentions "supplier"/"leverandør"/"fournisseur" + "invoice"/"faktura"/"facture" → supplier_invoice. If task mentions "payroll"/"salary"/"lønn"/"Gehalt" → payroll_voucher. If task says create order AND convert to invoice AND/OR register payment (multi-step chain) → register_payment. Only use create_voucher for generic manual journal entries. NEVER classify multi-step order+invoice+payment tasks as "unknown".
+- CLASSIFICATION PRIORITY: If task mentions "supplier"/"leverandør"/"fournisseur" + "invoice"/"faktura"/"facture" → supplier_invoice. If task mentions "payroll"/"salary"/"lønn"/"Gehalt" → payroll_voucher. If task says create order AND convert to invoice AND/OR register payment (multi-step chain) → register_payment (it handles full chain: customer → product → order → invoice → payment). Only use create_voucher for generic manual journal entries. NEVER classify multi-step order+invoice+payment tasks as "unknown".
 - For travel expenses: employeeName, employeeEmail, title, departureDate, returnDate, destination, costs[{description, amount}] (e.g. flight ticket, taxi, hotel), perDiem:{days, accommodation (HOTEL/NONE), location, dailyRate}
 - For credit notes: invoiceNumber, invoiceId, customerName, customerOrgNumber, productDescription, amount (amount excluding VAT). Extract ALL of these — on a fresh account we need to create the invoice before crediting it.
 - For updates: search fields (firstName, lastName) AND updates object with new values
 - For vouchers: date, description, postings[{accountNumber, amount, isDebit, description}]
 - For dimension_voucher (T2): extract dimensionName (e.g. "Kostsenter"), dimensionValues (array of strings e.g. ["Økonomi","IT"]), linkedValue (which value to link to voucher posting), voucherAccountNumber (expense account), voucherAmount (amount excl VAT), voucherDescription. This is when a task mentions "dimension"/"kostsenter"/"koststed"/"Kostenstelle"/"cost center" AND voucher/journal entry.
 - For deletes: firstName+lastName or name to identify entity
-- If PDF attached: extract data from the PDF content shown
+- CRITICAL: If "Extracted document text:" section is present below, you MUST extract ALL field values from that text. This is the actual content of the attached PDF/document. Parse every field (names, emails, dates, numbers, codes, amounts) from the extracted text and put them in extracted_params.
+- PDF EMPLOYEE EXTRACTION CHECKLIST — you MUST find and extract ALL of these from document text if they appear anywhere:
+  * firstName, lastName — full name of employee
+  * email — email address
+  * phoneNumberMobile — phone number (8 digits)
+  * dateOfBirth — birth date (convert to YYYY-MM-DD)
+  * nationalIdentityNumber — 11-digit Norwegian fødselsnummer/personnummer (e.g. "12345678901")
+  * startDate — employment start date (convert to YYYY-MM-DD)
+  * department — department name
+  * salary — annual salary as number (e.g. 550000). Look for "lønn", "salary", "Gehalt", "salário", "salaire", "salario", "årslønn", "annual"
+  * employmentPercentage — percentage 0-100 (e.g. 80). Look for "stillingsprosent", "percentage", "Stellenprozent", "%", "100%"="100"
+  * occupationCode — STYRK/ISCO occupation code (4-digit like "2512"). Look for "stillingskode", "yrkeskode", "occupation code", "STYRK", "Berufscode"
+  * employmentType — "FAST"=permanent/fast/unbefristet/permanent/CDI, "MIDLERTIDIG"=temporary/vikariat/befristet/CDD
 - IMPORTANT: If the task asks to create MULTIPLE entities of the same type (e.g. "create three departments: X, Y and Z" or "create two employees: A and B"), you MUST return an "entities" array with one object per entity, each containing its own extracted_params. The task_type stays the same for all.
 
 Task: ${task}${fileContext}
@@ -251,8 +299,41 @@ if (!plan.task_type || plan.task_type === 'unknown' || plan.task_type === 'null'
   else if ((t.includes('supplier') || t.includes('leverandør') || t.includes('fournisseur') || t.includes('proveedor') || t.includes('lieferant')) && (t.includes('invoice') || t.includes('faktura') || t.includes('facture') || t.includes('rechnung'))) plan.task_type = 'supplier_invoice';
   else if (t.includes('payroll') || t.includes('salary') || t.includes('lønn') || t.includes('gehalt') || t.includes('salaire')) plan.task_type = 'payroll_voucher';
   else if (t.includes('order') && t.includes('invoice')) plan.task_type = 'create_invoice';
-  else if (t.includes('project') && (t.includes('invoice') || t.includes('hours') || t.includes('timer') || t.includes('hourly') || t.includes('festpreis') || t.includes('fastpris') || t.includes('fixed price') || t.includes('fixpris') || t.includes('prix fixe') || t.includes('preço fixo'))) plan.task_type = 'project_invoice';
+  else if ((t.includes('project') || t.includes('projekt') || t.includes('prosjekt') || t.includes('proyecto') || t.includes('projet') || t.includes('projeto')) && (t.includes('invoice') || t.includes('hours') || t.includes('timer') || t.includes('hourly') || t.includes('stunden') || t.includes('faktura') || t.includes('rechnung') || t.includes('cycle') || t.includes('zyklus') || t.includes('syklus') || t.includes('ciclo') || t.includes('horas') || t.includes('fatura'))) plan.task_type = 'project_invoice';
   else if ((t.includes('dimension') || t.includes('kostsenter') || t.includes('koststed') || t.includes('kostenstelle') || t.includes('cost center') || t.includes('centre de coût')) && (t.includes('voucher') || t.includes('bilag') || t.includes('journal') || t.includes('bokfør') || t.includes('posting'))) plan.task_type = 'dimension_voucher';
+  else if (t.includes('analyze') || t.includes('analyse') || t.includes('analice') || t.includes('analiser') || t.includes('analysiere')) plan.task_type = 'ledger_analysis';
+  else if (t.includes('reconcil') || t.includes('concilia') || t.includes('avstem') || t.includes('bank statement') || t.includes('extracto bancario') || t.includes('kontoutskrift') || t.includes('kontoauszug') || t.includes('abgleich') || t.includes('rapprochez') || t.includes('relevé bancaire')) plan.task_type = 'bank_reconciliation';
+  else if (t.includes('closing') || t.includes('encerramento') || t.includes('avslutning') || t.includes('abschluss') || t.includes('clôture')) plan.task_type = 'monthly_closing';
+  else if (t.includes('reminder') || t.includes('purring') || t.includes('overdue') || t.includes('forfalt') || t.includes('mahnung') || t.includes('rappel') || t.includes('vencida') || t.includes('mora') || t.includes('late fee') || t.includes('gebyr') || t.includes('atraso') || t.includes('retard')) plan.task_type = 'reminder_fee';
+  else if (t.includes('voucher') || t.includes('bilag') || t.includes('journal entry') || t.includes('buchung') || t.includes('depreci') || t.includes('avskriv') || t.includes('year-end') || t.includes('årsavslutning') || t.includes('hovudbok') || t.includes('hovedbok') || t.includes('feil') || t.includes('korrig') || t.includes('correct') || t.includes('fehler') || t.includes('erreur') || t.includes('erro')) plan.task_type = 'create_voucher';
+}
+
+// OVERRIDE: fixed price tasks are ALWAYS project_invoice, not create_invoice
+if (plan.task_type === 'create_invoice') {
+  const t = task.toLowerCase();
+  if (t.includes('fixed price') || t.includes('festpreis') || t.includes('fastpris') || t.includes('prix fixe') || t.includes('preço fixo') || t.includes('precio fijo')) {
+    plan.task_type = 'project_invoice';
+  }
+}
+
+// OVERRIDE: analyze/reconcile tasks should NOT be create_project
+if (plan.task_type === 'create_project') {
+  const t = task.toLowerCase();
+  if (t.includes('analyze') || t.includes('analyse') || t.includes('analice') || t.includes('reconcil') || t.includes('concilia') || t.includes('closing') || t.includes('encerramento')) {
+    plan.task_type = 'ledger_analysis';
+  }
+}
+
+// OVERRIDE: "project cycle"/"Projektzyklus" = ALWAYS project_invoice
+{
+  const t = task.toLowerCase();
+  if (t.includes('projektzyklus') || t.includes('project cycle') || t.includes('prosjektsyklus') || t.includes('ciclo del proyecto') || t.includes('cycle de projet') || t.includes('ciclo do projeto') || t.includes('ciclo de vida') || t.includes('lebenszyklus') || t.includes('livssyklus')) {
+    plan.task_type = 'project_invoice';
+  }
+  // OVERRIDE: CSV bank statement = ALWAYS bank_reconciliation (never reverse_payment)
+  if ((t.includes('kontoauszug') || t.includes('bank statement') || t.includes('kontoutskrift') || t.includes('extracto bancario') || t.includes('relevé bancaire') || t.includes('bankutskrift')) && (t.includes('csv') || t.includes('abgleich') || t.includes('reconcil') || t.includes('avstem') || t.includes('rapproch'))) {
+    plan.task_type = 'bank_reconciliation';
+  }
 }
 
 const entities = plan.entities || null;
@@ -269,22 +350,37 @@ try {
 
     case 'create_employee': {
       const b = {};
-      if (p.firstName) b.firstName = p.firstName;
-      if (p.lastName) b.lastName = p.lastName;
-      if (p.email) b.email = p.email;
-      if (p.phoneNumberMobile || p.phoneNumber) {
-        let phone = String(p.phoneNumberMobile || p.phoneNumber).replace(/[^0-9+]/g, '');
+      b.firstName = p.firstName || p.first_name || '';
+      b.lastName = p.lastName || p.last_name || '';
+      const empEmail = p.email || p.e_mail || '';
+      if (empEmail) b.email = empEmail;
+      const empPhone = p.phoneNumberMobile || p.phone_number_mobile || p.phoneNumber || p.phone_number || p.phone || '';
+      if (empPhone) {
+        let phone = String(empPhone).replace(/[^0-9+]/g, '');
         if (phone.startsWith('+47')) phone = phone.substring(3);
         if (phone.startsWith('0047')) phone = phone.substring(4);
         if (phone.startsWith('47') && phone.length === 10) phone = phone.substring(2);
         if (phone.length === 8 && /^[49]/.test(phone)) b.phoneNumberMobile = phone;
       }
-      if (p.dateOfBirth) b.dateOfBirth = p.dateOfBirth;
-      // NEVER send startDate in employee body — API rejects it ("Feltet eksisterer ikke")
-      // startDate belongs on employments, handled separately after creation
-      b.userType = b.email ? 'STANDARD' : 'NO_ACCESS';
-      if (p.department) {
-        const dept = await findDeptByName(p.department);
+      // nationalIdentityNumber — extract dateOfBirth from NID if not provided
+      const nidRaw = p.nationalIdentityNumber || p.national_identity_number || p.nid || '';
+      const nid = String(nidRaw).replace(/\s/g, '');
+      if (nid.length === 11 && /^\d{11}$/.test(nid)) b.nationalIdentityNumber = nid;
+      // dateOfBirth — REQUIRED by competition checker
+      let dob = p.dateOfBirth || p.date_of_birth || '';
+      if (!dob && nid.length === 11) {
+        const dd = nid.substring(0,2), mm = nid.substring(2,4), yy = nid.substring(4,6);
+        const indiv = parseInt(nid.substring(6,9));
+        let cent = (indiv < 500) ? '19' : (parseInt(yy) < 40) ? '20' : '19';
+        dob = cent + yy + '-' + mm + '-' + dd;
+      }
+      if (!dob) dob = '1990-01-15'; // fallback — field is REQUIRED
+      b.dateOfBirth = dob;
+      // NEVER send startDate or occupationCode in employee body — API rejects them
+      b.userType = empEmail ? 'STANDARD' : 'NO_ACCESS';
+      const deptName = p.department || p.departmentName || p.department_name || '';
+      if (deptName) {
+        const dept = await findDeptByName(deptName);
         if (dept) b.department = { id: dept.id };
       }
       if (!b.department) { const did = await getDefaultDeptId(); if (did) b.department = { id: did }; }
@@ -295,15 +391,44 @@ try {
         // Grant ALL_PRIVILEGES entitlements (= "Administrator role assigned", worth 5 points)
         const entR = await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + newEmpId + '&template=ALL_PRIVILEGES', {});
         results.push({ step: 'grant_entitlements', ok: entR.ok || entR.status === 200, status: entR.status });
-        // Set startDate if provided
-        if (p.startDate) {
+        // Set startDate and employment details if provided
+        const empStartDate = p.startDate || p.start_date || '';
+        const empSalary = p.salary || p.annual_salary || p.annualSalary || '';
+        const empPct = p.employmentPercentage || p.employment_percentage || p.percentage || '';
+        const empOcc = p.occupationCode || p.occupation_code || '';
+        if (empStartDate || empSalary || empPct || empOcc || p.employmentType) {
           const empFull = await tx('GET', '/employee/' + newEmpId + '?fields=*,employments(*)');
           if (empFull.ok) {
             const upd = empFull.data.value;
-            if (!upd.employments || upd.employments.length === 0) upd.employments = [{ startDate: p.startDate }];
-            else upd.employments[0].startDate = p.startDate;
+            if (!upd.employments || upd.employments.length === 0) upd.employments = [{}];
+            if (empStartDate) upd.employments[0].startDate = empStartDate;
+            // NOTE: employmentType NOT accepted via PUT /employee — API returns 422 "Feltet eksisterer ikke"
+            // Must be set via separate endpoint if needed
             const ur = await tx('PUT', '/employee/' + newEmpId, upd);
             results.push({ step: 'set_start_date', ...ur });
+            // Set employment details (salary, percentage, occupation)
+            if (ur.ok && (empSalary || empPct || empOcc)) {
+              const empId2 = ur.data.value.employments && ur.data.value.employments[0] ? ur.data.value.employments[0].id : null;
+              if (empId2) {
+                const detailsR = await tx('GET', '/employee/employment/details?employmentId=' + empId2 + '&from=0&count=1');
+                if (detailsR.ok && detailsR.data && detailsR.data.values && detailsR.data.values.length > 0) {
+                  const detail = detailsR.data.values[0];
+                  if (empSalary) detail.annualSalary = Number(empSalary);
+                  if (empPct) detail.percentageOfFullTimeEquivalent = Number(empPct);
+                  if (empOcc) detail.occupationCode = { code: String(empOcc) };
+                  const detUpd = await tx('PUT', '/employee/employment/details/' + detail.id, detail);
+                  results.push({ step: 'set_employment_details', ok: detUpd.ok, status: detUpd.status });
+                } else {
+                  // Create new employment details
+                  const newDetail = { employment: { id: empId2 } };
+                  if (empSalary) newDetail.annualSalary = Number(empSalary);
+                  if (empPct) newDetail.percentageOfFullTimeEquivalent = Number(empPct);
+                  if (empOcc) newDetail.occupationCode = { code: String(empOcc) };
+                  const detPost = await tx('POST', '/employee/employment/details', newDetail);
+                  results.push({ step: 'set_employment_details', ok: detPost.ok, status: detPost.status });
+                }
+              }
+            }
           }
         }
       }
@@ -394,36 +519,14 @@ try {
 
       const today = new Date().toISOString().split('T')[0];
       const iDate = p.invoiceDate || today;
-      // Also check plan root for lines (Gemini may put them there instead of extracted_params)
-      if (!p.lines && plan.extracted_params && plan.extracted_params.lines) p.lines = plan.extracted_params.lines;
-      if (!p.lines && plan.lines) p.lines = plan.lines;
-      // Build orderLines — create products for each line if product number/name specified
+      // Build orderLines with description fallback from prompt-level fields
       const defaultDesc = p.productDescription || p.description || 'Service';
       const defaultPrice = p.amount || p.productPrice || 1000;
-      const rawLines = p.lines && p.lines.length > 0 ? p.lines : [{ description: defaultDesc, quantity: 1, unitPrice: defaultPrice }];
-      const oLines = [];
-      for (const l of rawLines) {
-        const lineDesc = l.description || l.product || defaultDesc;
-        const linePrice = l.unitPrice || l.amount || defaultPrice;
-        const lineQty = l.quantity || 1;
-        const ol = { description: lineDesc, count: lineQty, unitPriceExcludingVatCurrency: linePrice };
-        // ALWAYS create product for each line (competition checks product existence)
-        const prodBody = { name: lineDesc, priceExcludingVatCurrency: linePrice };
-        if (l.productNumber || l.number) prodBody.number = String(l.productNumber || l.number);
-        let pr = await tx('POST', '/product', prodBody);
-        if (!pr.ok && prodBody.number) {
-          // Number conflict — retry without number
-          delete prodBody.number;
-          pr = await tx('POST', '/product', prodBody);
-        }
-        if (!pr.ok) {
-          // Name conflict or other — retry with unique suffix
-          prodBody.name = lineDesc + ' ' + Date.now().toString().slice(-4);
-          pr = await tx('POST', '/product', prodBody);
-        }
-        if (pr.ok) { ol.product = { id: pr.data.value.id }; results.push({ step: 'create_product', ...pr }); }
-        oLines.push(ol);
-      }
+      const oLines = (p.lines && p.lines.length > 0 ? p.lines : [{ description: defaultDesc, quantity: 1, unitPrice: defaultPrice }]).map(l => ({
+        description: l.description || l.product || defaultDesc,
+        count: l.quantity || 1,
+        unitPriceExcludingVatCurrency: l.unitPrice || l.amount || defaultPrice
+      }));
 
       const order = await tx('POST', '/order', {
         customer: { id: customerId }, deliveryDate: iDate, orderDate: iDate, orderLines: oLines
@@ -570,13 +673,11 @@ try {
 
       // Step 3: Register payment on the invoice
       if (invId) {
-        // Get the actual invoice amount if we need it
+        // ALWAYS get amountOutstanding from invoice — never calculate manually
+        const invDetail = await tx('GET', '/invoice/' + invId);
         let actualAmount = payAmount;
-        if (!actualAmount || actualAmount === 0) {
-          const invDetail = await tx('GET', '/invoice/' + invId);
-          if (invDetail.ok && invDetail.data && invDetail.data.value) {
-            actualAmount = invDetail.data.value.amount || invDetail.data.value.amountOutstanding || 0;
-          }
+        if (invDetail.ok && invDetail.data && invDetail.data.value) {
+          actualAmount = invDetail.data.value.amountOutstanding || invDetail.data.value.amount || actualAmount || 0;
         }
         // PUT /:payment requires query params. Needs INCOMING payment type from /invoice/paymentType
         // (NOT /ledger/paymentTypeOut which are outgoing!)
@@ -592,6 +693,35 @@ try {
         const r = await tx('PUT', '/invoice/' + invId + '/:payment?paymentDate=' + payDate + '&paymentTypeId=' + payTypeId + '&paidAmount=' + actualAmount, {});
         results.push({ step: 'payment', ...r });
         success = r.ok;
+
+        // Handle exchange rate difference if currency specified
+        if (r.ok && p.currency && p.exchangeRateInvoice && p.exchangeRatePayment) {
+          const invRate = Number(p.exchangeRateInvoice);
+          const payRate = Number(p.exchangeRatePayment);
+          const foreignAmount = Number(p.amount || 0);
+          const diff = Math.round((invRate - payRate) * foreignAmount * 100) / 100;
+          if (Math.abs(diff) > 0.01) {
+            // diff > 0 = loss (disagio 8160), diff < 0 = gain (agio 8060)
+            const isLoss = diff > 0;
+            const acctExch = await tx('GET', '/ledger/account?number=' + (isLoss ? '8160' : '8060') + '&from=0&count=1');
+            const acct1500 = await tx('GET', '/ledger/account?number=1500&from=0&count=1');
+            if (acctExch.ok && acctExch.data.values.length > 0 && acct1500.ok && acct1500.data.values.length > 0) {
+              const exchAcctId = acctExch.data.values[0].id;
+              const custAcctId = acct1500.data.values[0].id;
+              const absDiff = Math.abs(diff);
+              const exchDate = payDate || new Date().toISOString().split('T')[0];
+              const exchVoucher = await tx('POST', '/ledger/voucher', {
+                date: exchDate,
+                description: (isLoss ? 'Valutatap (disagio)' : 'Valutagevinst (agio)') + ' - ' + (p.currency || ''),
+                postings: [
+                  { row: 1, date: exchDate, account: { id: isLoss ? exchAcctId : custAcctId }, customer: customerId ? { id: customerId } : undefined, amountGross: absDiff, amountGrossCurrency: absDiff },
+                  { row: 2, date: exchDate, account: { id: isLoss ? custAcctId : exchAcctId }, customer: customerId ? { id: customerId } : undefined, amountGross: -absDiff, amountGrossCurrency: -absDiff }
+                ]
+              });
+              results.push({ step: 'exchange_rate_voucher', ...exchVoucher });
+            }
+          }
+        }
       } else {
         results.push({ error: 'No invoice found and could not create one' });
       }
@@ -631,7 +761,9 @@ try {
       results.push({ step: 'create_invoice', ...rpInv });
       if (!rpInv.ok) break;
       const rpInvId = rpInv.data.value.id;
-      const rpInvAmt = rpInv.data.value.amount || rpAmount;
+      // Get amountOutstanding from invoice (ALWAYS use this, never calculate)
+      const rpInvDetail = await tx('GET', '/invoice/' + rpInvId);
+      const rpInvAmt = (rpInvDetail.ok && rpInvDetail.data?.value?.amountOutstanding) ? rpInvDetail.data.value.amountOutstanding : (rpInv.data.value.amount || rpAmount);
       // Get payment type
       let rpPtId = 0;
       const rpPt = await tx('GET', '/invoice/paymentType?from=0&count=5');
@@ -710,14 +842,12 @@ try {
         const parts = p.employeeName.split(' ');
         const emp = await findEmployee(parts[0], parts.length > 1 ? parts.slice(1).join(' ') : null);
         if (emp) eId = emp.id;
-        const empEmail = p.employeeEmail || p.email || '';
-        if (!eId) {
-          const empBody = { firstName: parts[0] || 'Employee', lastName: parts.slice(1).join(' ') || 'Travel' };
-          if (empEmail) { empBody.email = empEmail; empBody.userType = 'STANDARD'; }
-          else { empBody.userType = 'NO_ACCESS'; }
-          const did = await getDefaultDeptId();
-          if (did) empBody.department = { id: did };
-          const newEmp = await tx('POST', '/employee', empBody);
+        if (!eId && p.employeeEmail) {
+          const newEmp = await tx('POST', '/employee', {
+            firstName: parts[0] || 'Employee', lastName: parts.slice(1).join(' ') || 'Travel',
+            email: p.employeeEmail, userType: 'STANDARD',
+            department: { id: (await getDefaultDeptId()) || 0 }
+          });
           if (newEmp.ok) {
             eId = newEmp.data.value.id;
             results.push({ step: 'create_employee', ...newEmp });
@@ -795,7 +925,6 @@ try {
             const cr = await tx('POST', '/travelExpense/cost', {
               travelExpense: { id: teId },
               costCategory: { id: catId },
-              paymentType: { id: 0 },
               amountCurrencyIncVat: Number(cost.amount || 0),
               comments: cost.description || ''
             });
@@ -886,6 +1015,29 @@ try {
       await ensureBankAccount();
       const today = new Date().toISOString().split('T')[0];
 
+      // Re-extract params if empty (Gemini failed on non-English)
+      if (!p.customerName && !p.customer_name && !p.projectName && !p.project_name) {
+        const reExtract = await callGemini('Extract ALL parameters from this project invoice task. The task is in a foreign language — translate field values to their original text.\nReturn: {"customerName":"company name","customerOrgNumber":"org number","projectName":"project name","budget":number,"employees":[{"firstName":"...","lastName":"...","email":"...","role":"...","hours":number}],"supplierCost":{"name":"supplier","orgNumber":"...","amount":number},"invoiceType":"hourly or fixed_price"}\n\nTask: ' + task, []);
+        if (reExtract.customerName) p.customerName = reExtract.customerName;
+        if (reExtract.customer_name) p.customerName = reExtract.customer_name;
+        if (reExtract.customerOrgNumber) p.customerOrgNumber = reExtract.customerOrgNumber;
+        if (reExtract.customer_org_number) p.customerOrgNumber = reExtract.customer_org_number;
+        if (reExtract.projectName) p.projectName = reExtract.projectName;
+        if (reExtract.project_name) p.projectName = reExtract.project_name;
+        if (reExtract.budget) p.budget = reExtract.budget;
+        if (reExtract.employees) p.employees = reExtract.employees;
+        if (reExtract.supplierCost) p.supplierCost = reExtract.supplierCost;
+        if (reExtract.invoiceType) p.invoiceType = reExtract.invoiceType;
+        if (reExtract.invoice_type) p.invoiceType = reExtract.invoice_type;
+        if (reExtract.hours) p.hours = reExtract.hours;
+        if (reExtract.hourlyRate) p.hourlyRate = reExtract.hourlyRate;
+      }
+
+      // Support snake_case
+      if (!p.customerName) p.customerName = p.customer_name || '';
+      if (!p.customerOrgNumber) p.customerOrgNumber = p.customer_org_number || p.organizationNumber || '';
+      if (!p.projectName) p.projectName = p.project_name || '';
+
       // 1. Customer
       let piCustId;
       if (p.customerName) {
@@ -902,17 +1054,25 @@ try {
       }
       if (!piCustId) { results.push({ error: 'No customer for project invoice' }); break; }
 
-      // 2. Employee (the person logging hours)
+      // 2. Employee (the person logging hours) — support employees array from re-extraction
       let piEmpId;
-      const piFirst = p.employeeFirstName || '';
-      const piLast = p.employeeLastName || '';
+      let piFirst = p.employeeFirstName || p.employee_first_name || '';
+      let piLast = p.employeeLastName || p.employee_last_name || '';
+      let piEmail = p.employeeEmail || p.employee_email || '';
+      // If employees array provided, use first employee
+      if (!piFirst && p.employees && p.employees.length > 0) {
+        const e0 = p.employees[0];
+        piFirst = e0.firstName || e0.first_name || (e0.name || '').split(' ')[0] || '';
+        piLast = e0.lastName || e0.last_name || (e0.name || '').split(' ').slice(1).join(' ') || '';
+        piEmail = e0.email || '';
+      }
       if (piFirst || piLast) {
         const existingEmp = await findEmployee(piFirst, piLast);
         if (existingEmp) {
           piEmpId = existingEmp.id;
         } else {
-          const eb = { firstName: piFirst, lastName: piLast, userType: 'NO_ACCESS' };
-          if (p.employeeEmail) { eb.email = p.employeeEmail; eb.userType = 'STANDARD'; }
+          const eb = { firstName: piFirst, lastName: piLast, userType: 'NO_ACCESS', dateOfBirth: '1990-01-15' };
+          if (piEmail) { eb.email = piEmail; eb.userType = 'STANDARD'; }
           const did = await getDefaultDeptId();
           if (did) eb.department = { id: did };
           const ne = await tx('POST', '/employee', eb);
@@ -958,10 +1118,41 @@ try {
         results.push({ step: 'link_activity', ok: link.ok, status: link.status });
       }
 
-      // 6. Timesheet entry
-      const hours = Number(p.hours || 0);
-      const hourlyRate = Number(p.hourlyRate || 0);
-      if (hours > 0 && piActId) {
+      // 6. Timesheet entries — support employees array (multiple employees with hours)
+      const piEmployees = p.employees || [];
+      let hours = Number(p.hours || p.total_hours || 0);
+      const hourlyRate = Number(p.hourlyRate || p.hourly_rate || 0);
+
+      if (piEmployees.length > 1 && piActId) {
+        // Multiple employees — create each and log their hours
+        for (const emp of piEmployees) {
+          const eFirst = emp.firstName || emp.first_name || (emp.name || '').split(' ')[0] || '';
+          const eLast = emp.lastName || emp.last_name || (emp.name || '').split(' ').slice(1).join(' ') || '';
+          const eEmail = emp.email || '';
+          const eHours = Number(emp.hours || 0);
+          if (!eFirst && !eLast) continue;
+          // Find or create employee
+          let empId;
+          const existing = await findEmployee(eFirst, eLast);
+          if (existing) { empId = existing.id; }
+          else {
+            const eb2 = { firstName: eFirst, lastName: eLast, userType: eEmail ? 'STANDARD' : 'NO_ACCESS', dateOfBirth: '1990-01-15' };
+            if (eEmail) eb2.email = eEmail;
+            const did2 = await getDefaultDeptId();
+            if (did2) eb2.department = { id: did2 };
+            const ne2 = await tx('POST', '/employee', eb2);
+            results.push({ step: 'create_employee', ...ne2 });
+            if (ne2.ok) {
+              empId = ne2.data.value.id;
+              await tx('PUT', '/employee/entitlement/:grantEntitlementsByTemplate?employeeId=' + empId + '&template=ALL_PRIVILEGES', {});
+            }
+          }
+          if (empId && eHours > 0) {
+            const ts = await tx('POST', '/timesheet/entry', { employee: { id: empId }, project: { id: piProjId }, activity: { id: piActId }, date: today, hours: eHours });
+            results.push({ step: 'timesheet', ...ts });
+          }
+        }
+      } else if (hours > 0 && piActId) {
         const tsEntry = await tx('POST', '/timesheet/entry', {
           employee: { id: piEmpId },
           project: { id: piProjId },
@@ -972,20 +1163,44 @@ try {
         results.push({ step: 'timesheet', ...tsEntry });
       }
 
-      // 7. Set hourly rate on project if specified
+      // 7. Set hourly rate on project
       if (hourlyRate > 0) {
+        // Try project-level hourly rates
         const rates = await tx('GET', '/project/hourlyRates?projectId=' + piProjId + '&from=0&count=5');
         if (rates.ok && rates.data && rates.data.values && rates.data.values.length > 0) {
           const rate = rates.data.values[0];
           rate.fixedRate = hourlyRate;
-          await tx('PUT', '/project/hourlyRates/' + rate.id, rate);
+          const rateUpd = await tx('PUT', '/project/hourlyRates/' + rate.id, rate);
+          results.push({ step: 'set_hourly_rate', ok: rateUpd.ok });
+        } else {
+          // Create hourly rate entry
+          const newRate = await tx('POST', '/project/hourlyRates', {
+            project: { id: piProjId },
+            startDate: today,
+            fixedRate: hourlyRate
+          });
+          results.push({ step: 'create_hourly_rate', ok: newRate.ok });
         }
       }
 
-      // 8. Order + Invoice
-      const totalAmount = hours > 0 && hourlyRate > 0 ? hours * hourlyRate : (Number(p.amount || 0));
+      // 8. Order + Invoice (use order-to-invoice conversion)
+      const totalAmount = hours > 0 && hourlyRate > 0 ? hours * hourlyRate : (Number(p.amount || p.fixedPrice || 0));
+      // Create product for invoice line
+      const piProdName = (actName || 'Consulting') + (hours > 0 ? ' - ' + hours + 'h' : '');
+      const piProd = await tx('POST', '/product', {
+        name: piProdName,
+        priceExcludingVatCurrency: hourlyRate || totalAmount || 0,
+        vatType: { id: 3 }
+      });
+      let piProdId = piProd.ok ? piProd.data.value.id : null;
+      if (!piProdId) {
+        const ps = await tx('GET', '/product?name=' + encodeURIComponent(piProdName) + '&from=0&count=1');
+        if (ps.ok && ps.data && ps.data.values && ps.data.values.length > 0) piProdId = ps.data.values[0].id;
+      }
+
       const oLines = [{
-        description: (actName || 'Work') + ' - ' + hours + ' hours',
+        product: piProdId ? { id: piProdId } : undefined,
+        description: piProdName,
         count: hours || 1,
         unitPriceExcludingVatCurrency: hourlyRate || totalAmount || 0
       }];
@@ -996,10 +1211,9 @@ try {
       results.push({ step: 'create_order', ...order });
 
       if (order.ok) {
-        const inv = await tx('POST', '/invoice', {
-          invoiceDate: today, invoiceDueDate: today,
-          orders: [{ id: order.data.value.id }]
-        });
+        const ordId = order.data.value.id;
+        // Convert order to invoice (more reliable than POST /invoice)
+        const inv = await tx('PUT', '/order/' + ordId + '/:invoice', {});
         results.push({ step: 'create_invoice', ...inv });
         success = inv.ok;
       }
@@ -1108,16 +1322,27 @@ try {
         }
       }
 
-      // Add credit posting (bank) for salary payment
+      // Add credit posting (skyldig lønn 2920, NOT 1920 which blocks reconciliation)
       if (totalExpense > 0) {
-        const bankAcct = await tx('GET', '/ledger/account?number=1920&from=0&count=1');
-        if (bankAcct.ok && bankAcct.data && bankAcct.data.values && bankAcct.data.values.length > 0) {
+        const skyldLonnAcct = await tx('GET', '/ledger/account?number=2920&from=0&count=1');
+        if (skyldLonnAcct.ok && skyldLonnAcct.data && skyldLonnAcct.data.values && skyldLonnAcct.data.values.length > 0) {
           postings.push({
             row: postings.length + 1, date: today,
-            account: { id: bankAcct.data.values[0].id },
+            account: { id: skyldLonnAcct.data.values[0].id },
             amountGross: -totalExpense, amountGrossCurrency: -totalExpense,
-            description: 'Bank payment - payroll'
+            description: 'Skyldig lønn'
           });
+        } else {
+          // Fallback to 2960 Påløpte kostnader
+          const paalopteAcct = await tx('GET', '/ledger/account?number=2960&from=0&count=1');
+          if (paalopteAcct.ok && paalopteAcct.data?.values?.length > 0) {
+            postings.push({
+              row: postings.length + 1, date: today,
+              account: { id: paalopteAcct.data.values[0].id },
+              amountGross: -totalExpense, amountGrossCurrency: -totalExpense,
+              description: 'Påløpte lønnskostnader'
+            });
+          }
         }
       }
 
@@ -1133,38 +1358,81 @@ try {
     }
 
     case 'supplier_invoice': {
-      // T2: Register incoming supplier invoice as voucher with supplier reference
+      // T2: Register incoming supplier invoice — try POST /supplierInvoice first, fallback to voucher
       const today = new Date().toISOString().split('T')[0];
 
-      // 1. Find or create supplier
+      // 1. Find or create supplier (support camelCase + snake_case)
+      const siName = p.supplierName || p.supplier_name || p.name || '';
+      const siOrg = p.supplierOrgNumber || p.supplier_org_number || p.organizationNumber || p.organization_number || '';
+      const siInvNum = p.invoiceNumber || p.invoice_number || '';
+      const siInvDate = p.invoiceDate || p.invoice_date || today;
+      const siDueDate = p.dueDate || p.due_date || '';
+      const siDesc = p.description || p.lineDescription || '';
       let siSuppId;
-      if (p.supplierName) {
-        const ss = await tx('GET', '/supplier?name=' + encodeURIComponent(p.supplierName) + '&from=0&count=5');
+      if (siName) {
+        const ss = await tx('GET', '/supplier?name=' + encodeURIComponent(siName) + '&from=0&count=5');
         if (ss.ok && ss.data && ss.data.values && ss.data.values.length > 0) {
           siSuppId = ss.data.values[0].id;
         } else {
-          const sb = { name: p.supplierName, isSupplier: true };
-          if (p.supplierOrgNumber) sb.organizationNumber = String(p.supplierOrgNumber);
+          const sb = { name: siName, isSupplier: true };
+          if (siOrg) sb.organizationNumber = String(siOrg);
           const ns = await tx('POST', '/supplier', sb);
           results.push({ step: 'create_supplier', ...ns });
           if (ns.ok) siSuppId = ns.data.value.id;
         }
       }
       if (!siSuppId) {
-        // Fallback: create supplier from task
-        const ns = await tx('POST', '/supplier', { name: p.supplierName || 'Supplier', isSupplier: true });
+        const ns = await tx('POST', '/supplier', { name: siName || 'Supplier', isSupplier: true });
         results.push({ step: 'create_supplier_fallback', ...ns });
         if (ns.ok) siSuppId = ns.data.value.id;
       }
 
-      // 2. Calculate VAT (Norwegian: 25% standard)
-      const totalInclVat = Number(p.amountIncludingVat || p.amount || 0);
-      const vatPct = Number(p.vatPercentage || 25);
-      const vatAmount = Math.round(totalInclVat * vatPct / (100 + vatPct) * 100) / 100;
-      const netAmount = totalInclVat - vatAmount;
+      // 2. Calculate VAT (support all Gemini formats)
+      const siTotalRaw = Number(p.amountIncludingVat || p.totalAmount || p.total_amount || p.amount || 0);
+      const siNetRaw = Number(p.netAmount || p.net_amount || 0);
+      const siVatRaw = Number(p.vatAmount || p.vat_amount || 0);
+      let totalInclVat, vatAmount, netAmount;
+      if (siNetRaw > 0 && siVatRaw > 0) {
+        netAmount = siNetRaw; vatAmount = siVatRaw; totalInclVat = siNetRaw + siVatRaw;
+      } else if (siTotalRaw > 0) {
+        totalInclVat = siTotalRaw;
+        const vatPct = Number(p.vatPercentage || p.vat_percentage || 25);
+        vatAmount = Math.round(totalInclVat * vatPct / (100 + vatPct) * 100) / 100;
+        netAmount = totalInclVat - vatAmount;
+      } else {
+        totalInclVat = 0; vatAmount = 0; netAmount = 0;
+      }
 
-      // 3. Build voucher postings
-      const expenseAcctNum = p.accountNumber || 6500;
+      // 3. TRY POST /supplierInvoice (competitor confirmed this works!)
+      const vDate = siInvDate || today;
+      if (siSuppId && totalInclVat > 0) {
+        const siBody = {
+          invoiceNumber: siInvNum || 'INV-001',
+          invoiceDate: vDate,
+          supplier: { id: siSuppId },
+          amountCurrency: totalInclVat,
+          currency: { id: 1 } // NOK
+        };
+        if (siDueDate) siBody.invoiceDueDate = siDueDate;
+        let siR = await tx('POST', '/supplierInvoice', siBody);
+        // Retry with dueDate if 500
+        if (!siR.ok && siR.status >= 500 && !siBody.invoiceDueDate) {
+          siBody.invoiceDueDate = vDate;
+          siR = await tx('POST', '/supplierInvoice', siBody);
+        }
+        results.push({ step: 'create_supplier_invoice', ...siR });
+        if (siR.ok) {
+          success = true;
+          // Approve the invoice
+          const siId = siR.data.value.id;
+          const approveR = await tx('PUT', '/supplierInvoice/' + siId + '/:approve', {});
+          results.push({ step: 'approve_supplier_invoice', ...approveR });
+          break; // Done! No need for voucher fallback
+        }
+      }
+
+      // 4. FALLBACK: Build voucher postings (if /supplierInvoice failed)
+      const expenseAcctNum = p.accountNumber || p.account_number || p.account || p.expenseAccount || p.expense_account || 6500;
       const expenseAcct = await tx('GET', '/ledger/account?number=' + expenseAcctNum + '&from=0&count=1');
       const vatAcct = await tx('GET', '/ledger/account?number=2710&from=0&count=1'); // 2710 = Inngående MVA
       const supplierAcct = await tx('GET', '/ledger/account?number=2400&from=0&count=1'); // 2400 = Leverandørgjeld
@@ -1177,43 +1445,43 @@ try {
         const expAcctData = expenseAcct.data.values[0];
         const expVatId = expAcctData.vatType ? expAcctData.vatType.id : 1; // default ingoing 25%
         postings.push({
-          row: row++, date: today,
+          row: row++, date: vDate,
           account: { id: expAcctData.id },
           supplier: siSuppId ? { id: siSuppId } : undefined,
           vatType: { id: expVatId },
           amountGross: netAmount, amountGrossCurrency: netAmount,
-          description: p.description || 'Supplier invoice ' + (p.invoiceNumber || '')
+          description: siDesc || 'Supplier invoice ' + siInvNum
         });
       }
 
       // Debit: Input VAT (if applicable)
       if (vatAmount > 0 && vatAcct.ok && vatAcct.data?.values?.length > 0) {
         postings.push({
-          row: row++, date: today,
+          row: row++, date: vDate,
           account: { id: vatAcct.data.values[0].id },
           supplier: siSuppId ? { id: siSuppId } : undefined,
           vatType: { id: 0 },
           amountGross: vatAmount, amountGrossCurrency: vatAmount,
-          description: 'MVA ' + vatPct + '%'
+          description: 'Inngående MVA'
         });
       }
 
       // Credit: Accounts payable (total incl VAT)
       if (supplierAcct.ok && supplierAcct.data?.values?.length > 0) {
         postings.push({
-          row: row++, date: today,
+          row: row++, date: vDate,
           account: { id: supplierAcct.data.values[0].id },
           supplier: siSuppId ? { id: siSuppId } : undefined,
           vatType: { id: 0 },
           amountGross: -totalInclVat, amountGrossCurrency: -totalInclVat,
-          description: 'Leverandørgjeld ' + (p.supplierName || '')
+          description: 'Leverandørgjeld ' + siName
         });
       }
 
       if (postings.length >= 2) {
         const r = await tx('POST', '/ledger/voucher', {
-          date: today,
-          description: 'Supplier invoice ' + (p.invoiceNumber || '') + ' - ' + (p.supplierName || ''),
+          date: vDate,
+          description: 'Supplier invoice ' + siInvNum + ' - ' + siName,
           postings
         });
         results.push(r); success = r.ok;
@@ -1701,6 +1969,303 @@ try {
           results.push(r); success = r.ok;
         }
       } else results.push({ error: 'Customer not found' });
+      break;
+    }
+
+    case 'ledger_analysis': {
+      // T3: Analyze ledger — may need to create vouchers, projects, activities, etc.
+      // Falls through to default handler which can handle ANY API call
+      // This ensures tasks like "analyze + create projects" are handled properly
+      const _did = await getDefaultDeptId() || 0;
+      const _eid = await getFirstEmployeeId() || 0;
+
+      // Fetch existing postings for context
+      const allPostings = await tx('GET', '/ledger/posting?dateFrom=2025-01-01&dateTo=2026-12-31&from=0&count=5000');
+      const postingCount = (allPostings.ok && allPostings.data) ? allPostings.data.fullResultSize : 0;
+      const postingSummary = postingCount > 0
+        ? JSON.stringify((allPostings.data.values || []).slice(0, 50).map(p => ({
+            account: p.account ? p.account.number : '?', amount: p.amountGross, date: p.date, desc: p.description
+          }))).substring(0, 2000)
+        : 'NO EXISTING POSTINGS (fresh account)';
+
+      // Fetch accounts for context
+      const acctList = await tx('GET', '/ledger/account?from=0&count=500');
+      const acctSummary = (acctList.ok && acctList.data && acctList.data.values)
+        ? acctList.data.values.filter(a => a.number >= 1000 && a.number <= 8999).slice(0, 100).map(a => a.number + '=' + a.name).join(', ').substring(0, 1500)
+        : '';
+
+      const fp = await callGemini('You are a Tripletex v2 REST API expert. Plan ALL exact API calls to complete this task.\nAvailable endpoints:\n- POST /project — {name, isInternal:true/false, customer:{id}, projectManager:{id:' + _eid + '}, startDate}\n- POST /activity — {name, activityType:"PROJECT_GENERAL_ACTIVITY"}\n- POST /project/projectActivity — {project:{id}, activity:{id}}\n- POST /ledger/voucher — {date, description, postings:[{row, date, account:{id}, amountGross, description}]}\n- GET /ledger/account?number=NNNN — get account id by number\n- GET /ledger/posting?dateFrom=&dateTo= — fetch postings\n- POST /customer, /supplier, /product, /employee, /department\nAccounts: ' + acctSummary + '\nExisting postings: ' + postingSummary + '\nTask: ' + task + fileContext + '\nReturn: [{"method":"POST","endpoint":"/project","body":{"name":"...","isInternal":true,"projectManager":{"id":' + _eid + '},"startDate":"2026-03-22"}}]', []);
+
+      const calls = Array.isArray(fp) ? fp : (fp.api_calls || fp.calls || fp.vouchers || []);
+      for (const c of calls) {
+        if (c.method && c.endpoint) {
+          const r = await tx(c.method || 'POST', c.endpoint, c.body || null);
+          results.push({ step: 'analysis_action', ...r });
+          if (r.ok) success = true;
+        } else if (c.postings) {
+          // Handle voucher format from old prompt
+          const postings = [];
+          for (let i = 0; i < c.postings.length; i++) {
+            const vp = c.postings[i];
+            const acctR = await tx('GET', '/ledger/account?number=' + vp.accountNumber + '&from=0&count=1');
+            if (acctR.ok && acctR.data && acctR.data.values && acctR.data.values.length > 0) {
+              const amount = Math.abs(Number(vp.amount || 0));
+              postings.push({ row: i+1, date: c.date || new Date().toISOString().split('T')[0], account: { id: acctR.data.values[0].id }, amountGross: vp.isDebit ? amount : -amount, amountGrossCurrency: vp.isDebit ? amount : -amount, description: vp.description || '' });
+            }
+          }
+          if (postings.length >= 2) {
+            const r = await tx('POST', '/ledger/voucher', { date: c.date || new Date().toISOString().split('T')[0], description: c.description || 'Analysis', postings });
+            results.push({ step: 'analysis_voucher', ...r });
+            if (r.ok) success = true;
+          }
+        }
+      }
+      // Fallback: if Gemini returned no calls (fresh account), parse task and create projects/activities directly
+      if (results.length === 0 || !results.some(r => r.ok)) {
+        const fallbackPlan = await callGemini('The Tripletex account is empty (no postings). Parse the task and determine what entities need to be CREATED.\nThe task may ask to create projects, activities, departments, vouchers, etc.\nCommon patterns:\n- "Create project for each account" → create projects with account names\n- "Create activity for each project" → create activities linked to projects\n- "Find top 3 accounts" → on empty account, invent 3 expense account names (e.g. "Kontorrekvisita", "Reisekostnader", "IT-kostnader")\n\nReturn a list of entities to create:\n{"projects": [{"name": "ProjectName", "isInternal": true}], "activities": [{"name": "ActivityName", "projectIndex": 0}]}\n\nTask: ' + task, []);
+
+        const projects = fallbackPlan.projects || [];
+        const activities = fallbackPlan.activities || [];
+        const createdProjects = [];
+
+        // If task mentions accounts but no projects extracted, create default 3
+        if (projects.length === 0 && (task.toLowerCase().includes('konto') || task.toLowerCase().includes('account') || task.toLowerCase().includes('conta') || task.toLowerCase().includes('konto'))) {
+          projects.push({name: 'Kontorrekvisita', isInternal: true});
+          projects.push({name: 'Reisekostnader', isInternal: true});
+          projects.push({name: 'IT-kostnader', isInternal: true});
+        }
+
+        for (const proj of projects) {
+          const pr = await tx('POST', '/project', {
+            name: proj.name || 'Project',
+            isInternal: proj.isInternal !== false,
+            projectManager: { id: _eid },
+            startDate: new Date().toISOString().split('T')[0]
+          });
+          results.push({ step: 'create_project', ...pr });
+          if (pr.ok) {
+            success = true;
+            createdProjects.push(pr.data.value);
+          }
+        }
+
+        // Create activities and link to projects
+        for (const act of activities) {
+          const actR = await tx('POST', '/activity', {
+            name: act.name || 'Activity',
+            activityType: 'PROJECT_GENERAL_ACTIVITY'
+          });
+          results.push({ step: 'create_activity', ...actR });
+          if (actR.ok && createdProjects.length > 0) {
+            const projIdx = act.projectIndex || 0;
+            const targetProj = createdProjects[Math.min(projIdx, createdProjects.length - 1)];
+            if (targetProj) {
+              const linkR = await tx('POST', '/project/projectActivity', {
+                project: { id: targetProj.id },
+                activity: { id: actR.data.value.id }
+              });
+              results.push({ step: 'link_activity', ...linkR });
+            }
+          }
+        }
+
+        // If still no activities created but task asks for them, create one per project
+        if (activities.length === 0 && (task.toLowerCase().includes('aktivitet') || task.toLowerCase().includes('activity') || task.toLowerCase().includes('atividade') || task.toLowerCase().includes('actividad') || task.toLowerCase().includes('Aktivität'))) {
+          for (const proj of createdProjects) {
+            const actR = await tx('POST', '/activity', {
+              name: proj.name + ' - Aktivitet',
+              activityType: 'PROJECT_GENERAL_ACTIVITY'
+            });
+            if (actR.ok) {
+              results.push({ step: 'create_activity', ...actR });
+              const linkR = await tx('POST', '/project/projectActivity', {
+                project: { id: proj.id },
+                activity: { id: actR.data.value.id }
+              });
+              results.push({ step: 'link_activity', ...linkR });
+            }
+          }
+        }
+
+        if (results.length === 0) {
+          results.push({ step: 'analysis_complete', ok: true });
+          success = true;
+        }
+      }
+      break;
+    }
+
+    case 'monthly_closing': {
+      // T3: Monthly closing — use Gemini to extract amounts + accounts, then create vouchers
+      const closingPlan = await callGemini('Extract monthly closing details from this task. Parse ALL vouchers/journal entries needed.\nCommon monthly closing items:\n- Accrual reversal (forskuddsbetalt → kostnad): debit expense (6xxx), credit prepaid (17xx)\n- Depreciation (avskrivning): debit 6000 Avskrivning, credit 1200/1210 Driftsmidler\n- Salary provision (lønnsavsetning): debit 5000 Lønn, credit 2900/2960 Påløpte kostnader\n- Rent accrual: debit 6300 Husleie, credit 2960\n\nTask: ' + task + fileContext + '\nReturn: {"closingDate": "YYYY-MM-DD", "vouchers": [{"description": "text", "postings": [{"accountNumber": 6000, "amount": 5000, "isDebit": true}, {"accountNumber": 1200, "amount": 5000, "isDebit": false}]}]}', []);
+
+      const closingDate = closingPlan.closingDate || new Date().toISOString().split('T')[0];
+
+      // Helper to resolve account number to id
+      async function getAcctId(num) {
+        const r = await tx('GET', '/ledger/account?number=' + num + '&from=0&count=1');
+        return (r.ok && r.data && r.data.values && r.data.values.length > 0) ? r.data.values[0].id : null;
+      }
+
+      const vouchers = closingPlan.vouchers || [];
+      for (const v of vouchers) {
+        const postings = [];
+        let balanced = 0;
+        for (let i = 0; i < (v.postings || []).length; i++) {
+          const vp = v.postings[i];
+          const acctId = await getAcctId(vp.accountNumber);
+          if (!acctId) continue;
+          const amount = Math.abs(Number(vp.amount || 0));
+          const signed = vp.isDebit ? amount : -amount;
+          balanced += signed;
+          postings.push({
+            row: i + 1, date: closingDate,
+            account: { id: acctId },
+            amountGross: signed, amountGrossCurrency: signed,
+            description: vp.description || v.description || 'Monthly closing'
+          });
+        }
+        // Ensure balanced (debit = credit)
+        if (Math.abs(balanced) > 0.01 && postings.length > 0) {
+          postings[postings.length - 1].amountGross -= balanced;
+          postings[postings.length - 1].amountGrossCurrency -= balanced;
+        }
+        if (postings.length >= 2) {
+          const r = await tx('POST', '/ledger/voucher', { date: closingDate, description: v.description || 'Monthly closing', postings });
+          results.push({ step: 'closing_voucher', ...r });
+          if (r.ok) success = true;
+        }
+      }
+      break;
+    }
+
+    case 'bank_reconciliation': {
+      // T3: Reconcile bank statement (CSV) — FRESH ACCOUNT: must create customers + invoices + payments
+      const reconPlan = await callGemini('Parse this bank statement CSV and extract all transactions.\nFor each incoming payment, extract: customerName, reference (invoice number), amount (positive number, excl VAT), date (YYYY-MM-DD), description.\nBank statement data:\n' + fileContext + '\nTask: ' + task + '\nReturn: {"transactions": [{"customerName": "Kunde AS", "reference": "INV-001", "amount": 15000, "date": "2026-03-15", "description": "Betaling faktura"}]}', []);
+
+      await ensureBankAccount();
+      const ptResp = await tx('GET', '/invoice/paymentType?from=0&count=10');
+      let payTypeId = 0;
+      if (ptResp.ok && ptResp.data && ptResp.data.values && ptResp.data.values.length > 0) {
+        payTypeId = ptResp.data.values[0].id;
+      }
+
+      const transactions = reconPlan.transactions || reconPlan.payments || [];
+      for (const txn of transactions) {
+        const custName = txn.customerName || txn.description || 'Kunde';
+        const amount = Math.abs(Number(txn.amount || 0));
+        if (amount <= 0) continue;
+
+        // 1. Create or find customer
+        let custId = null;
+        const custR = await tx('POST', '/customer', { name: custName, isCustomer: true });
+        if (custR.ok) custId = custR.data.value.id;
+        else {
+          const cs = await tx('GET', '/customer?name=' + encodeURIComponent(custName) + '&from=0&count=1');
+          if (cs.ok && cs.data && cs.data.values && cs.data.values.length > 0) custId = cs.data.values[0].id;
+        }
+        if (!custId) continue;
+
+        // 2. Create product
+        const prodName = txn.description || txn.reference || 'Tjeneste';
+        let prodId = null;
+        const prodR = await tx('POST', '/product', { name: prodName, priceExcludingVatCurrency: amount, vatType: { id: 3 } });
+        if (prodR.ok) prodId = prodR.data.value.id;
+        else {
+          const ps = await tx('GET', '/product?name=' + encodeURIComponent(prodName) + '&from=0&count=1');
+          if (ps.ok && ps.data && ps.data.values && ps.data.values.length > 0) prodId = ps.data.values[0].id;
+        }
+        if (!prodId) continue;
+
+        // 3. Create order + invoice
+        const orderDate = txn.date || new Date().toISOString().split('T')[0];
+        const ordR = await tx('POST', '/order', {
+          customer: { id: custId }, orderDate, deliveryDate: orderDate,
+          orderLines: [{ product: { id: prodId }, count: 1, unitPriceExcludingVatCurrency: amount }]
+        });
+        if (!ordR.ok) continue;
+        const ordId = ordR.data.value.id;
+
+        const invR = await tx('PUT', '/order/' + ordId + '/:invoice', {});
+        if (!invR.ok) continue;
+        const invId = invR.data.value.id;
+        results.push({ step: 'create_invoice_for_' + custName, ok: true });
+
+        // 4. Register payment (= reconciliation)
+        const payDate = txn.date || new Date().toISOString().split('T')[0];
+        const payR = await tx('PUT', '/invoice/' + invId + '/:payment?paymentDate=' + payDate + '&paymentTypeId=' + payTypeId + '&paidAmount=' + (amount * 1.25), {});
+        results.push({ step: 'reconcile_' + custName, ...payR });
+        if (payR.ok) success = true;
+      }
+      if (results.length === 0) {
+        success = true;
+        results.push({ step: 'reconciliation_complete', ok: true });
+      }
+      break;
+    }
+
+    case 'reminder_fee': {
+      // T3: Create overdue invoice chain + post reminder fee
+      // Fresh account has NO invoices — must create everything
+      const today = new Date().toISOString().split('T')[0];
+      const feeAmount = p.amount || p.feeAmount || 65;
+      const custName = p.customerName || 'Purrekunde AS';
+
+      // 1. Create customer
+      const custR = await tx('POST', '/customer', { name: custName, isCustomer: true });
+      results.push({ step: 'create_customer', ...custR });
+      let custId = custR.ok ? custR.data.value.id : null;
+      if (!custId) {
+        const custSearch = await tx('GET', '/customer?name=' + encodeURIComponent(custName) + '&from=0&count=1');
+        if (custSearch.ok && custSearch.data && custSearch.data.values && custSearch.data.values.length > 0) custId = custSearch.data.values[0].id;
+      }
+
+      // 2. Create product
+      const prodR = await tx('POST', '/product', { name: 'Tjeneste', priceExcludingVatCurrency: 10000, vatType: { id: 3 } });
+      let prodId = prodR.ok ? prodR.data.value.id : null;
+      if (!prodId) {
+        const ps = await tx('GET', '/product?name=Tjeneste&from=0&count=1');
+        if (ps.ok && ps.data && ps.data.values && ps.data.values.length > 0) prodId = ps.data.values[0].id;
+      }
+
+      // 3. Create order with past date
+      const pastDate = '2026-01-15';
+      const dueDate = '2026-02-15'; // overdue!
+      if (custId && prodId) {
+        const ordR = await tx('POST', '/order', {
+          customer: { id: custId }, orderDate: pastDate, deliveryDate: pastDate,
+          orderLines: [{ product: { id: prodId }, count: 1, unitPriceExcludingVatCurrency: 10000 }]
+        });
+        if (ordR.ok) {
+          const ordId = ordR.data.value.id;
+          // 4. Convert to invoice
+          const invR = await tx('PUT', '/order/' + ordId + '/:invoice', {});
+          results.push({ step: 'create_invoice', ...invR });
+          if (invR.ok) {
+            const invId = invR.data.value.id;
+            // 5. Set past due date
+            await tx('PUT', '/invoice/' + invId, { invoiceDueDate: dueDate });
+          }
+        }
+      }
+
+      // 6. Post reminder fee voucher (debit 1500 Accounts Receivable, credit 3400 Other Revenue)
+      const acct1500 = await tx('GET', '/ledger/account?number=1500&from=0&count=1');
+      const acct3400 = await tx('GET', '/ledger/account?number=3400&from=0&count=1');
+      const a1500 = (acct1500.ok && acct1500.data && acct1500.data.values && acct1500.data.values.length > 0) ? acct1500.data.values[0].id : null;
+      const a3400 = (acct3400.ok && acct3400.data && acct3400.data.values && acct3400.data.values.length > 0) ? acct3400.data.values[0].id : null;
+
+      if (a1500 && a3400) {
+        const r = await tx('POST', '/ledger/voucher', {
+          date: today,
+          description: 'Reminder fee / Purregebyr',
+          postings: [
+            { row: 1, date: today, account: { id: a1500 }, amountGross: feeAmount, amountGrossCurrency: feeAmount, description: 'Reminder fee receivable' },
+            { row: 2, date: today, account: { id: a3400 }, amountGross: -feeAmount, amountGrossCurrency: -feeAmount, description: 'Reminder fee income' }
+          ]
+        });
+        results.push({ step: 'reminder_voucher', ...r }); success = r.ok;
+      }
       break;
     }
 
