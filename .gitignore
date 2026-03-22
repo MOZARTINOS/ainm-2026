@@ -15,3 +15,9 @@ tracks/cv/weights/*.npy
 tracks/cv/weights/*.onnx
 tracks/cv/weights/*.safetensors
 *.zip
+
+# Secrets
+notes/competition_token.txt
+notes/deep_research_*_id.txt
+notes/_t*_escaped.txt
+notes/farming_log.txt

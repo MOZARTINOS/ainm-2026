@@ -21,7 +21,7 @@ import os
 from datetime import datetime, timezone
 
 TOKEN = os.environ.get("ASTAR_TOKEN",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlZGY2MzE5MS1kZGVkLTRmOGItYjRhNy00MmExNDNiNjU0MjkiLCJlbWFpbCI6Im1vemFydGluaWNoQGdtYWlsLmNvbSIsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzc0NTUxNzUzfQ.om9fw-Potv7b6ABCyfcwRWHJsfQN31b4iVkj0mPjfjs")
+    "YOUR_JWT_TOKEN_HERE")
 BASE = "https://api.ainm.no/astar-island"
 FLOOR = 0.01
 NUM_CLASSES = 6

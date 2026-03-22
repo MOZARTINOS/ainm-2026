@@ -16,7 +16,7 @@ import sys
 import os
 from datetime import datetime, timezone
 
-TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlZGY2MzE5MS1kZGVkLTRmOGItYjRhNy00MmExNDNiNjU0MjkiLCJlbWFpbCI6Im1vemFydGluaWNoQGdtYWlsLmNvbSIsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzc0NTUxNzUzfQ.om9fw-Potv7b6ABCyfcwRWHJsfQN31b4iVkj0mPjfjs"
+TOKEN = "YOUR_JWT_TOKEN_HERE"
 BASE = "https://api.ainm.no/astar-island"
 NOTES_DIR = "F:/Workfolder/NM i AI main/repo/notes"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
