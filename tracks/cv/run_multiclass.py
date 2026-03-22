@@ -20,9 +20,9 @@ from ensemble_boxes import weighted_boxes_fusion
 # Constants
 # ---------------------------------------------------------------------------
 TILE_SIZE = 1280
-OVERLAP = 0.20            # 20% overlap for good coverage
-CONF_THRESH = 0.01        # Low for full PR curve recall
-WBF_IOU_THRESH = 0.55     # Slightly higher for dense retail (avoid merging adjacent products)
+OVERLAP = 0.25            # 25% overlap — best from grid search
+CONF_THRESH = 0.02        # Lower = more recall = better mAP (grid search v2)
+WBF_IOU_THRESH = 0.45     # Lower = less merging = preserves dense detections (grid search v2)
 WBF_SKIP_BOX_THRESH = 0.001
 MIN_BOX_AREA = 50
 SKIP_TILE_THRESHOLD = 1280
@@ -197,7 +197,7 @@ def main():
     weights_dir = Path(__file__).parent / "weights"
 
     # Load multi-class ONNX model
-    onnx_path = weights_dir / "yolov8s_multiclass.onnx"
+    onnx_path = weights_dir / "yolov8s_mc356.onnx"
     providers = ["CUDAExecutionProvider", "CPUExecutionProvider"]
     sess_opts = ort.SessionOptions()
     sess_opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
@@ -228,7 +228,78 @@ def main():
         if img_bgr is None:
             continue
 
-        detections = run_detector(session, img_bgr, input_name, det_fp16, num_classes)
+        # TTA: collect detections from multiple augmented views
+        img_h, img_w = img_bgr.shape[:2]
+        tta_results = []
+
+        # 1. Original
+        tta_results.append(run_detector(session, img_bgr, input_name, det_fp16, num_classes))
+
+        # 2. Horizontal flip
+        img_flip = cv2.flip(img_bgr, 1)
+        dets_flip = run_detector(session, img_flip, input_name, det_fp16, num_classes)
+        if len(dets_flip) > 0:
+            x1_f = img_w - dets_flip[:, 2]
+            x2_f = img_w - dets_flip[:, 0]
+            dets_flip[:, 0] = x1_f
+            dets_flip[:, 2] = x2_f
+        tta_results.append(dets_flip)
+
+        # 3. Scaled down (0.8x) — catches objects at different scales
+        scale_factor = 0.8
+        img_scaled = cv2.resize(img_bgr, (int(img_w * scale_factor), int(img_h * scale_factor)))
+        dets_scaled = run_detector(session, img_scaled, input_name, det_fp16, num_classes)
+        if len(dets_scaled) > 0:
+            dets_scaled[:, :4] /= scale_factor
+        tta_results.append(dets_scaled)
+
+        # 4. Scaled + horizontal flip
+        img_scaled_flip = cv2.flip(img_scaled, 1)
+        dets_sf = run_detector(session, img_scaled_flip, input_name, det_fp16, num_classes)
+        if len(dets_sf) > 0:
+            sw = int(img_w * scale_factor)
+            x1_sf = sw - dets_sf[:, 2]
+            x2_sf = sw - dets_sf[:, 0]
+            dets_sf[:, 0] = x1_sf
+            dets_sf[:, 2] = x2_sf
+            dets_sf[:, :4] /= scale_factor
+        tta_results.append(dets_sf)
+
+        # Merge all TTA results with WBF
+        all_boxes = []
+        all_scores = []
+        all_labels = []
+        for dets in tta_results:
+            if len(dets) == 0:
+                all_boxes.append(np.empty((0, 4), dtype=np.float32))
+                all_scores.append(np.empty((0,), dtype=np.float32))
+                all_labels.append(np.empty((0,), dtype=np.int32))
+                continue
+            boxes_norm = dets[:, :4].copy()
+            boxes_norm[:, [0, 2]] /= img_w
+            boxes_norm[:, [1, 3]] /= img_h
+            boxes_norm = np.clip(boxes_norm, 0.0, 1.0)
+            all_boxes.append(boxes_norm)
+            all_scores.append(dets[:, 4])
+            all_labels.append(dets[:, 5].astype(np.int32))
+
+        total_dets = sum(len(b) for b in all_boxes)
+        if total_dets == 0:
+            continue
+
+        boxes_out, scores_out, labels_out = weighted_boxes_fusion(
+            all_boxes, all_scores, all_labels,
+            iou_thr=WBF_IOU_THRESH, skip_box_thr=WBF_SKIP_BOX_THRESH,
+        )
+
+        boxes_out[:, [0, 2]] *= img_bgr.shape[1]
+        boxes_out[:, [1, 3]] *= img_bgr.shape[0]
+
+        detections = np.zeros((len(boxes_out), 6), dtype=np.float32)
+        detections[:, :4] = boxes_out
+        detections[:, 4] = scores_out
+        detections[:, 5] = labels_out
+
         if len(detections) == 0:
             continue
 

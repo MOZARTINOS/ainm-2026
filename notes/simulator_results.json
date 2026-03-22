@@ -2,1030 +2,1213 @@
   {
     "category": "T1",
     "name": "Employee NO",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.5,
-    "errors": []
+    "time": 0.3,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee EN",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee FR",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee ES",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee DE",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.6,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee PT",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.4,
-    "errors": []
+    "time": 0.3,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee IT",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee NO no-email",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee special chars",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Employee phone",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer NO",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer EN",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer FR",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer ES",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer DE",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer PT",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer IT",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer private",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 1.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Customer as supplier",
-    "status": "PASS",
-    "task_type": "create_supplier",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Product EN 25%",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Product FR 25%",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Product DE 25%",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Product NO 0%",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Product EN 15%",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Product large price",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Product decimal price",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Dept NO multi",
-    "status": "PASS",
-    "task_type": "create_department",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Dept EN multi",
-    "status": "PASS",
-    "task_type": "create_department",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Dept NO single",
-    "status": "PASS",
-    "task_type": "create_department",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Dept FR single",
-    "status": "PASS",
-    "task_type": "create_department",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.6,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Dept ES single",
-    "status": "PASS",
-    "task_type": "create_department",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.6,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Supplier ES",
-    "status": "PASS",
-    "task_type": "create_supplier",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Supplier NO",
-    "status": "PASS",
-    "task_type": "create_supplier",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Supplier EN",
-    "status": "PASS",
-    "task_type": "create_supplier",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Project FR linked",
-    "status": "PASS",
-    "task_type": "create_project",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Project NO linked",
-    "status": "PASS",
-    "task_type": "create_project",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Project EN internal",
-    "status": "PASS",
-    "task_type": "create_project",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Project DE",
-    "status": "PASS",
-    "task_type": "create_project",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Travel NO",
-    "status": "PASS",
-    "task_type": "create_travel_expense",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Travel EN",
-    "status": "PASS",
-    "task_type": "create_travel_expense",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Travel FR",
-    "status": "PASS",
-    "task_type": "create_travel_expense",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Travel DE full",
-    "status": "PASS",
-    "task_type": "create_travel_expense",
-    "calls": 5,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Travel EN costs",
-    "status": "PASS",
-    "task_type": "create_travel_expense",
-    "calls": 6,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Delete travel NO",
-    "status": "PASS",
-    "task_type": "delete_travel_expense",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Delete travel EN",
-    "status": "PASS",
-    "task_type": "delete_travel_expense",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Update phone NO",
-    "status": "PASS",
-    "task_type": "update_employee",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Update phone EN",
-    "status": "PASS",
-    "task_type": "update_employee",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.6,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Update name FR",
-    "status": "PASS",
-    "task_type": "update_employee",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Delete NO",
-    "status": "PASS",
-    "task_type": "delete_employee",
-    "calls": 2,
-    "err4xx": 1,
-    "time": 2.4,
-    "errors": []
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T1",
     "name": "Delete EN",
-    "status": "PASS",
-    "task_type": "delete_employee",
-    "calls": 2,
-    "err4xx": 1,
-    "time": 2.1,
-    "errors": []
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice simple NO",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.3,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice+send FR",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.3,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice+send EN",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.6,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice+send PT",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice multi-line",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice 33% partial",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 17.9,
-    "errors": []
+    "time": 0.3,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice NO",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Invoice ES",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Payment EN",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 4,
-    "err4xx": 1,
-    "time": 11.3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Produktnavnet \"Consulting\" er allerede registrert."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Payment FR",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 4,
-    "err4xx": 1,
-    "time": 8.8,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Produktnavnet \"Services IT\" er allerede registrert."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Payment NO",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 4,
-    "err4xx": 1,
-    "time": 7.9,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Produktnavnet \"Raadgivning\" er allerede registrert."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Payment ES",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 4,
-    "err4xx": 1,
-    "time": 15.3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Produktnavnet \"Servicio de red\" er allerede registrert."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Payment DE",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 4,
-    "err4xx": 1,
-    "time": 11.0,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Produktnavnet \"Beratung\" er allerede registrert."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Order+inv+pay chain",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 5,
-    "err4xx": 2,
-    "time": 7.4,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Produktnavnet \"Web Design\" er allerede registrert.",
-      "Produktnavnet \"Software License\" er allerede registrert."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Payment 2 products PT",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 5,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.2,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Payment 2 products EN",
-    "status": "PASS",
-    "task_type": "register_payment",
-    "calls": 5,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Reverse payment DE",
-    "status": "PASS",
-    "task_type": "reverse_payment",
-    "calls": 4,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.3,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Reverse payment EN",
-    "status": "PASS",
-    "task_type": "reverse_payment",
-    "calls": 4,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.0,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Reverse payment NO",
-    "status": "PASS",
-    "task_type": "reverse_payment",
-    "calls": 4,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.0,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Credit note PT",
-    "status": "PASS",
-    "task_type": "credit_note",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Credit note EN",
-    "status": "PASS",
-    "task_type": "credit_note",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Credit note NO",
-    "status": "PASS",
-    "task_type": "credit_note",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Credit note FR",
-    "status": "PASS",
-    "task_type": "credit_note",
-    "calls": 3,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.0,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "ProjInv FR",
-    "status": "PASS",
-    "task_type": "project_invoice",
-    "calls": 6,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "ProjInv NO",
-    "status": "PASS",
-    "task_type": "project_invoice",
-    "calls": 6,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "ProjInv EN",
-    "status": "PASS",
-    "task_type": "project_invoice",
-    "calls": 6,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.2,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "SupInv EN",
-    "status": "PASS",
-    "task_type": "supplier_invoice",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "SupInv FR",
-    "status": "PASS",
-    "task_type": "supplier_invoice",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "SupInv NO",
-    "status": "PASS",
-    "task_type": "supplier_invoice",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.0,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Payroll EN",
-    "status": "PASS",
-    "task_type": "payroll_voucher",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Payroll NO",
-    "status": "PASS",
-    "task_type": "payroll_voucher",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 7.0,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Payroll FR",
-    "status": "PASS",
-    "task_type": "payroll_voucher",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 5.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Payroll DE",
-    "status": "PASS",
-    "task_type": "payroll_voucher",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.4,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Voucher office NO",
-    "status": "PASS",
-    "task_type": "create_voucher",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Voucher rent EN",
-    "status": "PASS",
-    "task_type": "create_voucher",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 6.3,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Voucher travel EN",
-    "status": "PASS",
-    "task_type": "create_voucher",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 10.2,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Voucher sales NO",
-    "status": "PASS",
-    "task_type": "create_voucher",
-    "calls": 3,
-    "err4xx": 1,
-    "time": 4.4,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Kunde mangler."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Voucher complex",
-    "status": "PASS",
-    "task_type": "create_voucher",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 12.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Dimension NO",
-    "status": "PASS",
-    "task_type": "dimension_voucher",
-    "calls": 3,
-    "err4xx": 2,
-    "time": 5.7,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Feltet eksisterer ikke i objektet."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "T2",
     "name": "Dimension FR",
-    "status": "PASS",
-    "task_type": "dimension_voucher",
-    "calls": 3,
-    "err4xx": 2,
-    "time": 6.0,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
     "errors": [
-      "Feltet eksisterer ikke i objektet."
+      "Expecting value: line 1 column 1 (char 0)"
     ]
   },
   {
     "category": "EDGE",
     "name": "Very long name",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "Special chars ØÅÆ",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "Unicode accents",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.0,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "Zero amount",
-    "status": "PASS",
-    "task_type": "create_product",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 1.9,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "Large amount",
-    "status": "PASS",
-    "task_type": "create_invoice",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.7,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "Minimal employee",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.3,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "Minimal customer",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.3,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "No org number",
-    "status": "PASS",
-    "task_type": "create_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.8,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "EDGE",
     "name": "Mixed lang NO+EN",
-    "status": "PASS",
-    "task_type": "create_employee",
-    "calls": 2,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 3.1,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Update cust NO",
-    "status": "PASS",
-    "task_type": "update_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 4.5,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   },
   {
     "category": "T2",
     "name": "Update cust EN",
-    "status": "PASS",
-    "task_type": "update_customer",
-    "calls": 1,
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
     "err4xx": 0,
-    "time": 2.3,
-    "errors": []
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
   }
 ]

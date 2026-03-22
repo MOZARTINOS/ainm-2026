@@ -20,7 +20,7 @@ TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlZGY2MzE5MS1kZGVkLTRmOG
 BASE = "https://api.ainm.no/astar-island"
 NOTES_DIR = "F:/Workfolder/NM i AI main/repo/notes"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PARTICIPATE_SCRIPT = os.path.join(SCRIPT_DIR, "participate_v7.py")
+PARTICIPATE_SCRIPT = os.path.join(SCRIPT_DIR, "participate_v8.py")
 
 headers = {"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"}
 
