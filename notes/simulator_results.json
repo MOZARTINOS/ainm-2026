@@ -1,0 +1,1214 @@
+[
+  {
+    "category": "T1",
+    "name": "Employee NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.3,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee ES",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee DE",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee PT",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.3,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee IT",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee NO no-email",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee special chars",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Employee phone",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer ES",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer DE",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer PT",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer IT",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer private",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Customer as supplier",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Product EN 25%",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Product FR 25%",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Product DE 25%",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Product NO 0%",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Product EN 15%",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Product large price",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Product decimal price",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Dept NO multi",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Dept EN multi",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Dept NO single",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Dept FR single",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Dept ES single",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Supplier ES",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Supplier NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Supplier EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Project FR linked",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Project NO linked",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Project EN internal",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Project DE",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Travel NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Travel EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Travel FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Travel DE full",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Travel EN costs",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Delete travel NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Delete travel EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Update phone NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Update phone EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Update name FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Delete NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T1",
+    "name": "Delete EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice simple NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice+send FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice+send EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice+send PT",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice multi-line",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice 33% partial",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.3,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Invoice ES",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment ES",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment DE",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Order+inv+pay chain",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment 2 products PT",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payment 2 products EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Reverse payment DE",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Reverse payment EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Reverse payment NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Credit note PT",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Credit note EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Credit note NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Credit note FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "ProjInv FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "ProjInv NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "ProjInv EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "SupInv EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "SupInv FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "SupInv NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payroll EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payroll NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payroll FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Payroll DE",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Voucher office NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Voucher rent EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Voucher travel EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Voucher sales NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Voucher complex",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Dimension NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Dimension FR",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Very long name",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Special chars ØÅÆ",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Unicode accents",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Zero amount",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Large amount",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Minimal employee",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Minimal customer",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "No org number",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "EDGE",
+    "name": "Mixed lang NO+EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Update cust NO",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  },
+  {
+    "category": "T2",
+    "name": "Update cust EN",
+    "status": "ERR",
+    "task_type": "?",
+    "calls": 0,
+    "err4xx": 0,
+    "time": 0.2,
+    "errors": [
+      "Expecting value: line 1 column 1 (char 0)"
+    ]
+  }
+]

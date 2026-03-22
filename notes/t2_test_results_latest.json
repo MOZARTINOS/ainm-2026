@@ -1,0 +1,166 @@
+{
+  "timestamp": "2026-03-20T12:43:43.672Z",
+  "config": {
+    "webhook": "https://n8n.visam.no/webhook/tripletex-solve",
+    "sandbox": "https://kkpqfuj-amager.tripletex.dev/v2",
+    "mode": "dry_run"
+  },
+  "summary": {
+    "total": 25,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 25
+  },
+  "results": [
+    {
+      "taskType": "supplier_invoice",
+      "id": "si_en_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "supplier_invoice",
+      "id": "si_no_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "supplier_invoice",
+      "id": "si_fr_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "supplier_invoice",
+      "id": "si_pt_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "supplier_invoice",
+      "id": "si_de_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "payroll_voucher",
+      "id": "pv_en_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "payroll_voucher",
+      "id": "pv_no_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "payroll_voucher",
+      "id": "pv_fr_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "payroll_voucher",
+      "id": "pv_pt_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "payroll_voucher",
+      "id": "pv_de_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "register_payment",
+      "id": "rp_en_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "register_payment",
+      "id": "rp_no_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "register_payment",
+      "id": "rp_fr_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "register_payment",
+      "id": "rp_pt_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "register_payment",
+      "id": "rp_de_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "credit_note",
+      "id": "cn_en_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "credit_note",
+      "id": "cn_no_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "credit_note",
+      "id": "cn_fr_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "credit_note",
+      "id": "cn_pt_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "credit_note",
+      "id": "cn_de_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "project_invoice",
+      "id": "pi_en_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "project_invoice",
+      "id": "pi_no_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "project_invoice",
+      "id": "pi_fr_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "project_invoice",
+      "id": "pi_pt_1",
+      "pass": null,
+      "checks": []
+    },
+    {
+      "taskType": "project_invoice",
+      "id": "pi_de_1",
+      "pass": null,
+      "checks": []
+    }
+  ]
+}

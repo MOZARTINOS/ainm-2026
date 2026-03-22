@@ -1,0 +1,5293 @@
+[
+  {
+    "time": "2026-03-20T14:49:15",
+    "prompt": "Créez une facture pour le client Océan SARL (nº org. 974909103) avec trois lignes de produit : Développement système (9068) à 11000 NOK avec 25 % TVA, Licence logicielle (3111) à 7350 NOK avec 15 % TVA (alimentaire), et Session de formation (9564) à 13150 NOK avec 0 % TVA (exonéré).",
+    "task_type": "create_invoice",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Créez une facture' (create an invoice). Customer name and organization number are provided. Three product lines are detailed with descriptions, unit prices, and specific VAT percentages. Quantity is assumed to be 1 for each line as not specified. The task does not mention sending the invoice, so 'shouldSend' is false.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401959056,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959056",
+            "customer": {
+              "id": 107828027,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107828027"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "1 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "1",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147528909,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528909"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Océan SARL",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147528912,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528912",
+            "invoiceNumber": 1,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107828027,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107828027"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401959056,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959056"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607504197,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607504197"
+              },
+              {
+                "id": 1607504198,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607504198"
+              },
+              {
+                "id": 1607504199,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607504199"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965730978,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965730978"
+              }
+            ],
+            "voucher": {
+              "id": 608826406,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608826406"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 31500,
+            "amountCurrency": 31500,
+            "amountExcludingVat": 31500,
+            "amountExcludingVatCurrency": 31500,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 31500,
+            "amountCurrencyOutstanding": 31500,
+            "amountOutstandingTotal": 31500,
+            "amountCurrencyOutstandingTotal": 31500,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844919627,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844919627"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024152750
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T14:48:51",
+    "prompt": "Créez et envoyez une facture au client Étoile SARL (nº org. 995085488) de 7250 NOK hors TVA. La facture concerne Rapport d'analyse.",
+    "task_type": "create_invoice",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'create and send an invoice' to a specified customer ('Étoile SARL' with organization number '995085488') for a specific amount ('7250 NOK hors TVA') and description ('Rapport d'analyse'). The 'envoyez' keyword indicates shouldSend: true. Default quantity to 1 and VAT percentage to 25% as per rules.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401959043,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959043",
+            "customer": {
+              "id": 107820419,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107820419"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "1 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "1",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147528893,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528893"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Étoile SARL",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147528894,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528894",
+            "invoiceNumber": 1,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107820419,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107820419"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401959043,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959043"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607504187,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607504187"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965730969,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965730969"
+              }
+            ],
+            "voucher": {
+              "id": 608826395,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608826395"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 7250,
+            "amountCurrency": 7250,
+            "amountExcludingVat": 7250,
+            "amountExcludingVatCurrency": 7250,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 7250,
+            "amountCurrencyOutstanding": 7250,
+            "amountOutstandingTotal": 7250,
+            "amountCurrencyOutstandingTotal": 7250,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844919601,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844919601"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024152739
+          }
+        }
+      },
+      {
+        "step": "send_invoice",
+        "ok": true,
+        "status": 204,
+        "data": ""
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T14:48:23",
+    "prompt": "Sett fastpris 122650 kr på prosjektet \"Digital transformasjon\" for Fossekraft AS (org.nr 830330704). Prosjektleiar er Liv Brekke (liv.brekke@example.org). Fakturer kunden for 33 % av fastprisen som ei delbetaling.",
+    "task_type": "create_invoice",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly requests to 'Fakturer kunden' (invoice the customer) for a partial payment of a fixed-price project. While the task also implies setting up or updating a project with a fixed price and project manager, the primary actionable request is to create an invoice. Given the constraint of a single task_type, 'create_invoice' is selected as the main action. The project details, including the project name, fixed price, and project manager information, are incorporated into the invoice line description to ensure all relevant context is captured. The unit price is calculated as 33% of the fixed price (0.33 * 122650 = 40474.5). VAT percentage defaults to 25% as no specific VAT was mentioned. Invoice date, due date, and shouldSend are not specified in the task.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401959031,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959031",
+            "customer": {
+              "id": 107843418,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107843418"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "2 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "2",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147528876,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528876"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Fossekraft AS",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147528880,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528880",
+            "invoiceNumber": 1,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107843418,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107843418"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401959031,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959031"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607504173,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607504173"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965730960,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965730960"
+              }
+            ],
+            "voucher": {
+              "id": 608826384,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608826384"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 40474.5,
+            "amountCurrency": 40474.5,
+            "amountExcludingVat": 40474.5,
+            "amountExcludingVatCurrency": 40474.5,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 40474.5,
+            "amountCurrencyOutstanding": 40474.5,
+            "amountOutstandingTotal": 40474.5,
+            "amountCurrencyOutstandingTotal": 40474.5,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844919567,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844919567"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024152731
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T14:47:28",
+    "prompt": "Enregistrez 9 heures pour Chloé Moreau (chloe.moreau@example.org) sur l'activité \"Utvikling\" du projet \"Mise à niveau système\" pour Étoile SARL (nº org. 832109428). Taux horaire : 1900 NOK/h. Générez une facture de projet au client basée sur les heures enregistrées.",
+    "task_type": "project_invoice",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly requests to log hours for an employee on a specific project activity for a customer and then generate a project invoice based on these hours. This directly matches the definition of the 'project_invoice' task type. All required parameters such as customer name, organization number, project name, employee details, activity name, hours, and hourly rate are clearly provided in the task.",
+    "results": [
+      {
+        "step": "create_project",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401958998,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/project/401958998",
+            "name": "Mise à niveau système",
+            "number": "2",
+            "displayName": "2 Mise à niveau système",
+            "description": "",
+            "projectManager": {
+              "id": 18186721,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18186721"
+            },
+            "department": null,
+            "mainProject": null,
+            "startDate": "2026-03-20",
+            "endDate": null,
+            "customer": {
+              "id": 107846350,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107846350"
+            },
+            "isClosed": false,
+            "isReadyForInvoicing": false,
+            "isInternal": false,
+            "isOffer": false,
+            "isFixedPrice": false,
+            "projectCategory": null,
+            "deliveryAddress": null,
+            "boligmappaAddress": null,
+            "displayNameFormat": "NAME_STANDARD",
+            "reference": "",
+            "externalAccountsNumber": "",
+            "discountPercentage": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "fixedprice": 0,
+            "contributionMarginPercent": 0,
+            "numberOfSubProjects": 0,
+            "numberOfProjectParticipants": 1,
+            "orderLines": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "markUpOrderLines": 0,
+            "markUpFeesEarned": 0,
+            "isPriceCeiling": false,
+            "priceCeilingAmount": 0,
+            "projectHourlyRates": [
+              {
+                "id": 11069122,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/hourlyRates/11069122"
+              }
+            ],
+            "forParticipantsOnly": false,
+            "participants": [
+              {
+                "id": 15623639,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/participant/15623639"
+              }
+            ],
+            "contact": null,
+            "attention": null,
+            "invoiceComment": "",
+            "invoicingPlan": [],
+            "preliminaryInvoice": null,
+            "generalProjectActivitiesPerProjectOnly": false,
+            "projectActivities": [],
+            "hierarchyNameAndNumber": "2 Mise à niveau système",
+            "invoiceDueDate": 14,
+            "invoiceDueDateType": "DAYS",
+            "invoiceReceiverEmail": "",
+            "overdueNoticeEmail": "",
+            "accessType": "WRITE",
+            "useProductNetPrice": false,
+            "ignoreCompanyProductDiscountAgreement": false,
+            "customerName": "Étoile SARL",
+            "hierarchyLevel": 0,
+            "projectManagerNameAndNumber": "Chloé Moreau",
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceOnAccountVatHigh": false,
+            "invoiceReserveTotalAmountCurrency": 0,
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "link_activity",
+        "ok": true,
+        "status": 201
+      },
+      {
+        "step": "timesheet",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 175904426,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/timesheet/entry/175904426",
+            "project": {
+              "id": 401958998,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/project/401958998"
+            },
+            "activity": {
+              "id": 5079351,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/activity/5079351"
+            },
+            "date": "2026-03-20",
+            "hours": 9,
+            "chargeableHours": 9,
+            "employee": {
+              "id": 18186721,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18186721"
+            },
+            "timeClocks": [],
+            "comment": "",
+            "locked": false,
+            "chargeable": false,
+            "invoice": null,
+            "hourlyRate": 0,
+            "hourlyCost": 0,
+            "hourlyCostPercentage": 0,
+            "projectChargeableHours": 9
+          }
+        }
+      },
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401959003,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959003",
+            "customer": {
+              "id": 107846350,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107846350"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "3 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "3",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": {
+              "id": 401958998,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/project/401958998"
+            },
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147528841,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528841"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Étoile SARL",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147528842,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147528842",
+            "invoiceNumber": 1,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107846350,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107846350"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401959003,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401959003"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607504143,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607504143"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965730936,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965730936"
+              }
+            ],
+            "voucher": {
+              "id": 608826359,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608826359"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 17100,
+            "amountCurrency": 17100,
+            "amountExcludingVat": 17100,
+            "amountExcludingVatCurrency": 17100,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 17100,
+            "amountCurrencyOutstanding": 17100,
+            "amountOutstandingTotal": 17100,
+            "amountCurrencyOutstandingTotal": 17100,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844919503,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844919503"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024152714
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T12:53:29",
+    "prompt": "Registrer 5 timer for Silje Strand (silje.strand@example.org) på aktiviteten \"Design\" i prosjektet \"Skytjeneste-oppsett\" for Nordhav AS (org.nr 912074005). Timesats: 1750 kr/t. Generer en prosjektfaktura til kunden basert på de registrerte timene.",
+    "task_type": "project_invoice",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly mentions 'Registrer 5 timer' (logging hours) and 'Generer en prosjektfaktura' (generating a project invoice), which directly matches the definition for the 'project_invoice' task type. All required parameters such as customer name, organization number, project name, employee details, activity, hours, and hourly rate were extracted from the task description.",
+    "results": [
+      {
+        "step": "create_project",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401956472,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/project/401956472",
+            "name": "Skytjeneste-oppsett",
+            "number": "2",
+            "displayName": "2 Skytjeneste-oppsett",
+            "description": "",
+            "projectManager": {
+              "id": 18186257,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18186257"
+            },
+            "department": null,
+            "mainProject": null,
+            "startDate": "2026-03-20",
+            "endDate": null,
+            "customer": {
+              "id": 107845883,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107845883"
+            },
+            "isClosed": false,
+            "isReadyForInvoicing": false,
+            "isInternal": false,
+            "isOffer": false,
+            "isFixedPrice": false,
+            "projectCategory": null,
+            "deliveryAddress": null,
+            "boligmappaAddress": null,
+            "displayNameFormat": "NAME_STANDARD",
+            "reference": "",
+            "externalAccountsNumber": "",
+            "discountPercentage": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "fixedprice": 0,
+            "contributionMarginPercent": 0,
+            "numberOfSubProjects": 0,
+            "numberOfProjectParticipants": 1,
+            "orderLines": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "markUpOrderLines": 0,
+            "markUpFeesEarned": 0,
+            "isPriceCeiling": false,
+            "priceCeilingAmount": 0,
+            "projectHourlyRates": [
+              {
+                "id": 11068595,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/hourlyRates/11068595"
+              }
+            ],
+            "forParticipantsOnly": false,
+            "participants": [
+              {
+                "id": 15623118,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/participant/15623118"
+              }
+            ],
+            "contact": null,
+            "attention": null,
+            "invoiceComment": "",
+            "invoicingPlan": [],
+            "preliminaryInvoice": null,
+            "generalProjectActivitiesPerProjectOnly": false,
+            "projectActivities": [],
+            "hierarchyNameAndNumber": "2 Skytjeneste-oppsett",
+            "invoiceDueDate": 14,
+            "invoiceDueDateType": "DAYS",
+            "invoiceReceiverEmail": "",
+            "overdueNoticeEmail": "",
+            "accessType": "WRITE",
+            "useProductNetPrice": false,
+            "ignoreCompanyProductDiscountAgreement": false,
+            "customerName": "Nordhav AS",
+            "hierarchyLevel": 0,
+            "projectManagerNameAndNumber": "Silje Strand",
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceOnAccountVatHigh": false,
+            "invoiceReserveTotalAmountCurrency": 0,
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "link_activity",
+        "ok": true,
+        "status": 201
+      },
+      {
+        "step": "timesheet",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 175904269,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/timesheet/entry/175904269",
+            "project": {
+              "id": 401956472,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/project/401956472"
+            },
+            "activity": {
+              "id": 5078571,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/activity/5078571"
+            },
+            "date": "2026-03-20",
+            "hours": 5,
+            "chargeableHours": 5,
+            "employee": {
+              "id": 18186257,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18186257"
+            },
+            "timeClocks": [],
+            "comment": "",
+            "locked": false,
+            "chargeable": false,
+            "invoice": null,
+            "hourlyRate": 0,
+            "hourlyCost": 0,
+            "hourlyCostPercentage": 0,
+            "projectChargeableHours": 5
+          }
+        }
+      },
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401956478,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401956478",
+            "customer": {
+              "id": 107845883,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107845883"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "3 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "3",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": {
+              "id": 401956472,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/project/401956472"
+            },
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147525428,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147525428"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Nordhav AS",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147525430,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147525430",
+            "invoiceNumber": 1,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107845883,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107845883"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401956478,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401956478"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607501109,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607501109"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965728487,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965728487"
+              }
+            ],
+            "voucher": {
+              "id": 608823628,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608823628"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 8750,
+            "amountCurrency": 8750,
+            "amountExcludingVat": 8750,
+            "amountExcludingVatCurrency": 8750,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 8750,
+            "amountCurrencyOutstanding": 8750,
+            "amountOutstandingTotal": 8750,
+            "amountCurrencyOutstandingTotal": 8750,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844912561,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844912561"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024151031
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T12:43:45",
+    "prompt": "Créez une dimension comptable personnalisée \"Kostsenter\" avec les valeurs \"Økonomi\" et \"IT\". Puis comptabilisez une pièce sur le compte 6340 pour 5050 NOK, liée à la valeur de dimension \"IT\".",
+    "task_type": "create_voucher",
+    "success": false,
+    "confidence": 0.8,
+    "reasoning": "The task involves two main actions: 1. Creating a custom accounting dimension 'Kostsenter' with values 'Økonomi' and 'IT'. This is a setup step and does not have a direct 'task_type' in the provided list. 2. Posting a voucher to account 6340 for 5050 NOK, linked to the 'IT' dimension value. The 'create_voucher' task type is selected for the accounting transaction. The custom dimension details are noted in the reasoning and reflected in the voucher and posting descriptions for context, as the dimension creation is a prerequisite.",
+    "results": [
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": "",
+              "message": "Summen av posteringene for 2026-03-20 er ikke lik 0.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "b64a1560-9f9b-4983-82a5-3854e71ebf88"
+        }
+      },
+      {
+        "step": "voucher_retry_gemini",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "40105545-7c9a-4a6c-9b4d-5c915154e5ed"
+        }
+      },
+      {
+        "step": "recovery_POST_ledger",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "a2711761-1f4b-413f-97dd-df4fc7268bc8"
+        }
+      },
+      {
+        "step": "recovery_POST_ledger",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "dde48cb5-730e-4c2f-8847-aa236e2e9d88"
+        }
+      },
+      {
+        "step": "recovery_POST_ledger",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "fdd63e6b-e5ad-4f2e-94a8-9cc1bdaa7d42"
+        }
+      },
+      {
+        "step": "recovery_POST_ledger",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 16000,
+          "message": "Request mapping failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "department",
+              "message": "Feltet eksisterer ikke i objektet.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "eba74f0f-8653-416c-a2e8-27d918cee3bf"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T12:31:08",
+    "prompt": "El cliente Río Verde SL (org. nº 801215564) tiene una factura pendiente de 22500 NOK sin IVA por \"Servicio de red\". Registre el pago completo de esta factura.",
+    "task_type": "register_payment",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Registre el pago completo de esta factura' (Register the full payment of this invoice), which directly maps to the 'register_payment' task type. Customer details (name and organization number) are extracted from 'El cliente Río Verde SL (org. nº 801215564)'. The amount is specified as '22500 NOK sin IVA', so 22500 is used for 'amount' and 'productPrice' as it's the value associated with the service. The 'productDescription' is 'Servicio de red'. No invoice number, invoice ID, or payment date are provided in the task.",
+    "results": [
+      {
+        "step": "create_product",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 84385032,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/product/84385032",
+            "name": "Servicio de red",
+            "number": "",
+            "displayNumber": "",
+            "description": "",
+            "orderLineDescription": "",
+            "costExcludingVatCurrency": 0,
+            "costPrice": 0,
+            "priceExcludingVatCurrency": 22500,
+            "priceIncludingVatCurrency": 28125,
+            "isInactive": false,
+            "productUnit": null,
+            "incomingStock": 0,
+            "outgoingStock": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "department": null,
+            "account": null,
+            "supplier": null,
+            "resaleProduct": null,
+            "isDeletable": false,
+            "hasSupplierProductConnected": false,
+            "image": null,
+            "displayName": "Servicio de red",
+            "mainSupplierProduct": null,
+            "isRoundPriceIncVat": false,
+            "priceInTargetCurrency": 0,
+            "purchasePriceCurrency": 0
+          }
+        }
+      },
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401956051,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401956051",
+            "customer": {
+              "id": 107822939,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822939"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "2 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "2",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147524909,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147524909"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Río Verde SL",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147524911,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147524911",
+            "invoiceNumber": 2,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107822939,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822939"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401956051,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401956051"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607500655,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607500655"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965728095,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965728095"
+              }
+            ],
+            "voucher": {
+              "id": 608823185,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608823185"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 28125,
+            "amountCurrency": 28125,
+            "amountExcludingVat": 22500,
+            "amountExcludingVatCurrency": 22500,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 28125,
+            "amountCurrencyOutstanding": 28125,
+            "amountOutstandingTotal": 28125,
+            "amountCurrencyOutstandingTotal": 28125,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844911479,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844911479"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024150757
+          }
+        }
+      },
+      {
+        "step": "payment",
+        "ok": true,
+        "status": 200,
+        "data": {
+          "value": {
+            "id": 2147524911,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147524911",
+            "invoiceNumber": 2,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107822939,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822939"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401956051,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401956051"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607500655,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607500655"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965728095,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965728095"
+              }
+            ],
+            "voucher": {
+              "id": 608823185,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608823185"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 28125,
+            "amountCurrency": 28125,
+            "amountExcludingVat": 22500,
+            "amountExcludingVatCurrency": 22500,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 5625,
+            "amountCurrencyOutstanding": 5625,
+            "amountOutstandingTotal": 5625,
+            "amountCurrencyOutstandingTotal": 5625,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844911479,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844911479"
+              },
+              {
+                "id": 3844911490,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844911490"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024150757
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T12:26:15",
+    "prompt": "O cliente Cascata Lda (org. nº 899582454) reclamou sobre a fatura referente a \"Serviço de rede\" (29150 NOK sem IVA). Emita uma nota de crédito completa que reverta toda a fatura.",
+    "task_type": "credit_note",
+    "success": false,
+    "confidence": 1,
+    "reasoning": "The task clearly requests to issue a full credit note ('nota de crédito completa'). The customer 'Cascata Lda' (organization number 899582454) and details of the original invoice ('Serviço de rede', 29150 NOK without VAT) are provided to identify the invoice. However, the specific 'invoiceNumber' or 'invoiceId' required for the credit note operation is not explicitly stated in the task, hence extracted_params is empty for these fields.",
+    "results": [
+      {
+        "error": "No invoice"
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T12:18:09",
+    "prompt": "Create an order for the customer Ridgepoint Ltd (org no. 997470311) with the products Maintenance (6293) at 21700 NOK and Software License (5849) at 2250 NOK. Convert the order to an invoice and register full payment.",
+    "task_type": "?",
+    "success": true,
+    "confidence": 0,
+    "reasoning": "",
+    "results": [
+      {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "fullResultSize": 1,
+          "from": 0,
+          "count": 1,
+          "versionDigest": "'If-None-Match' header not specified",
+          "values": [
+            {
+              "id": 107830308,
+              "version": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107830308",
+              "name": "Ridgepoint Ltd",
+              "organizationNumber": "997470311",
+              "globalLocationNumber": 0,
+              "supplierNumber": 0,
+              "customerNumber": 10001,
+              "isSupplier": false,
+              "isCustomer": true,
+              "isInactive": false,
+              "accountManager": null,
+              "department": null,
+              "email": "",
+              "invoiceEmail": "",
+              "overdueNoticeEmail": "",
+              "phoneNumber": "",
+              "phoneNumberMobile": "",
+              "description": "",
+              "language": "NO",
+              "displayName": "Ridgepoint Ltd (10001)",
+              "isPrivateIndividual": false,
+              "singleCustomerInvoice": false,
+              "invoiceSendMethod": "EMAIL",
+              "emailAttachmentType": "ATTACHMENT",
+              "postalAddress": {
+                "id": 404512039,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/address/404512039"
+              },
+              "physicalAddress": {
+                "id": 404512038,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/address/404512038"
+              },
+              "deliveryAddress": null,
+              "category1": null,
+              "category2": null,
+              "category3": null,
+              "invoicesDueIn": 14,
+              "invoicesDueInType": "DAYS",
+              "currency": {
+                "id": 1,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+              },
+              "bankAccountPresentation": [],
+              "ledgerAccount": {
+                "id": 353759571,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/353759571"
+              },
+              "isFactoring": false,
+              "invoiceSendSMSNotification": false,
+              "invoiceSMSNotificationNumber": "",
+              "isAutomaticSoftReminderEnabled": false,
+              "isAutomaticReminderEnabled": false,
+              "isAutomaticNoticeOfDebtCollectionEnabled": false,
+              "discountPercentage": 0,
+              "website": ""
+            }
+          ]
+        }
+      },
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 16000,
+          "message": "Request mapping failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "customer.id",
+              "message": "Verdien er ikke av korrekt type for dette feltet.",
+              "path": "customer.id",
+              "rootId": null
+            }
+          ],
+          "requestId": "6457c49e-3aee-4a39-9aa9-20b201d144e0"
+        }
+      },
+      {
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 21000,
+          "message": "HTTP 404 Not Found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "e29c134a-3b17-4af0-8988-bc8b32aa7204"
+        }
+      },
+      {
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 21000,
+          "message": "HTTP 404 Not Found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "bb3fe0ad-151a-4a03-93d4-ccc0d89a547a"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T12:12:12",
+    "prompt": "We have received invoice INV-2026-4606 from the supplier Silveroak Ltd (org no. 973931156) for 14650 NOK including VAT. The amount relates to office services (account 6500). Register the supplier invoice with the correct input VAT (25%).",
+    "task_type": "create_voucher",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Register the supplier invoice' which corresponds to creating a voucher. The supplier 'Silveroak Ltd' (org no. 973931156) is identified. The total amount of 14650 NOK including 25% VAT is used to calculate the net amount (11720 NOK) and the VAT amount (2930 NOK). The expense is allocated to account 6500 ('office services'). Standard accounts for input VAT (2640) and accounts payable (2400) are used. The invoice number 'INV-2026-4606' implies the year 2026, so a default date of '2026-01-01' is assumed as no specific day/month was provided. The voucher includes three postings to balance the transaction: debit for office services, debit for input VAT, and credit for accounts payable.",
+    "results": [
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": "postings.supplier.id",
+              "message": "Leverandør mangler.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "2ac8d595-fa15-4e32-9a3f-ca832f039f34"
+        }
+      },
+      {
+        "step": "voucher_retry",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "f0e7ccc2-9822-4bf0-bba9-2ec8538e3b47"
+        }
+      },
+      {
+        "step": "recovery_POST_supplier",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108242623,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/supplier/108242623",
+            "name": "Silveroak Ltd",
+            "organizationNumber": "973931156",
+            "supplierNumber": 20002,
+            "customerNumber": 0,
+            "isSupplier": true,
+            "isCustomer": false,
+            "isInactive": false,
+            "email": "",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "isPrivateIndividual": false,
+            "showProducts": false,
+            "accountManager": null,
+            "postalAddress": {
+              "id": 405336740,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405336740"
+            },
+            "physicalAddress": {
+              "id": 405336739,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405336739"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "bankAccountPresentation": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "ledgerAccount": {
+              "id": 354268584,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/354268584"
+            },
+            "language": "NO",
+            "isWholesaler": false,
+            "displayName": "Silveroak Ltd (20002)",
+            "locale": "no_NO",
+            "website": ""
+          }
+        }
+      },
+      {
+        "step": "recovery_POST_ledger",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 16000,
+          "message": "Request mapping failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "postings.amountGrossCurrency",
+              "message": "Verdien er ikke av korrekt type for dette feltet.",
+              "path": "postings[0].amountGrossCurrency",
+              "rootId": null
+            }
+          ],
+          "requestId": "bd79bf8e-9f47-4d6a-84d4-f675698e13b2"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T11:58:03",
+    "prompt": "Nous avons reçu la facture INV-2026-8741 du fournisseur Lumière SARL (nº org. 944971165) de 61200 NOK TTC. Le montant concerne des services de bureau (compte 6500). Enregistrez la facture fournisseur avec la TVA déductible correcte (25 %).",
+    "task_type": "create_voucher",
+    "success": false,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Enregistrez la facture fournisseur' (register the supplier invoice) with details including supplier name, organization number, total amount (TTC), expense account (6500), and VAT percentage (25%). This operation is best handled by creating a voucher to record the expense, input VAT, and the corresponding liability to the supplier. The total amount of 61200 NOK TTC with 25% VAT is broken down into 48960 NOK (excluding VAT) and 12240 NOK (VAT). The date is inferred from the invoice number's year (2026). Standard Norwegian accounting accounts are used for input VAT (2710) and accounts payable (2400) as they were not explicitly provided in the task.",
+    "results": [
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": "postings.supplier.id",
+              "message": "Leverandør mangler.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "1a083e99-4f72-4ef0-b460-54fcba593f10"
+        }
+      },
+      {
+        "step": "voucher_retry",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "bfdd611e-766f-4b9c-b6f7-9970c93048f0"
+        }
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "cd97b8a5-236e-4721-a8b5-b2f2f7618fc7"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T11:48:50",
+    "prompt": "Run payroll for Daniel Smith (daniel.smith@example.org) for this month. The base salary is 54850 NOK. Add a one-time bonus of 6800 NOK on top of the base salary. If the salary API is unavailable, you can use manual vouchers on salary accounts (5000-series) to record the payroll expense.",
+    "task_type": "create_voucher",
+    "success": false,
+    "confidence": 1,
+    "reasoning": "The task is to 'Run payroll' and explicitly mentions using 'manual vouchers on salary accounts (5000-series)' if a salary API is unavailable. Since there is no direct 'run_payroll' task type, 'create_voucher' is the most appropriate action. The voucher date is set to the end of the month (2026-10-31) as per the 'for this month' instruction and the rule to assume 2026 for dates. The base salary and bonus are recorded as debit postings to a salary expense account (5000-series), and the total amount is credited to a payroll payable account (2910) to ensure the voucher balances. The employee's name and email are used in the descriptions for clarity.",
+    "results": [
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": "postings.employee.id",
+              "message": "Ansatt mangler.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "8a8b1bfa-b141-40cd-b250-06a24b140c2b"
+        }
+      },
+      {
+        "step": "voucher_retry",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": "postings.employee.id",
+              "message": "Ansatt mangler.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "24f5e96e-cce1-4c71-bec7-adaa8dec991f"
+        }
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "61e4cb43-ccb7-40ec-9191-4eaa18c9bf9e"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T11:00:48",
+    "prompt": "Create an order for the customer Greenfield Ltd (org no. 914083478) with the products Web Design (8474) at 23450 NOK and Software License (3064) at 7800 NOK. Convert the order to an invoice and register full payment.",
+    "task_type": "?",
+    "success": true,
+    "confidence": 0,
+    "reasoning": "",
+    "results": [
+      {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "fullResultSize": 1,
+          "from": 0,
+          "count": 1,
+          "versionDigest": "'If-None-Match' header not specified",
+          "values": [
+            {
+              "id": 107830133,
+              "version": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107830133",
+              "name": "Greenfield Ltd",
+              "organizationNumber": "914083478",
+              "globalLocationNumber": 0,
+              "supplierNumber": 0,
+              "customerNumber": 10001,
+              "isSupplier": false,
+              "isCustomer": true,
+              "isInactive": false,
+              "accountManager": null,
+              "department": null,
+              "email": "",
+              "invoiceEmail": "",
+              "overdueNoticeEmail": "",
+              "phoneNumber": "",
+              "phoneNumberMobile": "",
+              "description": "",
+              "language": "NO",
+              "displayName": "Greenfield Ltd (10001)",
+              "isPrivateIndividual": false,
+              "singleCustomerInvoice": false,
+              "invoiceSendMethod": "EMAIL",
+              "emailAttachmentType": "ATTACHMENT",
+              "postalAddress": {
+                "id": 404511689,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/address/404511689"
+              },
+              "physicalAddress": {
+                "id": 404511688,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/address/404511688"
+              },
+              "deliveryAddress": null,
+              "category1": null,
+              "category2": null,
+              "category3": null,
+              "invoicesDueIn": 14,
+              "invoicesDueInType": "DAYS",
+              "currency": {
+                "id": 1,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+              },
+              "bankAccountPresentation": [],
+              "ledgerAccount": {
+                "id": 353730476,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/353730476"
+              },
+              "isFactoring": false,
+              "invoiceSendSMSNotification": false,
+              "invoiceSMSNotificationNumber": "",
+              "isAutomaticSoftReminderEnabled": false,
+              "isAutomaticReminderEnabled": false,
+              "isAutomaticNoticeOfDebtCollectionEnabled": false,
+              "discountPercentage": 0,
+              "website": ""
+            }
+          ]
+        }
+      },
+      {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "fullResultSize": 2,
+          "from": 0,
+          "count": 2,
+          "versionDigest": "'If-None-Match' header not specified",
+          "values": [
+            {
+              "id": 84379222,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/product/84379222",
+              "name": "Web Design",
+              "number": "8474",
+              "displayNumber": "8474",
+              "description": "",
+              "orderLineDescription": "",
+              "costExcludingVatCurrency": 0,
+              "costPrice": 0,
+              "priceExcludingVatCurrency": 23450,
+              "priceIncludingVatCurrency": 29312.5,
+              "isInactive": false,
+              "productUnit": null,
+              "incomingStock": 0,
+              "outgoingStock": 0,
+              "vatType": {
+                "id": 3,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+              },
+              "currency": {
+                "id": 1,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+              },
+              "department": null,
+              "account": null,
+              "supplier": null,
+              "resaleProduct": null,
+              "isDeletable": false,
+              "hasSupplierProductConnected": false,
+              "image": null,
+              "displayName": "8474 Web Design",
+              "mainSupplierProduct": null,
+              "isRoundPriceIncVat": false,
+              "priceInTargetCurrency": 0,
+              "purchasePriceCurrency": 0
+            },
+            {
+              "id": 84379226,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/product/84379226",
+              "name": "Software License",
+              "number": "3064",
+              "displayNumber": "3064",
+              "description": "",
+              "orderLineDescription": "",
+              "costExcludingVatCurrency": 0,
+              "costPrice": 0,
+              "priceExcludingVatCurrency": 7800,
+              "priceIncludingVatCurrency": 9750,
+              "isInactive": false,
+              "productUnit": null,
+              "incomingStock": 0,
+              "outgoingStock": 0,
+              "vatType": {
+                "id": 3,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+              },
+              "currency": {
+                "id": 1,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+              },
+              "department": null,
+              "account": null,
+              "supplier": null,
+              "resaleProduct": null,
+              "isDeletable": false,
+              "hasSupplierProductConnected": false,
+              "image": null,
+              "displayName": "3064 Software License",
+              "mainSupplierProduct": null,
+              "isRoundPriceIncVat": false,
+              "priceInTargetCurrency": 0,
+              "purchasePriceCurrency": 0
+            }
+          ]
+        }
+      },
+      {
+        "ok": true,
+        "status": 200,
+        "data": {
+          "fullResultSize": 2,
+          "from": 0,
+          "count": 2,
+          "versionDigest": "'If-None-Match' header not specified",
+          "values": [
+            {
+              "id": 84379222,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/product/84379222",
+              "name": "Web Design",
+              "number": "8474",
+              "displayNumber": "8474",
+              "description": "",
+              "orderLineDescription": "",
+              "costExcludingVatCurrency": 0,
+              "costPrice": 0,
+              "priceExcludingVatCurrency": 23450,
+              "priceIncludingVatCurrency": 29312.5,
+              "isInactive": false,
+              "productUnit": null,
+              "incomingStock": 0,
+              "outgoingStock": 0,
+              "vatType": {
+                "id": 3,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+              },
+              "currency": {
+                "id": 1,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+              },
+              "department": null,
+              "account": null,
+              "supplier": null,
+              "resaleProduct": null,
+              "isDeletable": false,
+              "hasSupplierProductConnected": false,
+              "image": null,
+              "displayName": "8474 Web Design",
+              "mainSupplierProduct": null,
+              "isRoundPriceIncVat": false,
+              "priceInTargetCurrency": 0,
+              "purchasePriceCurrency": 0
+            },
+            {
+              "id": 84379226,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/product/84379226",
+              "name": "Software License",
+              "number": "3064",
+              "displayNumber": "3064",
+              "description": "",
+              "orderLineDescription": "",
+              "costExcludingVatCurrency": 0,
+              "costPrice": 0,
+              "priceExcludingVatCurrency": 7800,
+              "priceIncludingVatCurrency": 9750,
+              "isInactive": false,
+              "productUnit": null,
+              "incomingStock": 0,
+              "outgoingStock": 0,
+              "vatType": {
+                "id": 3,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+              },
+              "currency": {
+                "id": 1,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+              },
+              "department": null,
+              "account": null,
+              "supplier": null,
+              "resaleProduct": null,
+              "isDeletable": false,
+              "hasSupplierProductConnected": false,
+              "image": null,
+              "displayName": "3064 Software License",
+              "mainSupplierProduct": null,
+              "isRoundPriceIncVat": false,
+              "priceInTargetCurrency": 0,
+              "purchasePriceCurrency": 0
+            }
+          ]
+        }
+      },
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 16000,
+          "message": "Request mapping failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "unitPrice",
+              "message": "Feltet eksisterer ikke i objektet.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "3e558283-9b46-4fd4-bbf5-31d7c2bbe70f"
+        }
+      },
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 15000,
+          "message": "Validation failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "invoiceDate",
+              "message": "Kan ikke være null.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "304020d5-5824-45e2-a4c9-ef066fc12392"
+        }
+      },
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 15000,
+          "message": "Validation failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "paidAmount",
+              "message": "Kan ikke være null.",
+              "path": null,
+              "rootId": null
+            },
+            {
+              "field": "paymentDate",
+              "message": "Kan ikke være null.",
+              "path": null,
+              "rootId": null
+            },
+            {
+              "field": "paymentTypeId",
+              "message": "Kan ikke være null.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "eb7847cc-82db-47b1-8621-7395a6a906b8"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T10:40:51",
+    "prompt": "Log 14 hours for Thomas Smith (thomas.smith@example.org) on the activity \"Design\" in the project \"App Development\" for Brightstone Ltd (org no. 982658691). Hourly rate: 1950 NOK/h. Generate a project invoice to the customer based on the logged hours.",
+    "task_type": "create_invoice",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly requests to 'Generate a project invoice to the customer based on the logged hours', which directly corresponds to the 'create_invoice' task type. Customer details (name, organization number) are extracted. The invoice line item's description combines the activity ('Design'), project ('App Development'), and employee ('Thomas Smith') for clarity. The quantity (14 hours) and unit price (1950 NOK/h) are directly provided. The default VAT percentage of 25% is applied as per the rules. 'shouldSend' is set to false because the task does not explicitly ask to send the invoice.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401954631,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401954631",
+            "customer": {
+              "id": 107845561,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107845561"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "2 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "2",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147523047,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147523047"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Brightstone Ltd",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147523048,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147523048",
+            "invoiceNumber": 1,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107845561,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107845561"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401954631,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401954631"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607499106,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607499106"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965726729,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965726729"
+              }
+            ],
+            "voucher": {
+              "id": 608821608,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608821608"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 27300,
+            "amountCurrency": 27300,
+            "amountExcludingVat": 27300,
+            "amountExcludingVatCurrency": 27300,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 27300,
+            "amountCurrencyOutstanding": 27300,
+            "amountOutstandingTotal": 27300,
+            "amountCurrencyOutstandingTotal": 27300,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844907660,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844907660"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024149765
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:26:49",
+    "prompt": "Tenemos un nuevo empleado llamado Lucía García, nacido el 18. March 1997. Créelo como empleado con el correo lucia.garcia@example.org y fecha de inicio 30. August 2026.",
+    "task_type": "create_employee",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to create a new employee ('nuevo empleado', 'Créelo como empleado'). All required parameters for creating an employee (firstName, lastName, dateOfBirth, email, startDate) are clearly provided in the text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 18549969,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18549969",
+            "firstName": "Lucía",
+            "lastName": "García",
+            "displayName": "Lucía García",
+            "employeeNumber": "",
+            "dateOfBirth": "1997-03-18",
+            "email": "lucia.garcia@example.org",
+            "phoneNumberMobileCountry": {
+              "id": 161,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+            },
+            "phoneNumberMobile": "",
+            "phoneNumberHome": "",
+            "phoneNumberWork": "",
+            "nationalIdentityNumber": "",
+            "dnumber": "",
+            "internationalId": {
+              "intAmeldingType": null,
+              "country": null,
+              "number": ""
+            },
+            "bankAccountNumber": "",
+            "iban": "",
+            "bic": "",
+            "creditorBankCountryId": 0,
+            "usesAbroadPayment": false,
+            "userType": null,
+            "allowInformationRegistration": true,
+            "isContact": false,
+            "isProxy": false,
+            "comments": "",
+            "address": null,
+            "department": {
+              "id": 689871,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/department/689871"
+            },
+            "employments": [],
+            "holidayAllowanceEarned": {
+              "year": 0,
+              "amount": 0,
+              "basis": 0,
+              "amountExtraHolidayWeek": 0
+            },
+            "employeeCategory": null,
+            "isAuthProjectOverviewURL": true,
+            "pictureId": 0,
+            "companyId": 107809536,
+            "vismaConnect2FAactive": false
+          }
+        }
+      },
+      {
+        "step": "grant_entitlements",
+        "ok": true,
+        "status": 200
+      },
+      {
+        "step": "set_start_date",
+        "ok": true,
+        "status": 200,
+        "data": {
+          "value": {
+            "id": 18549969,
+            "version": 2,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18549969",
+            "firstName": "Lucía",
+            "lastName": "García",
+            "displayName": "Lucía García",
+            "employeeNumber": "",
+            "dateOfBirth": "1997-03-18",
+            "email": "lucia.garcia@example.org",
+            "phoneNumberMobileCountry": {
+              "id": 161,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+            },
+            "phoneNumberMobile": "",
+            "phoneNumberHome": "",
+            "phoneNumberWork": "",
+            "nationalIdentityNumber": "",
+            "dnumber": "",
+            "internationalId": {
+              "intAmeldingType": null,
+              "country": null,
+              "number": ""
+            },
+            "bankAccountNumber": "",
+            "iban": "",
+            "bic": "",
+            "creditorBankCountryId": 0,
+            "usesAbroadPayment": false,
+            "userType": null,
+            "allowInformationRegistration": true,
+            "isContact": false,
+            "isProxy": false,
+            "comments": "",
+            "address": null,
+            "department": {
+              "id": 689871,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/department/689871"
+            },
+            "employments": [],
+            "holidayAllowanceEarned": {
+              "year": 0,
+              "amount": 0,
+              "basis": 0,
+              "amountExtraHolidayWeek": 0
+            },
+            "employeeCategory": null,
+            "isAuthProjectOverviewURL": true,
+            "pictureId": 0,
+            "companyId": 107809536,
+            "vismaConnect2FAactive": false
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:23:36",
+    "prompt": "The customer Windmill Ltd (org no. 830362894) has an outstanding invoice for 32200 NOK excluding VAT for \"System Development\". Register full payment on this invoice.",
+    "task_type": "register_payment",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Register full payment on this invoice', which maps directly to the 'register_payment' task type. Customer details 'Windmill Ltd' and '830362894' were extracted for 'customerName' and 'customerOrgNumber'. The service 'System Development' was extracted for 'productDescription'. The amount '32200 NOK excluding VAT' for 'System Development' was used for 'productPrice'. Since it's a 'full payment' on an invoice that was '32200 NOK excluding VAT', the 'amount' for payment was calculated by adding 25% VAT (32200 * 1.25 = 40250), assuming a standard VAT rate for a full payment.",
+    "results": [
+      {
+        "step": "create_product",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 84383282,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/product/84383282",
+            "name": "System Development",
+            "number": "",
+            "displayNumber": "",
+            "description": "",
+            "orderLineDescription": "",
+            "costExcludingVatCurrency": 0,
+            "costPrice": 0,
+            "priceExcludingVatCurrency": 32200,
+            "priceIncludingVatCurrency": 40250,
+            "isInactive": false,
+            "productUnit": null,
+            "incomingStock": 0,
+            "outgoingStock": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "department": null,
+            "account": null,
+            "supplier": null,
+            "resaleProduct": null,
+            "isDeletable": false,
+            "hasSupplierProductConnected": false,
+            "image": null,
+            "displayName": "System Development",
+            "mainSupplierProduct": null,
+            "isRoundPriceIncVat": false,
+            "priceInTargetCurrency": 0,
+            "purchasePriceCurrency": 0
+          }
+        }
+      },
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952675,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952675",
+            "customer": {
+              "id": 107822521,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822521"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "2 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "2",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147520730,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520730"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Windmill Ltd",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147520731,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520731",
+            "invoiceNumber": 2,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107822521,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822521"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401952675,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952675"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607497366,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607497366"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965725002,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965725002"
+              }
+            ],
+            "voucher": {
+              "id": 608820062,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608820062"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 40250,
+            "amountCurrency": 40250,
+            "amountExcludingVat": 32200,
+            "amountExcludingVatCurrency": 32200,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 40250,
+            "amountCurrencyOutstanding": 40250,
+            "amountOutstandingTotal": 40250,
+            "amountCurrencyOutstandingTotal": 40250,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844904065,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844904065"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024148502
+          }
+        }
+      },
+      {
+        "step": "payment",
+        "ok": true,
+        "status": 200,
+        "data": {
+          "value": {
+            "id": 2147520731,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520731",
+            "invoiceNumber": 2,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107822521,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822521"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401952675,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952675"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607497366,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607497366"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965725002,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965725002"
+              }
+            ],
+            "voucher": {
+              "id": 608820062,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608820062"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 40250,
+            "amountCurrency": 40250,
+            "amountExcludingVat": 32200,
+            "amountExcludingVatCurrency": 32200,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 0,
+            "amountCurrencyOutstanding": 0,
+            "amountOutstandingTotal": 0,
+            "amountCurrencyOutstandingTotal": 0,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844904065,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844904065"
+              },
+              {
+                "id": 3844904069,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844904069"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024148502
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:22:22",
+    "prompt": "Opprett tre avdelingar i Tripletex: \"Produksjon\", \"Lager\" og \"Kvalitetskontroll\".",
+    "task_type": "create_department",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Opprett tre avdelingar' (create three departments). The names of the departments are clearly provided: 'Produksjon', 'Lager', and 'Kvalitetskontroll'. Since multiple entities of the same type are requested, an 'entities' array is used.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 893786,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/893786",
+            "name": "Produksjon",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Produksjon",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      },
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 893787,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/893787",
+            "name": "Lager",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Lager",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      },
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 893790,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/893790",
+            "name": "Kvalitetskontroll",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Kvalitetskontroll",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      }
+    ],
+    "entities_count": 3
+  },
+  {
+    "time": "2026-03-20T05:14:54",
+    "prompt": "Registre el proveedor Río Verde SL con número de organización 839568630. Correo electrónico: faktura@roverdesl.no.",
+    "task_type": "create_supplier",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Registre el proveedor' (Register the supplier), which maps to 'create_supplier'. The supplier's name 'Río Verde SL', organization number '839568630', and email 'faktura@roverdesl.no' were extracted directly from the text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108225177,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/supplier/108225177",
+            "name": "Río Verde SL",
+            "organizationNumber": "839568630",
+            "supplierNumber": 20001,
+            "customerNumber": 0,
+            "isSupplier": true,
+            "isCustomer": false,
+            "isInactive": false,
+            "email": "faktura@roverdesl.no",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "isPrivateIndividual": false,
+            "showProducts": false,
+            "accountManager": null,
+            "postalAddress": {
+              "id": 405301854,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405301854"
+            },
+            "physicalAddress": {
+              "id": 405301853,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405301853"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "bankAccountPresentation": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "ledgerAccount": {
+              "id": 350855476,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/350855476"
+            },
+            "language": "NO",
+            "isWholesaler": false,
+            "displayName": "Río Verde SL (20001)",
+            "locale": "no_NO",
+            "website": ""
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:14:04",
+    "prompt": "Create the product \"Training Session\" with product number 2451. The price is 20350 NOK excluding VAT, using the standard 25% VAT rate.",
+    "task_type": "create_product",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly states 'Create the product' which maps to 'create_product'. The product's name, number, price excluding VAT, and VAT percentage are all clearly provided in the request.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 84383277,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/product/84383277",
+            "name": "Training Session",
+            "number": "2451",
+            "displayNumber": "2451",
+            "description": "",
+            "orderLineDescription": "",
+            "costExcludingVatCurrency": 0,
+            "costPrice": 0,
+            "priceExcludingVatCurrency": 20350,
+            "priceIncludingVatCurrency": 25437.5,
+            "isInactive": false,
+            "productUnit": null,
+            "incomingStock": 0,
+            "outgoingStock": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "department": null,
+            "account": null,
+            "supplier": null,
+            "resaleProduct": null,
+            "isDeletable": false,
+            "hasSupplierProductConnected": false,
+            "image": null,
+            "displayName": "2451 Training Session",
+            "mainSupplierProduct": null,
+            "isRoundPriceIncVat": false,
+            "priceInTargetCurrency": 0,
+            "purchasePriceCurrency": 0
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:13:03",
+    "prompt": "Opprett kunden Polaris AS med organisasjonsnummer 869095443. Adressen er Nygata 7, 4611 Kristiansand. E-post: post@polaris.no.",
+    "task_type": "create_customer",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly states 'Opprett kunden' (Create customer), identifying the task type as 'create_customer'. All customer details such as name, organization number, address, postal code, city, and email were directly extracted from the provided text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108224892,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/customer/108224892",
+            "name": "Polaris AS",
+            "organizationNumber": "869095443",
+            "globalLocationNumber": 0,
+            "supplierNumber": 0,
+            "customerNumber": 10001,
+            "isSupplier": false,
+            "isCustomer": true,
+            "isInactive": false,
+            "accountManager": null,
+            "department": null,
+            "email": "post@polaris.no",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "language": "NO",
+            "displayName": "Polaris AS (10001)",
+            "isPrivateIndividual": false,
+            "singleCustomerInvoice": false,
+            "invoiceSendMethod": "EMAIL",
+            "emailAttachmentType": "ATTACHMENT",
+            "postalAddress": {
+              "id": 405301284,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405301284",
+              "addressLine1": "Nygata 7",
+              "addressLine2": "",
+              "postalCode": "4611",
+              "city": "Kristiansand",
+              "country": {
+                "id": 161,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+              },
+              "displayName": "Polaris AS, Nygata 7, 4611 Kristiansand, Norge",
+              "addressAsString": "Nygata 7, 4611 Kristiansand, Norge",
+              "displayNameInklMatrikkel": "Polaris AS, Nygata 7, 4611 Kristiansand, Norge",
+              "knr": 0,
+              "gnr": 0,
+              "bnr": 0,
+              "fnr": 0,
+              "snr": 0,
+              "unitNumber": ""
+            },
+            "physicalAddress": {
+              "id": 405301283,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405301283"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "bankAccountPresentation": [],
+            "ledgerAccount": {
+              "id": 349826985,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/349826985"
+            },
+            "isFactoring": false,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "isAutomaticSoftReminderEnabled": false,
+            "isAutomaticReminderEnabled": false,
+            "isAutomaticNoticeOfDebtCollectionEnabled": false,
+            "discountPercentage": 0,
+            "website": ""
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:10:32",
+    "prompt": "Registre el proveedor Sierra SL con número de organización 854784978. Correo electrónico: faktura@sierrasl.no.",
+    "task_type": "create_supplier",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Registre el proveedor' (Register the supplier). Extracted the supplier's name, organization number, and email from the provided text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108224512,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/supplier/108224512",
+            "name": "Sierra SL",
+            "organizationNumber": "854784978",
+            "supplierNumber": 20001,
+            "customerNumber": 0,
+            "isSupplier": true,
+            "isCustomer": false,
+            "isInactive": false,
+            "email": "faktura@sierrasl.no",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "isPrivateIndividual": false,
+            "showProducts": false,
+            "accountManager": null,
+            "postalAddress": {
+              "id": 405300524,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405300524"
+            },
+            "physicalAddress": {
+              "id": 405300523,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405300523"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "bankAccountPresentation": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "ledgerAccount": {
+              "id": 350853889,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/350853889"
+            },
+            "language": "NO",
+            "isWholesaler": false,
+            "displayName": "Sierra SL (20001)",
+            "locale": "no_NO",
+            "website": ""
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:09:53",
+    "prompt": "Créez le projet \"Migration Étoile\" lié au client Étoile SARL (nº org. 964531161). Le chef de projet est Arthur Dubois (arthur.dubois@example.org).",
+    "task_type": "create_project",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Créez le projet' (create the project), which maps directly to 'create_project'. All required parameters for creating a project, including the project name, customer details (name and organization number), and project manager's first name, last name, and email, are clearly provided in the French text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952656,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/project/401952656",
+            "name": "Migration Étoile",
+            "number": "1",
+            "displayName": "1 Migration Étoile",
+            "description": "",
+            "projectManager": {
+              "id": 18167788,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18167788"
+            },
+            "department": null,
+            "mainProject": null,
+            "startDate": "2026-03-20",
+            "endDate": null,
+            "customer": {
+              "id": 107825481,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107825481"
+            },
+            "isClosed": false,
+            "isReadyForInvoicing": false,
+            "isInternal": false,
+            "isOffer": false,
+            "isFixedPrice": false,
+            "projectCategory": null,
+            "deliveryAddress": null,
+            "boligmappaAddress": null,
+            "displayNameFormat": "NAME_STANDARD",
+            "reference": "",
+            "externalAccountsNumber": "",
+            "discountPercentage": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "fixedprice": 0,
+            "contributionMarginPercent": 0,
+            "numberOfSubProjects": 0,
+            "numberOfProjectParticipants": 1,
+            "orderLines": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "markUpOrderLines": 0,
+            "markUpFeesEarned": 0,
+            "isPriceCeiling": false,
+            "priceCeilingAmount": 0,
+            "projectHourlyRates": [
+              {
+                "id": 11067600,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/hourlyRates/11067600"
+              }
+            ],
+            "forParticipantsOnly": false,
+            "participants": [
+              {
+                "id": 15622094,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/participant/15622094"
+              }
+            ],
+            "contact": null,
+            "attention": null,
+            "invoiceComment": "",
+            "invoicingPlan": [],
+            "preliminaryInvoice": null,
+            "generalProjectActivitiesPerProjectOnly": false,
+            "projectActivities": [],
+            "hierarchyNameAndNumber": "1 Migration Étoile",
+            "invoiceDueDate": 14,
+            "invoiceDueDateType": "DAYS",
+            "invoiceReceiverEmail": "",
+            "overdueNoticeEmail": "",
+            "accessType": "WRITE",
+            "useProductNetPrice": false,
+            "ignoreCompanyProductDiscountAgreement": false,
+            "customerName": "Étoile SARL",
+            "hierarchyLevel": 0,
+            "projectManagerNameAndNumber": "Arthur Dubois",
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceOnAccountVatHigh": false,
+            "invoiceReserveTotalAmountCurrency": 0,
+            "accountingDimensionValues": []
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:02:52",
+    "prompt": "Crie e envie uma fatura ao cliente Cascata Lda (org. nº 996275205) por 15500 NOK sem IVA. A fatura refere-se a Licença de software.",
+    "task_type": "create_invoice",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Crie e envie uma fatura' (Create and send an invoice), which maps directly to 'create_invoice'. The customer name 'Cascata Lda' and organization number '996275205' are provided. The invoice amount '15500 NOK' and description 'Licença de software' are extracted for the invoice line. 'sem IVA' indicates a VAT percentage of 0. No specific invoice date or due date was mentioned.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952649,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952649",
+            "customer": {
+              "id": 107819670,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107819670"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "1 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "1",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147520692,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520692"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Cascata Lda",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147520693,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520693",
+            "invoiceNumber": 1,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107819670,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107819670"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401952649,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952649"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607497339,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607497339"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965724977,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965724977"
+              }
+            ],
+            "voucher": {
+              "id": 608820025,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608820025"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 15500,
+            "amountCurrency": 15500,
+            "amountExcludingVat": 15500,
+            "amountExcludingVatCurrency": 15500,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 15500,
+            "amountCurrencyOutstanding": 15500,
+            "amountOutstandingTotal": 15500,
+            "amountCurrencyOutstandingTotal": 15500,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844903993,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844903993"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024148483
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T05:01:42",
+    "prompt": "Créez le projet \"Analyse Lumière\" lié au client Lumière SARL (nº org. 929902688). Le chef de projet est Léo Dubois (leo.dubois@example.org).",
+    "task_type": "create_project",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Créez le projet' (create the project), setting the task_type to 'create_project'. The project name 'Analyse Lumière' is directly provided. The customer name 'Lumière SARL' and organization number '929902688' are specified as the client. The project manager's first name 'Léo', last name 'Dubois', and email 'leo.dubois@example.org' are also clearly stated.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952643,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/project/401952643",
+            "name": "Analyse Lumière",
+            "number": "1",
+            "displayName": "1 Analyse Lumière",
+            "description": "",
+            "projectManager": {
+              "id": 18167787,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18167787"
+            },
+            "department": null,
+            "mainProject": null,
+            "startDate": "2026-03-20",
+            "endDate": null,
+            "customer": {
+              "id": 107825479,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107825479"
+            },
+            "isClosed": false,
+            "isReadyForInvoicing": false,
+            "isInternal": false,
+            "isOffer": false,
+            "isFixedPrice": false,
+            "projectCategory": null,
+            "deliveryAddress": null,
+            "boligmappaAddress": null,
+            "displayNameFormat": "NAME_STANDARD",
+            "reference": "",
+            "externalAccountsNumber": "",
+            "discountPercentage": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "fixedprice": 0,
+            "contributionMarginPercent": 0,
+            "numberOfSubProjects": 0,
+            "numberOfProjectParticipants": 1,
+            "orderLines": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "markUpOrderLines": 0,
+            "markUpFeesEarned": 0,
+            "isPriceCeiling": false,
+            "priceCeilingAmount": 0,
+            "projectHourlyRates": [
+              {
+                "id": 11067598,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/hourlyRates/11067598"
+              }
+            ],
+            "forParticipantsOnly": false,
+            "participants": [
+              {
+                "id": 15622092,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/participant/15622092"
+              }
+            ],
+            "contact": null,
+            "attention": null,
+            "invoiceComment": "",
+            "invoicingPlan": [],
+            "preliminaryInvoice": null,
+            "generalProjectActivitiesPerProjectOnly": false,
+            "projectActivities": [],
+            "hierarchyNameAndNumber": "1 Analyse Lumière",
+            "invoiceDueDate": 14,
+            "invoiceDueDateType": "DAYS",
+            "invoiceReceiverEmail": "",
+            "overdueNoticeEmail": "",
+            "accessType": "WRITE",
+            "useProductNetPrice": false,
+            "ignoreCompanyProductDiscountAgreement": false,
+            "customerName": "Lumière SARL",
+            "hierarchyLevel": 0,
+            "projectManagerNameAndNumber": "Léo Dubois",
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceOnAccountVatHigh": false,
+            "invoiceReserveTotalAmountCurrency": 0,
+            "accountingDimensionValues": []
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T04:46:31",
+    "prompt": "Créez le projet \"Implémentation Montagne\" lié au client Montagne SARL (nº org. 842138248). Le chef de projet est Jules Martin (jules.martin@example.org).",
+    "task_type": "create_project",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Créez le projet' (Create the project). The project name 'Implémentation Montagne', associated customer 'Montagne SARL' with organization number '842138248', and project manager 'Jules Martin' with email 'jules.martin@example.org' were all directly extracted from the text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952621,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/project/401952621",
+            "name": "Implémentation Montagne",
+            "number": "1",
+            "displayName": "1 Implémentation Montagne",
+            "description": "",
+            "projectManager": {
+              "id": 18167770,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18167770"
+            },
+            "department": null,
+            "mainProject": null,
+            "startDate": "2026-03-20",
+            "endDate": null,
+            "customer": {
+              "id": 107825478,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107825478"
+            },
+            "isClosed": false,
+            "isReadyForInvoicing": false,
+            "isInternal": false,
+            "isOffer": false,
+            "isFixedPrice": false,
+            "projectCategory": null,
+            "deliveryAddress": null,
+            "boligmappaAddress": null,
+            "displayNameFormat": "NAME_STANDARD",
+            "reference": "",
+            "externalAccountsNumber": "",
+            "discountPercentage": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "fixedprice": 0,
+            "contributionMarginPercent": 0,
+            "numberOfSubProjects": 0,
+            "numberOfProjectParticipants": 1,
+            "orderLines": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "markUpOrderLines": 0,
+            "markUpFeesEarned": 0,
+            "isPriceCeiling": false,
+            "priceCeilingAmount": 0,
+            "projectHourlyRates": [
+              {
+                "id": 11067592,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/hourlyRates/11067592"
+              }
+            ],
+            "forParticipantsOnly": false,
+            "participants": [
+              {
+                "id": 15622086,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/participant/15622086"
+              }
+            ],
+            "contact": null,
+            "attention": null,
+            "invoiceComment": "",
+            "invoicingPlan": [],
+            "preliminaryInvoice": null,
+            "generalProjectActivitiesPerProjectOnly": false,
+            "projectActivities": [],
+            "hierarchyNameAndNumber": "1 Implémentation Montagne",
+            "invoiceDueDate": 14,
+            "invoiceDueDateType": "DAYS",
+            "invoiceReceiverEmail": "",
+            "overdueNoticeEmail": "",
+            "accessType": "WRITE",
+            "useProductNetPrice": false,
+            "ignoreCompanyProductDiscountAgreement": false,
+            "customerName": "Montagne SARL",
+            "hierarchyLevel": 0,
+            "projectManagerNameAndNumber": "Admin NM",
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceOnAccountVatHigh": false,
+            "invoiceReserveTotalAmountCurrency": 0,
+            "accountingDimensionValues": []
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T04:37:29",
+    "prompt": "Kunden Havbris AS (org.nr 831357983) har en utestående faktura på 5900 kr eksklusiv MVA for \"Konsulenttimer\". Registrer full betaling på denne fakturaen.",
+    "task_type": "register_payment",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Registrer full betaling på denne fakturaen' (Register full payment on this invoice), indicating a 'register_payment' task. The customer name 'Havbris AS' and organization number '831357983' are provided. The outstanding amount of '5900 kr eksklusiv MVA' is extracted as the payment 'amount', and 'Konsulenttimer' as the 'productDescription' for the invoice.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952605,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952605",
+            "customer": {
+              "id": 107822499,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822499"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "2 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "2",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147520638,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520638"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Havbris AS",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147520639,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520639",
+            "invoiceNumber": 2,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107822499,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822499"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401952605,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952605"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607497312,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607497312"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965724945,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965724945"
+              }
+            ],
+            "voucher": {
+              "id": 608819989,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608819989"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 0,
+            "amountCurrency": 0,
+            "amountExcludingVat": 0,
+            "amountExcludingVatCurrency": 0,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 0,
+            "amountCurrencyOutstanding": 0,
+            "amountOutstandingTotal": 0,
+            "amountCurrencyOutstandingTotal": 0,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844903918,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844903918"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024148445
+          }
+        }
+      },
+      {
+        "step": "payment",
+        "ok": true,
+        "status": 200,
+        "data": {
+          "value": {
+            "id": 2147520639,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520639",
+            "invoiceNumber": 2,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107822499,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822499"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401952605,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952605"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607497312,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607497312"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965724945,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965724945"
+              }
+            ],
+            "voucher": {
+              "id": 608819989,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608819989"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 0,
+            "amountCurrency": 0,
+            "amountExcludingVat": 0,
+            "amountExcludingVatCurrency": 0,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": -5900,
+            "amountCurrencyOutstanding": -5900,
+            "amountOutstandingTotal": -5900,
+            "amountCurrencyOutstandingTotal": -5900,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844903918,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844903918"
+              },
+              {
+                "id": 3844903920,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844903920"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024148445
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T04:27:15",
+    "prompt": "Kunden Lysgård AS (org.nr 850823049) har en utestående faktura på 49700 kr eksklusiv MVA for \"Opplæring\". Registrer full betaling på denne fakturaen.",
+    "task_type": "register_payment",
+    "success": false,
+    "confidence": 0.7,
+    "reasoning": "The task explicitly asks to 'Registrer full betaling' (register full payment), indicating a 'register_payment' task type. Customer name 'Lysgård AS' and organization number '850823049' are directly extracted. The service 'Opplæring' is extracted as 'productDescription'. The value '49700 kr eksklusiv MVA' is extracted as 'productPrice' (the price of the service on the invoice, excluding VAT). The 'amount' for payment is also extracted as '49700', interpreting it as the net value of the invoice as stated. However, for 'full betaling', the actual payment amount would typically include VAT, which is not specified in the task. The task does not provide an 'invoiceNumber' or 'invoiceId', which are usually required to identify the specific invoice for payment registration. 'paymentDate' is also missing. The confidence is lowered due to these missing critical parameters and the ambiguity regarding the 'amount' for full payment.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952591,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952591",
+            "customer": {
+              "id": 107822495,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822495"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "2 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "2",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147520616,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520616"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Lysgård AS",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "create_invoice",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 2147520617,
+            "version": 3,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520617",
+            "invoiceNumber": 2,
+            "invoiceDate": "2026-03-20",
+            "customer": {
+              "id": 107822495,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107822495"
+            },
+            "creditedInvoice": 0,
+            "isCredited": false,
+            "invoiceDueDate": "2026-03-20",
+            "kid": "",
+            "invoiceComment": "",
+            "comment": "",
+            "orders": [
+              {
+                "id": 401952591,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952591"
+              }
+            ],
+            "orderLines": [
+              {
+                "id": 1607497298,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/order/orderline/1607497298"
+              }
+            ],
+            "travelReports": [],
+            "projectInvoiceDetails": [
+              {
+                "id": 1965724929,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/details/1965724929"
+              }
+            ],
+            "voucher": {
+              "id": 608819968,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/voucher/608819968"
+            },
+            "deliveryDate": "2026-03-20",
+            "amount": 0,
+            "amountCurrency": 0,
+            "amountExcludingVat": 0,
+            "amountExcludingVatCurrency": 0,
+            "amountRoundoff": 0,
+            "amountRoundoffCurrency": 0,
+            "amountOutstanding": 0,
+            "amountCurrencyOutstanding": 0,
+            "amountOutstandingTotal": 0,
+            "amountCurrencyOutstandingTotal": 0,
+            "sumRemits": 0,
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "isCreditNote": false,
+            "isCharged": true,
+            "isApproved": false,
+            "postings": [
+              {
+                "id": 3844903891,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/posting/3844903891"
+              }
+            ],
+            "reminders": [],
+            "invoiceRemarks": "",
+            "invoiceRemark": null,
+            "isPeriodizationPossible": true,
+            "documentId": 1024148437
+          }
+        }
+      },
+      {
+        "step": "payment",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": null,
+              "message": "Den angitte betalingstypen må være en innbetaling.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "5e408dd7-037d-4304-856b-85add0fe05ea"
+        }
+      },
+      {
+        "step": "payment_fallback",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 15000,
+          "message": "Validation failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "paidAmount",
+              "message": "Kan ikke være null.",
+              "path": null,
+              "rootId": null
+            },
+            {
+              "field": "paymentDate",
+              "message": "Kan ikke være null.",
+              "path": null,
+              "rootId": null
+            },
+            {
+              "field": "paymentTypeId",
+              "message": "Kan ikke være null.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "fe1d31d2-ae30-4664-9523-7131f9959d83"
+        }
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "d3371ba3-6075-4987-9180-7e9bf5b46470"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T04:25:43",
+    "prompt": "Opprett kunden Fjordkraft AS med organisasjonsnummer 843216285. Adressen er Fjordveien 129, 2317 Hamar. E-post: post@fjordkraft.no.",
+    "task_type": "create_customer",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly states 'Opprett kunden' (Create customer). All necessary parameters for creating a customer, including name, organization number, address, postal code, city, and email, are clearly provided in the Norwegian text. The 'AS' in the name indicates it's not a private individual.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108217799,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/customer/108217799",
+            "name": "Fjordkraft AS",
+            "organizationNumber": "843216285",
+            "globalLocationNumber": 0,
+            "supplierNumber": 0,
+            "customerNumber": 10001,
+            "isSupplier": false,
+            "isCustomer": true,
+            "isInactive": false,
+            "accountManager": null,
+            "department": null,
+            "email": "post@fjordkraft.no",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "language": "NO",
+            "displayName": "Fjordkraft AS (10001)",
+            "isPrivateIndividual": false,
+            "singleCustomerInvoice": false,
+            "invoiceSendMethod": "EMAIL",
+            "emailAttachmentType": "ATTACHMENT",
+            "postalAddress": {
+              "id": 405287098,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405287098",
+              "addressLine1": "Fjordveien 129",
+              "addressLine2": "",
+              "postalCode": "2317",
+              "city": "Hamar",
+              "country": {
+                "id": 161,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+              },
+              "displayName": "Fjordkraft AS, Fjordveien 129, 2317 Hamar, Norge",
+              "addressAsString": "Fjordveien 129, 2317 Hamar, Norge",
+              "displayNameInklMatrikkel": "Fjordkraft AS, Fjordveien 129, 2317 Hamar, Norge",
+              "knr": 0,
+              "gnr": 0,
+              "bnr": 0,
+              "fnr": 0,
+              "snr": 0,
+              "unitNumber": ""
+            },
+            "physicalAddress": {
+              "id": 405287097,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405287097"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "bankAccountPresentation": [],
+            "ledgerAccount": {
+              "id": 349824869,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/349824869"
+            },
+            "isFactoring": false,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "isAutomaticSoftReminderEnabled": false,
+            "isAutomaticReminderEnabled": false,
+            "isAutomaticNoticeOfDebtCollectionEnabled": false,
+            "discountPercentage": 0,
+            "website": ""
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T04:23:16",
+    "prompt": "We have a new employee named Lucy Wilson, born 28. December 1986. Please create them as an employee with email lucy.wilson@example.org and start date 25. April 2026.",
+    "task_type": "create_employee",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'create' a 'new employee' named Lucy Wilson, indicating a 'create_employee' task. All required parameters like first name, last name, date of birth, email, and start date are clearly provided in the text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 18540534,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18540534",
+            "firstName": "Lucy",
+            "lastName": "Wilson",
+            "displayName": "Lucy Wilson",
+            "employeeNumber": "",
+            "dateOfBirth": "1986-12-28",
+            "email": "lucy.wilson@example.org",
+            "phoneNumberMobileCountry": {
+              "id": 161,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+            },
+            "phoneNumberMobile": "",
+            "phoneNumberHome": "",
+            "phoneNumberWork": "",
+            "nationalIdentityNumber": "",
+            "dnumber": "",
+            "internationalId": {
+              "intAmeldingType": null,
+              "country": null,
+              "number": ""
+            },
+            "bankAccountNumber": "",
+            "iban": "",
+            "bic": "",
+            "creditorBankCountryId": 0,
+            "usesAbroadPayment": false,
+            "userType": null,
+            "allowInformationRegistration": true,
+            "isContact": false,
+            "isProxy": false,
+            "comments": "",
+            "address": null,
+            "department": {
+              "id": 689860,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/department/689860"
+            },
+            "employments": [],
+            "holidayAllowanceEarned": {
+              "year": 0,
+              "amount": 0,
+              "basis": 0,
+              "amountExtraHolidayWeek": 0
+            },
+            "employeeCategory": null,
+            "isAuthProjectOverviewURL": true,
+            "pictureId": 0,
+            "companyId": 107809510,
+            "vismaConnect2FAactive": false
+          }
+        }
+      },
+      {
+        "step": "grant_entitlements",
+        "ok": true,
+        "status": 200
+      },
+      {
+        "step": "set_start_date",
+        "ok": true,
+        "status": 200,
+        "data": {
+          "value": {
+            "id": 18540534,
+            "version": 2,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18540534",
+            "firstName": "Lucy",
+            "lastName": "Wilson",
+            "displayName": "Lucy Wilson",
+            "employeeNumber": "",
+            "dateOfBirth": "1986-12-28",
+            "email": "lucy.wilson@example.org",
+            "phoneNumberMobileCountry": {
+              "id": 161,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+            },
+            "phoneNumberMobile": "",
+            "phoneNumberHome": "",
+            "phoneNumberWork": "",
+            "nationalIdentityNumber": "",
+            "dnumber": "",
+            "internationalId": {
+              "intAmeldingType": null,
+              "country": null,
+              "number": ""
+            },
+            "bankAccountNumber": "",
+            "iban": "",
+            "bic": "",
+            "creditorBankCountryId": 0,
+            "usesAbroadPayment": false,
+            "userType": null,
+            "allowInformationRegistration": true,
+            "isContact": false,
+            "isProxy": false,
+            "comments": "",
+            "address": null,
+            "department": {
+              "id": 689860,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/department/689860"
+            },
+            "employments": [],
+            "holidayAllowanceEarned": {
+              "year": 0,
+              "amount": 0,
+              "basis": 0,
+              "amountExtraHolidayWeek": 0
+            },
+            "employeeCategory": null,
+            "isAuthProjectOverviewURL": true,
+            "pictureId": 0,
+            "companyId": 107809510,
+            "vismaConnect2FAactive": false
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T03:27:19",
+    "prompt": "Create and send an invoice to the customer Blueshore Ltd (org no. 987928921) for 40600 NOK excluding VAT. The invoice is for Maintenance.",
+    "task_type": "create_invoice",
+    "success": false,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Create and send an invoice', which directly maps to the 'create_invoice' task type. The customer name 'Blueshore Ltd' and organization number '987928921' are provided. The invoice line item 'Maintenance' for '40600 NOK excluding VAT' is extracted, with an implied quantity of 1 and the default VAT percentage of 25% as it was not specified.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952467,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952467",
+            "customer": {
+              "id": 107819626,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107819626"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "1 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "1",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147520475,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520475"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Blueshore Ltd",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "convert_to_invoice",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": null,
+              "message": "Faktura kan ikke opprettes før selskapet har registrert et bankkontonummer.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "f8bc5bf0-9f25-4744-b733-1bac3c938cc9"
+        }
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "9321d6bd-fa00-4466-8279-f530ac187759"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T03:26:16",
+    "prompt": "Créez le client Montagne SARL avec le numéro d'organisation 936464815. L'adresse est Havnegata 139, 4611 Kristiansand. E-mail : post@montagne.no.",
+    "task_type": "create_customer",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Créez le client' (Create the customer). The customer's name 'Montagne SARL', organization number '936464815', address 'Havnegata 139', postal code '4611', city 'Kristiansand', and email 'post@montagne.no' were all directly extracted from the provided text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108208672,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/customer/108208672",
+            "name": "Montagne SARL",
+            "organizationNumber": "936464815",
+            "globalLocationNumber": 0,
+            "supplierNumber": 0,
+            "customerNumber": 10001,
+            "isSupplier": false,
+            "isCustomer": true,
+            "isInactive": false,
+            "accountManager": null,
+            "department": null,
+            "email": "post@montagne.no",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "language": "NO",
+            "displayName": "Montagne SARL (10001)",
+            "isPrivateIndividual": false,
+            "singleCustomerInvoice": false,
+            "invoiceSendMethod": "EMAIL",
+            "emailAttachmentType": "ATTACHMENT",
+            "postalAddress": {
+              "id": 405268840,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405268840",
+              "addressLine1": "Havnegata 139",
+              "addressLine2": "",
+              "postalCode": "4611",
+              "city": "Kristiansand",
+              "country": {
+                "id": 161,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+              },
+              "displayName": "Montagne SARL, Havnegata 139, 4611 Kristiansand, Norge",
+              "addressAsString": "Havnegata 139, 4611 Kristiansand, Norge",
+              "displayNameInklMatrikkel": "Montagne SARL, Havnegata 139, 4611 Kristiansand, Norge",
+              "knr": 0,
+              "gnr": 0,
+              "bnr": 0,
+              "fnr": 0,
+              "snr": 0,
+              "unitNumber": ""
+            },
+            "physicalAddress": {
+              "id": 405268839,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405268839"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "bankAccountPresentation": [],
+            "ledgerAccount": {
+              "id": 349822224,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/349822224"
+            },
+            "isFactoring": false,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "isAutomaticSoftReminderEnabled": false,
+            "isAutomaticReminderEnabled": false,
+            "isAutomaticNoticeOfDebtCollectionEnabled": false,
+            "discountPercentage": 0,
+            "website": ""
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T03:25:12",
+    "prompt": "Create three departments in Tripletex: \"Drift\", \"Innkjøp\", and \"Salg\".",
+    "task_type": "create_department",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Create three departments' and lists their names. The task type is 'create_department', and each department's name is extracted as a separate entity.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 884963,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/884963",
+            "name": "Drift",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Drift",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      },
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 884968,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/884968",
+            "name": "Innkjøp",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Innkjøp",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      },
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 884969,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/884969",
+            "name": "Salg",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Salg",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      }
+    ],
+    "entities_count": 3
+  },
+  {
+    "time": "2026-03-20T03:20:31",
+    "prompt": "Registrer leverandøren Havbris AS med organisasjonsnummer 846635408. E-post: faktura@havbris.no.",
+    "task_type": "create_customer",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task 'Registrer leverandøren' (Register the supplier) indicates a 'create_customer' task. 'Havbris AS' is extracted as the customer name. 'organisasjonsnummer 846635408' is extracted as the organizationNumber. 'E-post: faktura@havbris.no' is extracted as the email. Since it's a company, 'isPrivateIndividual' is set to false.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108207734,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/customer/108207734",
+            "name": "Havbris AS",
+            "organizationNumber": "846635408",
+            "globalLocationNumber": 0,
+            "supplierNumber": 0,
+            "customerNumber": 10001,
+            "isSupplier": false,
+            "isCustomer": true,
+            "isInactive": false,
+            "accountManager": null,
+            "department": null,
+            "email": "faktura@havbris.no",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "language": "NO",
+            "displayName": "Havbris AS (10001)",
+            "isPrivateIndividual": false,
+            "singleCustomerInvoice": false,
+            "invoiceSendMethod": "EMAIL",
+            "emailAttachmentType": "ATTACHMENT",
+            "postalAddress": {
+              "id": 405266964,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405266964"
+            },
+            "physicalAddress": {
+              "id": 405266963,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405266963"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "bankAccountPresentation": [],
+            "ledgerAccount": {
+              "id": 350846897,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/350846897"
+            },
+            "isFactoring": false,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "isAutomaticSoftReminderEnabled": false,
+            "isAutomaticReminderEnabled": false,
+            "isAutomaticNoticeOfDebtCollectionEnabled": false,
+            "discountPercentage": 0,
+            "website": ""
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:50:12",
+    "prompt": "Opprett prosjektet \"Migrasjon Elvdal\" knytt til kunden Elvdal AS (org.nr 877501906). Prosjektleiar er Liv Haugen (liv.haugen@example.org).",
+    "task_type": "create_project",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly states 'Opprett prosjektet' (Create project), setting the task_type to 'create_project'. The project name 'Migrasjon Elvdal' is directly provided. The customer 'Elvdal AS' and its organization number '877501906' are specified. The project manager 'Liv Haugen' and her email 'liv.haugen@example.org' are also clearly mentioned.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952243,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/project/401952243",
+            "name": "Migrasjon Elvdal",
+            "number": "1",
+            "displayName": "1 Migrasjon Elvdal",
+            "description": "",
+            "projectManager": {
+              "id": 18167724,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18167724"
+            },
+            "department": null,
+            "mainProject": null,
+            "startDate": "2026-03-20",
+            "endDate": null,
+            "customer": {
+              "id": 107825426,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107825426"
+            },
+            "isClosed": false,
+            "isReadyForInvoicing": false,
+            "isInternal": false,
+            "isOffer": false,
+            "isFixedPrice": false,
+            "projectCategory": null,
+            "deliveryAddress": null,
+            "boligmappaAddress": null,
+            "displayNameFormat": "NAME_STANDARD",
+            "reference": "",
+            "externalAccountsNumber": "",
+            "discountPercentage": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "fixedprice": 0,
+            "contributionMarginPercent": 0,
+            "numberOfSubProjects": 0,
+            "numberOfProjectParticipants": 1,
+            "orderLines": [],
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "markUpOrderLines": 0,
+            "markUpFeesEarned": 0,
+            "isPriceCeiling": false,
+            "priceCeilingAmount": 0,
+            "projectHourlyRates": [
+              {
+                "id": 11067496,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/hourlyRates/11067496"
+              }
+            ],
+            "forParticipantsOnly": false,
+            "participants": [
+              {
+                "id": 15621989,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/project/participant/15621989"
+              }
+            ],
+            "contact": null,
+            "attention": null,
+            "invoiceComment": "",
+            "invoicingPlan": [],
+            "preliminaryInvoice": null,
+            "generalProjectActivitiesPerProjectOnly": false,
+            "projectActivities": [],
+            "hierarchyNameAndNumber": "1 Migrasjon Elvdal",
+            "invoiceDueDate": 14,
+            "invoiceDueDateType": "DAYS",
+            "invoiceReceiverEmail": "",
+            "overdueNoticeEmail": "",
+            "accessType": "WRITE",
+            "useProductNetPrice": false,
+            "ignoreCompanyProductDiscountAgreement": false,
+            "customerName": "Elvdal AS",
+            "hierarchyLevel": 0,
+            "projectManagerNameAndNumber": "Admin NM",
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceOnAccountVatHigh": false,
+            "invoiceReserveTotalAmountCurrency": 0,
+            "accountingDimensionValues": []
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:49:05",
+    "prompt": "Nous avons un nouvel employé nommé Nathan Moreau, né le 17. April 1981. Veuillez le créer en tant qu'employé avec l'e-mail nathan.moreau@example.org et la date de début 6. January 2026.",
+    "task_type": "create_employee",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly states 'Nous avons un nouvel employé' and 'Veuillez le créer en tant qu'employé', indicating a 'create_employee' task. The name 'Nathan Moreau' is extracted for firstName and lastName. The date of birth '17. April 1981' is converted to '1981-04-17'. The email 'nathan.moreau@example.org' is directly provided. The start date '6. January 2026' is converted to '2026-01-06'.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 18526020,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18526020",
+            "firstName": "Nathan",
+            "lastName": "Moreau",
+            "displayName": "Nathan Moreau",
+            "employeeNumber": "",
+            "dateOfBirth": "1981-04-17",
+            "email": "nathan.moreau@example.org",
+            "phoneNumberMobileCountry": {
+              "id": 161,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+            },
+            "phoneNumberMobile": "",
+            "phoneNumberHome": "",
+            "phoneNumberWork": "",
+            "nationalIdentityNumber": "",
+            "dnumber": "",
+            "internationalId": {
+              "intAmeldingType": null,
+              "country": null,
+              "number": ""
+            },
+            "bankAccountNumber": "",
+            "iban": "",
+            "bic": "",
+            "creditorBankCountryId": 0,
+            "usesAbroadPayment": false,
+            "userType": null,
+            "allowInformationRegistration": true,
+            "isContact": false,
+            "isProxy": false,
+            "comments": "",
+            "address": null,
+            "department": {
+              "id": 689847,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/department/689847"
+            },
+            "employments": [],
+            "holidayAllowanceEarned": {
+              "year": 0,
+              "amount": 0,
+              "basis": 0,
+              "amountExtraHolidayWeek": 0
+            },
+            "employeeCategory": null,
+            "isAuthProjectOverviewURL": true,
+            "pictureId": 0,
+            "companyId": 107809485,
+            "vismaConnect2FAactive": false
+          }
+        }
+      },
+      {
+        "step": "grant_entitlements",
+        "ok": true,
+        "status": 200
+      },
+      {
+        "step": "set_start_date",
+        "ok": true,
+        "status": 200,
+        "data": {
+          "value": {
+            "id": 18526020,
+            "version": 2,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/employee/18526020",
+            "firstName": "Nathan",
+            "lastName": "Moreau",
+            "displayName": "Nathan Moreau",
+            "employeeNumber": "",
+            "dateOfBirth": "1981-04-17",
+            "email": "nathan.moreau@example.org",
+            "phoneNumberMobileCountry": {
+              "id": 161,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+            },
+            "phoneNumberMobile": "",
+            "phoneNumberHome": "",
+            "phoneNumberWork": "",
+            "nationalIdentityNumber": "",
+            "dnumber": "",
+            "internationalId": {
+              "intAmeldingType": null,
+              "country": null,
+              "number": ""
+            },
+            "bankAccountNumber": "",
+            "iban": "",
+            "bic": "",
+            "creditorBankCountryId": 0,
+            "usesAbroadPayment": false,
+            "userType": null,
+            "allowInformationRegistration": true,
+            "isContact": false,
+            "isProxy": false,
+            "comments": "",
+            "address": null,
+            "department": {
+              "id": 689847,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/department/689847"
+            },
+            "employments": [],
+            "holidayAllowanceEarned": {
+              "year": 0,
+              "amount": 0,
+              "basis": 0,
+              "amountExtraHolidayWeek": 0
+            },
+            "employeeCategory": null,
+            "isAuthProjectOverviewURL": true,
+            "pictureId": 0,
+            "companyId": 107809485,
+            "vismaConnect2FAactive": false
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:47:02",
+    "prompt": "Opprett og send en faktura til kunden Stormberg AS (org.nr 921996144) på 31250 kr eksklusiv MVA. Fakturaen gjelder Opplæring.",
+    "task_type": "create_invoice",
+    "success": false,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Opprett og send en faktura' (Create and send an invoice), setting the task_type to 'create_invoice'. The customer is identified as 'Stormberg AS'. The invoice line description is 'Opplæring'. The amount '31250 kr eksklusiv MVA' is interpreted as the unitPrice for a quantity of 1. The vatPercentage defaults to 25% as it's not specified and the amount is exclusive of VAT.",
+    "results": [
+      {
+        "step": "create_order",
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 401952230,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/order/401952230",
+            "customer": {
+              "id": 107819612,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/customer/107819612"
+            },
+            "contact": null,
+            "attn": null,
+            "displayName": "1 Ordre",
+            "receiverEmail": "",
+            "overdueNoticeEmail": "",
+            "number": "1",
+            "reference": "",
+            "department": null,
+            "orderDate": "2026-03-20",
+            "project": null,
+            "invoiceComment": "",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "isShowOpenPostsOnInvoices": false,
+            "isClosed": false,
+            "deliveryDate": "2026-03-20",
+            "deliveryAddress": null,
+            "deliveryComment": "",
+            "isPrioritizeAmountsIncludingVat": false,
+            "orderLineSorting": "PRODUCT",
+            "orderGroups": [],
+            "orderLines": [],
+            "isSubscription": false,
+            "subscriptionDuration": 0,
+            "subscriptionDurationType": "MONTHS",
+            "subscriptionPeriodsOnInvoice": 0,
+            "subscriptionPeriodsOnInvoiceType": "MONTHS",
+            "subscriptionInvoicingTimeInAdvanceOrArrears": "ADVANCE",
+            "subscriptionInvoicingTime": 0,
+            "subscriptionInvoicingTimeType": "MONTHS",
+            "isSubscriptionAutoInvoicing": false,
+            "preliminaryInvoice": {
+              "id": 2147520247,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/invoice/2147520247"
+            },
+            "attachment": [],
+            "sendMethodDescription": "Faktura må sendes manuelt.",
+            "invoiceOnAccountVatHigh": false,
+            "totalInvoicedOnAccountAmountAbsoluteCurrency": 0,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "markUpOrderLines": 0,
+            "discountPercentage": 0,
+            "customerName": "Stormberg AS",
+            "projectManagerNameAndNumber": "",
+            "travelReports": [],
+            "accountingDimensionValues": []
+          }
+        }
+      },
+      {
+        "step": "convert_to_invoice",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": "VALIDATION_ERROR",
+          "validationMessages": [
+            {
+              "field": null,
+              "message": "Faktura kan ikke opprettes før selskapet har registrert et bankkontonummer.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "a491594e-b58d-470f-bd74-2bab75d3e841"
+        }
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 404,
+        "data": {
+          "status": 404,
+          "code": 6000,
+          "message": "Object not found",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "4463571a-e593-481b-8ca3-7ab4e3298dbf"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:46:01",
+    "prompt": "Erstellen Sie den Kunden Grünfeld GmbH mit der Organisationsnummer 886669445. Die Adresse ist Kirkegata 87, 6003 Ålesund. E-Mail: post@grunfeld.no.",
+    "task_type": "create_customer",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Erstellen Sie den Kunden' (create the customer) and provides all the necessary details for a customer entity, including name, organization number, address, postal code, city, and email. Since it's a 'GmbH', it's not a private individual.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 108202144,
+            "version": 1,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/customer/108202144",
+            "name": "Grünfeld GmbH",
+            "organizationNumber": "886669445",
+            "globalLocationNumber": 0,
+            "supplierNumber": 0,
+            "customerNumber": 10001,
+            "isSupplier": false,
+            "isCustomer": true,
+            "isInactive": false,
+            "accountManager": null,
+            "department": null,
+            "email": "post@grunfeld.no",
+            "invoiceEmail": "",
+            "overdueNoticeEmail": "",
+            "phoneNumber": "",
+            "phoneNumberMobile": "",
+            "description": "",
+            "language": "NO",
+            "displayName": "Grünfeld GmbH (10001)",
+            "isPrivateIndividual": false,
+            "singleCustomerInvoice": false,
+            "invoiceSendMethod": "EMAIL",
+            "emailAttachmentType": "ATTACHMENT",
+            "postalAddress": {
+              "id": 405255784,
+              "version": 0,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405255784",
+              "addressLine1": "Kirkegata 87",
+              "addressLine2": "",
+              "postalCode": "6003",
+              "city": "Ålesund",
+              "country": {
+                "id": 161,
+                "url": "kkpqfuj-amager.tripletex.dev/v2/country/161"
+              },
+              "displayName": "Grünfeld GmbH, Kirkegata 87, 6003 Ålesund, Norge",
+              "addressAsString": "Kirkegata 87, 6003 Ålesund, Norge",
+              "displayNameInklMatrikkel": "Grünfeld GmbH, Kirkegata 87, 6003 Ålesund, Norge",
+              "knr": 0,
+              "gnr": 0,
+              "bnr": 0,
+              "fnr": 0,
+              "snr": 0,
+              "unitNumber": ""
+            },
+            "physicalAddress": {
+              "id": 405255783,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/address/405255783"
+            },
+            "deliveryAddress": null,
+            "category1": null,
+            "category2": null,
+            "category3": null,
+            "invoicesDueIn": 14,
+            "invoicesDueInType": "DAYS",
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "bankAccountPresentation": [],
+            "ledgerAccount": {
+              "id": 349819050,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/account/349819050"
+            },
+            "isFactoring": false,
+            "invoiceSendSMSNotification": false,
+            "invoiceSMSNotificationNumber": "",
+            "isAutomaticSoftReminderEnabled": false,
+            "isAutomaticReminderEnabled": false,
+            "isAutomaticNoticeOfDebtCollectionEnabled": false,
+            "discountPercentage": 0,
+            "website": ""
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:45:21",
+    "prompt": "Créez le produit \"Maintenance\" avec le numéro de produit 1327. Le prix est de 3700 NOK hors TVA, avec le taux standard de 25 %.",
+    "task_type": "create_product",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Créez le produit' (create the product). The product's name is 'Maintenance', its number is '1327', the price excluding VAT is '3700 NOK', and the VAT percentage is specified as '25 %'.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 84382905,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/product/84382905",
+            "name": "Maintenance",
+            "number": "1327",
+            "displayNumber": "1327",
+            "description": "",
+            "orderLineDescription": "",
+            "costExcludingVatCurrency": 0,
+            "costPrice": 0,
+            "priceExcludingVatCurrency": 3700,
+            "priceIncludingVatCurrency": 4625,
+            "isInactive": false,
+            "productUnit": null,
+            "incomingStock": 0,
+            "outgoingStock": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "department": null,
+            "account": null,
+            "supplier": null,
+            "resaleProduct": null,
+            "isDeletable": false,
+            "hasSupplierProductConnected": false,
+            "image": null,
+            "displayName": "1327 Maintenance",
+            "mainSupplierProduct": null,
+            "isRoundPriceIncVat": false,
+            "priceInTargetCurrency": 0,
+            "purchasePriceCurrency": 0
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:44:03",
+    "prompt": "Create three departments in Tripletex: \"Produksjon\", \"Kundeservice\", and \"Økonomi\".",
+    "task_type": "create_department",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly asks to 'Create three departments' and lists their names. The 'entities' array is used for multiple creations of the same type.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 881742,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/881742",
+            "name": "Produksjon",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Produksjon",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      },
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 881745,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/881745",
+            "name": "Kundeservice",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Kundeservice",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      },
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 881748,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/department/881748",
+            "name": "Økonomi",
+            "departmentNumber": "",
+            "departmentManager": null,
+            "displayName": "Økonomi",
+            "isInactive": false,
+            "businessActivityTypeId": 0
+          }
+        }
+      }
+    ],
+    "entities_count": 3
+  },
+  {
+    "time": "2026-03-20T02:37:46",
+    "prompt": "Opprett tre avdelinger i Tripletex: \"Utvikling\", \"Drift\" og \"HR\".",
+    "task_type": "create_department",
+    "success": false,
+    "confidence": 1,
+    "reasoning": "The task explicitly states 'Opprett tre avdelinger' which translates to 'Create three departments'. The names of the departments are clearly listed.",
+    "results": [
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 18000,
+          "message": "Validering feilet.",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "name",
+              "message": "Feltet kan ikke være tomt.",
+              "path": "null.name",
+              "rootId": null
+            }
+          ],
+          "requestId": "8a32e5b5-87cb-4994-b1b3-527d0a3ad5df"
+        }
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 404,
+        "data": "{\n  \"code\": 404,\n  \"page\": https://kkpqfuj-amager.tripletex.dev/error\n}"
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:35:48",
+    "prompt": "Le client Forêt SARL (nº org. 925519685) a une facture impayée de 40750 NOK hors TVA pour \"Design web\". Enregistrez le paiement intégral de cette facture.",
+    "task_type": "register_payment",
+    "success": false,
+    "confidence": 1,
+    "reasoning": "The task is to 'Enregistrez le paiement intégral de cette facture' (Register the full payment of this invoice), which clearly indicates a 'register_payment' task. The customer is identified by 'Forêt SARL' and organization number '925519685'. The specific invoice is identified by its net amount '40750 NOK hors TVA' and description 'Design web'. The payment amount is set to 40750, directly from the specified invoice amount. No payment date was provided, so the current date (2024-04-23) is assumed.",
+    "results": [
+      {
+        "error": "No invoice found"
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 400,
+        "data": {
+          "status": 400,
+          "code": 4000,
+          "message": "HTTP 405 Method Not Allowed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": null,
+          "requestId": "7c8aa212-7d77-456c-acb1-ece863776f16"
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T02:33:37",
+    "prompt": "Erstellen Sie das Produkt \"Beratungsstunden\" mit der Produktnummer 3512. Der Preis beträgt 42600 NOK ohne MwSt., mit dem Standardsatz von 25 %.",
+    "task_type": "create_product",
+    "success": true,
+    "confidence": 1,
+    "reasoning": "The task explicitly states 'Erstellen Sie das Produkt' (Create the product), indicating a 'create_product' task. The product name 'Beratungsstunden', product number '3512', price '42600 NOK ohne MwSt.' (priceExcludingVat), and VAT percentage 'Standardsatz von 25 %' (vatPercentage) were directly extracted from the German text.",
+    "results": [
+      {
+        "ok": true,
+        "status": 201,
+        "data": {
+          "value": {
+            "id": 84382879,
+            "version": 0,
+            "url": "kkpqfuj-amager.tripletex.dev/v2/product/84382879",
+            "name": "Beratungsstunden",
+            "number": "3512",
+            "displayNumber": "3512",
+            "description": "",
+            "orderLineDescription": "",
+            "costExcludingVatCurrency": 0,
+            "costPrice": 0,
+            "priceExcludingVatCurrency": 42600,
+            "priceIncludingVatCurrency": 53250,
+            "isInactive": false,
+            "productUnit": null,
+            "incomingStock": 0,
+            "outgoingStock": 0,
+            "vatType": {
+              "id": 3,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/ledger/vatType/3"
+            },
+            "currency": {
+              "id": 1,
+              "url": "kkpqfuj-amager.tripletex.dev/v2/currency/1"
+            },
+            "department": null,
+            "account": null,
+            "supplier": null,
+            "resaleProduct": null,
+            "isDeletable": false,
+            "hasSupplierProductConnected": false,
+            "image": null,
+            "displayName": "3512 Beratungsstunden",
+            "mainSupplierProduct": null,
+            "isRoundPriceIncVat": false,
+            "priceInTargetCurrency": 0,
+            "purchasePriceCurrency": 0
+          }
+        }
+      }
+    ],
+    "entities_count": 1
+  },
+  {
+    "time": "2026-03-20T01:19:36",
+    "prompt": "We have a new employee named Thomas Harris, born 4. June 1991. Please create them as an employee with email thomas.harris@example.org and start date 6. October 2026.",
+    "task_type": "create_employee",
+    "success": false,
+    "confidence": 0.9,
+    "reasoning": "The task explicitly states 'create them as an employee', which directly maps to the 'create_employee' task type. Employee details such as firstName, lastName, dateOfBirth, email, and startDate were extracted directly from the provided text, adhering to the YYYY-MM-DD date format rule.",
+    "results": [
+      {
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 16000,
+          "message": "Request mapping failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "startDate",
+              "message": "Feltet eksisterer ikke i objektet.",
+              "path": null,
+              "rootId": null
+            }
+          ],
+          "requestId": "7f5b17c2-4385-4280-b5b9-bd3e8743ee13"
+        }
+      },
+      {
+        "step": "retry",
+        "ok": false,
+        "status": 422,
+        "data": {
+          "status": 422,
+          "code": 16000,
+          "message": "Request mapping failed",
+          "link": "https://tripletex.no/v2-docs/",
+          "developerMessage": null,
+          "validationMessages": [
+            {
+              "field": "userType",
+              "message": "Verdien er ikke av korrekt type for dette feltet.",
+              "path": "userType",
+              "rootId": null
+            }
+          ],
+          "requestId": "065dd871-7758-46fa-a022-fe49302dc464"
+        }
+      }
+    ],
+    "entities_count": 1
+  }
+]

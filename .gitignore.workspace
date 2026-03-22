@@ -1,0 +1,4 @@
+# Large binary files — store on GCS
+tracks/cv/weights/*.onnx
+tracks/cv/weights/*.safetensors
+*.zip
