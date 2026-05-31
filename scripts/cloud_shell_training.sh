@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # =============================================================================
-# NM i AI 2026 — NorgesGruppen CV training on GCP Cloud Shell
+# NM i AI 2026 — NorgesGruppen VLM training on GCP Cloud Shell
 # =============================================================================
 # Paste this ENTIRE script into GCP Cloud Shell (https://shell.cloud.google.com)
-# Prerequisites: authenticated as devstar18611@gcplab.me in project ai-nm26osl-1861
+# Prerequisites: authenticated as your-gcp-account in project ${GCP_PROJECT:-your-gcp-project}
 #
 # Usage:
 #   bash cloud_shell_training.sh [DATASET_URL]
@@ -14,7 +14,7 @@ set -euo pipefail
 
 # ── Config ───────────────────────────────────────────────────────────────────
 VM_NAME="nmiai-train"
-PROJECT="ai-nm26osl-1861"
+PROJECT="${GCP_PROJECT:-your-gcp-project}"
 ZONE="europe-west4-a"
 MACHINE_TYPE="g2-standard-8"      # 8 vCPUs, 32 GB RAM + 1x L4 GPU
 DISK_SIZE="200GB"
@@ -274,17 +274,17 @@ if [ -d coco_dataset ] && [ -n "\$(ls -A coco_dataset 2>/dev/null)" ]; then
   exit 0
 fi
 
-if [ ! -f NM_NGD_coco_dataset.zip ]; then
+if [ ! -f cv_coco_dataset.zip ]; then
   echo "Trying GCS bucket..."
-  gsutil -q cp gs://${PROJECT}-data/NM_NGD_coco_dataset.zip . 2>/dev/null && echo "Downloaded from GCS" || true
+  gsutil -q cp gs://${PROJECT}-data/cv_coco_dataset.zip . 2>/dev/null && echo "Downloaded from GCS" || true
 fi
 
-if [ ! -f NM_NGD_coco_dataset.zip ] && [ -n "${DATASET_URL}" ]; then
+if [ ! -f cv_coco_dataset.zip ] && [ -n "${DATASET_URL}" ]; then
   echo "Downloading from provided URL..."
-  wget -q --show-progress -O NM_NGD_coco_dataset.zip "${DATASET_URL}"
+  wget -q --show-progress -O cv_coco_dataset.zip "${DATASET_URL}"
 fi
 
-if [ ! -f NM_NGD_coco_dataset.zip ]; then
+if [ ! -f cv_coco_dataset.zip ]; then
   echo ""
   echo "=========================================================="
   echo "  DATASET NOT FOUND"
@@ -292,10 +292,10 @@ if [ ! -f NM_NGD_coco_dataset.zip ]; then
   echo "Please upload the dataset manually. Options:"
   echo ""
   echo "  Option A - Upload via Cloud Shell:"
-  echo "    gcloud compute scp NM_NGD_coco_dataset.zip ${VM_NAME}:~/cv/data/ --project=${PROJECT} --zone=${ZONE}"
+  echo "    gcloud compute scp cv_coco_dataset.zip ${VM_NAME}:~/cv/data/ --project=${PROJECT} --zone=${ZONE}"
   echo ""
   echo "  Option B - Upload to GCS first, then download on VM:"
-  echo "    gsutil cp NM_NGD_coco_dataset.zip gs://${PROJECT}-data/"
+  echo "    gsutil cp cv_coco_dataset.zip gs://${PROJECT}-data/"
   echo "    Then re-run this script."
   echo ""
   echo "  Option C - If you have a direct download URL:"
@@ -305,7 +305,7 @@ if [ ! -f NM_NGD_coco_dataset.zip ]; then
 fi
 
 echo "Extracting dataset..."
-unzip -qo NM_NGD_coco_dataset.zip -d coco_dataset
+unzip -qo cv_coco_dataset.zip -d coco_dataset
 echo "Dataset extracted:"
 find coco_dataset -maxdepth 2 -type f | head -20
 echo "..."

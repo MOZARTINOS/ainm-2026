@@ -4,7 +4,7 @@
 set -euo pipefail
 
 VM_NAME="${1:-nmiai-train}"
-PROJECT="ai-nm26osl-1861"
+PROJECT="${GCP_PROJECT:-your-gcp-project}"
 ZONE="europe-west4-a"
 MACHINE_TYPE="g2-standard-8"
 DISK_SIZE="100GB"

@@ -9,7 +9,7 @@ set -euo pipefail
 
 VM_NAME="${1:-nmiai-train}"
 DATA_URL="${2:-}"  # Pass the dataset download URL as second arg if needed
-PROJECT="ai-nm26osl-1861"
+PROJECT="${GCP_PROJECT:-your-gcp-project}"
 ZONE="europe-west4-a"
 LOCAL_WEIGHTS_DIR="tracks/cv/weights"
 
@@ -30,15 +30,15 @@ pip install -q ultralytics safetensors timm
 echo "--- Downloading dataset ---"
 mkdir -p data && cd data
 # If the dataset zip is already present, skip download
-if [ ! -f NM_NGD_coco_dataset.zip ]; then
-  echo "NOTE: Place NM_NGD_coco_dataset.zip in ~/cv/data/ or set DATA_URL."
+if [ ! -f cv_coco_dataset.zip ]; then
+  echo "NOTE: Place cv_coco_dataset.zip in ~/cv/data/ or set DATA_URL."
   echo "Attempting gcloud storage download..."
   # Try GCS bucket first (adjust path as needed)
-  gsutil -q cp gs://ai-nm26osl-1861-data/NM_NGD_coco_dataset.zip . 2>/dev/null || true
+  gsutil -q cp gs://${GCP_PROJECT}-data/cv_coco_dataset.zip . 2>/dev/null || true
 fi
 
-if [ -f NM_NGD_coco_dataset.zip ]; then
-  unzip -qo NM_NGD_coco_dataset.zip -d coco_dataset
+if [ -f cv_coco_dataset.zip ]; then
+  unzip -qo cv_coco_dataset.zip -d coco_dataset
 else
   echo "ERROR: Dataset not found. Upload manually or set correct download path."
   exit 1
